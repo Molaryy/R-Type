@@ -39,3 +39,24 @@ build/Cmake*
 build/cmake_install.cmake
 build/Makefile
 build/CPack*
+
+#CMake files
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+CMakeUserPresets.json
+
+#local file to check cpp version
+vers.cc
+
+#binary files
+r-type_client
+r-type_server
