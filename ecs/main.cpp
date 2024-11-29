@@ -1,7 +1,7 @@
 
 void test();
 
-int main(void)
+int main()
 {
     test();
     return 0;
