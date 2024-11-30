@@ -14,35 +14,37 @@
 #include <utility> // std::forward
 #include <any> //std::any
 
-#include "allocator.hh"
-
-template <typename Component, typename Allocator = std::allocator<Component>>
+//! removed the component type to allow any type of component
+template <class Allocator = std::allocator<std::any>>
 class sparse_array
 {
     public:
-        using value_type = std::any
+        using value_type = std::any;
         using reference_type = value_type &;
         using const_reference_type = value_type const &;
         using container_t = std::vector<value_type, Allocator>;
         using size_type = typename container_t::size_type;
         using iterator = typename container_t::iterator;
         using const_iterator = typename container_t::const_iterator;
+        //!using = typedef
+        //using traits_type = std::allocator_traits<typename container_t::allocator_type>;
+        //! no decltype in code because allocator_traits is already known by the container_t
 
     public:
         /// @brief  Default constructor
-        sparse_array() = default;
+        sparse_array() noexcept = default;
 
         /// @brief  Copy constructor
-        sparse_array(sparse_array const &) = default;
+        sparse_array(sparse_array const &) noexcept = default;
 
         /// @brief  Move constructor
         sparse_array(sparse_array &&) noexcept = default;
     
         /// @brief  Destructor
-        ~sparse_array() = default;
+        ~sparse_array() noexcept = default;
 
         /// @brief  Copy assignment operator
-        sparse_array &operator=(sparse_array const &) = default;
+        sparse_array &operator=(sparse_array const &) noexcept = default;
 
         /// @brief  Move assignment operator
         sparse_array &operator=(sparse_array &&) noexcept = default;
@@ -81,14 +83,24 @@ class sparse_array
         /// @return const_iterator
         const_iterator cend() const noexcept { return data_.cend(); }
 
-        /// @brief Get the size of the sparse array
-        /// @return size_type
+        /**
+         * @brief Get the size of the sparse array
+         * 
+         * @return size_type 
+         */
         size_type size() const noexcept { return data_.size(); }
 
-        /// @brief Insert a value in the sparse array
-        /// @param pos  The position to insert the value
-        /// @param value  The value to insert
-        /// @return  reference_type
+
+        //! templated to be able to make any component type instead of just value_type
+        /**
+         * @brief Insert a value in the sparse array
+         * 
+         * @tparam Component 
+         * @param pos 
+         * @param value 
+         * @return reference_type 
+         */
+        template <typename Component>
         reference_type insert_at(size_type pos, Component const &value)
         {
             if (pos >= data_.size())
@@ -97,16 +109,25 @@ class sparse_array
             }
             else
             {
-                std::allocator_traits<Allocator>::destroy(data_.get_allocator(), std::addressof(data_[pos]));
+                // std::allocator_traits<Allocator>::destroy(data_.get_allocator(), std::addressof(data_[pos]));
+                // std::allocator_traits<decltype(data_.get_allocator())>::destroy(data_.get_allocator(), std::addressof(data_[pos]));
+                // traits_type::destroy(data_.get_allocator(), std::addressof(data_[pos]));
+                data_[pos].reset();
             }
-            std::allocator_traits<Allocator>::construct(data_.get_allocator(), std::addressof(data_[pos]), value);
+            // traits_type::construct(data_.get_allocator(), std::addressof(data_[pos]), value);
+            data_[pos] = value;
             return data_[pos];
         }
 
-        /// @brief Insert a value in the sparse array
-        /// @param pos  The position to insert the value
-        /// @param value  The value to insert
-        /// @return  reference_type
+        /**
+         * @brief Insert a value in the sparse array
+         * 
+         * @tparam Component 
+         * @param pos 
+         * @param value 
+         * @return reference_type 
+         */
+        template <typename Component>
         reference_type insert_at(size_type pos, Component &&value)
         {
             if (pos >= data_.size())
@@ -115,17 +136,24 @@ class sparse_array
             }
             else
             {
-                std::allocator_traits<Allocator>::destroy(data_.get_allocator(), std::addressof(data_[pos]));
+                // std::allocator_traits<Allocator>::destroy(data_.get_allocator(), std::addressof(data_[pos]));
+                // traits_type::destroy(data_.get_allocator(), std::addressof(data_[pos]));
+                data_[pos].reset();
             }
-            std::allocator_traits<Allocator>::construct(data_.get_allocator(), std::addressof(data_[pos]), std::move(value));
+            // std::allocator_traits<Allocator>::construct(data_.get_allocator(), std::addressof(data_[pos]), std::move(value));
+            // traits_type::construct(data_.get_allocator(), std::addressof(data_[pos]), std::any(std::forward<Component>(value)));
+            data_[pos] = std::forward<Component>(value); //! using std::any instead of Component
             return data_[pos];
         }
 
-        /// @brief Emplace a value in the sparse array
-        /// @tparam ...Params  The parameters to pass to the constructor of the value
-        /// @param pos The position to insert the value
-        /// @param ...  The parameters to pass to the constructor of the value
-        /// @return  reference_type
+        /**
+         * @brief Emplace a value in the sparse array
+         * 
+         * @tparam Params 
+         * @param pos 
+         * @param params 
+         * @return reference_type 
+         */
         template <class... Params>
         reference_type emplace_at(size_type pos, Params &&...params)
         {
@@ -135,32 +163,44 @@ class sparse_array
             }
             else
             {
-                std::allocator_traits<Allocator>::destroy(data_.get_allocator(), std::addressof(data_[pos]));
+                // std::allocator_traits<Allocator>::destroy(data_.get_allocator(), std::addressof(data_[pos]));
+                // traits_type::destroy(data_.get_allocator(), std::addressof(data_[pos]));
+                data_[pos].reset();
             }
-            std::allocator_traits<Allocator>::construct(data_.get_allocator(), std::addressof(data_[pos]), std::forward<Params>(params)...);
+            // std::allocator_traits<Allocator>::construct(data_.get_allocator(), std::addressof(data_[pos]), std::forward<Params>(params)...);
+            // traits_type::construct(data_.get_allocator(), std::addressof(data_[pos]), std::any(std::forward<Params>(params)...));
+            data_[pos] = std::any(std::forward<Params>(params)...);
             return data_[pos];
         }
 
-        /// @brief Erase a value in the sparse array
-        /// @param pos  The position of the value to erase
+        /**
+         * @brief Erase a value in the sparse array
+         * 
+         * @param pos 
+         */
         void erase(size_type pos)
         {
             if (pos < data_.size())
             {
-                std::allocator_traits<Allocator>::destroy(data_.get_allocator(), std::addressof(data_[pos]));
+                // std::allocator_traits<Allocator>::destroy(data_.get_allocator(), std::addressof(data_[pos]));
+                // traits_type::destroy(data_.get_allocator(), std::addressof(data_[pos]));
+                data_[pos].reset();
                 data_.erase(data_.begin() + pos);
             }
         }
 
-        /// @brief Get the index of a value in the sparse array
-        /// @param value
-        /// @return size_type
+        /**
+         * @brief Get the index object
+         * 
+         * @param value 
+         * @return size_type 
+         */
         size_type get_index(value_type const &value) const
         {
             auto iter = std::find(data_.begin(), data_.end(), value);
 
             if (iter != data_.end())
-                return std::distance(data_.begin(), iter);
+                return iter - data_.begin();
             return data_.size();
         }
 

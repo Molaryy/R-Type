@@ -7,13 +7,9 @@
 
 #pragma once
 
-#include <cstddef>
+#include <cstddef> // std::size_t
 
-class entity
-{
-    public:
-        explicit entity(size_t value) : value_(value) {}
-        operator size_t() const { return value_; }
-    private:
-        size_t value_;
-};
+#include "component.hh"
+
+using entity_id = std::size_t;
+using entity_t = sparse_array<>;
