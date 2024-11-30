@@ -34,6 +34,8 @@
 
 .idea
 
+.vscode
+
 build/_deps
 build/Cmake*
 build/cmake_install.cmake
