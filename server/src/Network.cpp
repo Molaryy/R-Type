@@ -19,9 +19,9 @@ namespace server {
     }
 
     Network::~Network() {
-        #ifdef _WIN64
+#ifdef _WIN64
             closesocket(_fd);
-        #endif
+#endif
     }
 
     void Network::run() {
@@ -36,12 +36,12 @@ namespace server {
 
         while (_isRunning) {
             client = 0;
-            #if defined(__linux__) || defined(__APPLE__)
-            client = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_clientAddr, &_clientAddrLen);                
-            #endif
-            #ifdef _WIN64
+#if defined(__linux__) || defined(__APPLE__)
+                client = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_clientAddr, &_clientAddrLen);                
+#endif
+#ifdef _WIN64
                 client = recvfrom(_fd, buffer.data(), buffer.size(), 0, (SOCKADDR *)&_clientAddr, &_clientAddrLen);
-            #endif
+#endif
             if (client < 0)
                 continue;
             auto[id, connect] = handleClient(buffer);
@@ -131,18 +131,23 @@ namespace server {
         int opt = 1;
 
         _fd = _maxClients;
-        #if defined(__linux__) || defined(__APPLE__)
-            _fd = socket(AF_INET, SOCK_DGRAM, 0);
+#if defined(__linux__) || defined(__APPLE__)
+            _fd = socket(AF_INET, SOCK_STREAM, 0);
             if (_fd == -1) {
                 std::cerr << "Error: socket creation failed" << std::endl;
                 return(84);
             }
-            if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1) {
+            socklen_t size = (socklen_t)sizeof(opt);
+            if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, &opt, size) == -1) {
                 std::cerr << "Error: socket options failed" << std::endl;
                 return(84);
             }
-        #endif
-        #ifdef _WIN64
+            if (setsockopt(_fd, SOL_SOCKET, SO_REUSEPORT, &opt, size) == -1) {
+                std::cerr << "Error: socket options failed" << std::endl;
+                return(84);
+            }
+#endif
+#ifdef _WIN64
             int iResult = 0;
 
             iResult = WSAStartup(MAKEWORD(2, 2), &_wsaData);
@@ -164,7 +169,7 @@ namespace server {
 
             unsigned read_timeout_ms = 10;
             setsockopt(_fd, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char*>(&read_timeout_ms), sizeof(read_timeout_ms));
-        #endif
+#endif
         return 0;
     }
 
@@ -182,20 +187,20 @@ namespace server {
     }
 
     int Network::bindSocket() {
-        #if defined(__linux__) || defined(__APPLE__)
+#if defined(__linux__) || defined(__APPLE__)
             if (bind(_fd, (struct sockaddr *)&_addr, sizeof(_addr)) == -1) {
                 std::cerr << "Error: socket binding failed" << std::endl;
                 return 84;
             }
             return 0;
-        #endif
-        #ifdef _WIN64
+#endif
+#ifdef _WIN64
             if (bind(_fd, (SOCKADDR *)&_addr, sizeof(_addr)) == -1) {
                 std::cerr << "Error: socket binding failed" << std::endl;
                 return 84;
             }
             return 0; 
-        #endif
+#endif
     }
 
     Interaction Network::manageClient(std::vector<char> buffer, int client_id, Game *game) {
