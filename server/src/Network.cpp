@@ -19,8 +19,6 @@ namespace server {
     }
 
     Network::~Network() {
-        #ifdef __linux__
-        #endif
         #ifdef _WIN64
             closesocket(_fd);
         #endif
@@ -38,13 +36,12 @@ namespace server {
 
         while (_isRunning) {
             client = 0;
-            #ifdef __linux__
-                client = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_clientAddr, &_clientAddrLen);
+            #if defined(__linux__) || defined(__APPLE__)
+            client = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_clientAddr, &_clientAddrLen);                
             #endif
             #ifdef _WIN64
                 client = recvfrom(_fd, buffer.data(), buffer.size(), 0, (SOCKADDR *)&_clientAddr, &_clientAddrLen);
             #endif
-
             if (client < 0)
                 continue;
             auto[id, connect] = handleClient(buffer);
@@ -134,7 +131,7 @@ namespace server {
         int opt = 1;
 
         _fd = _maxClients;
-        #ifdef __linux__
+        #if defined(__linux__) || defined(__APPLE__)
             _fd = socket(AF_INET, SOCK_DGRAM, 0);
             if (_fd == -1) {
                 std::cerr << "Error: socket creation failed" << std::endl;
@@ -185,7 +182,7 @@ namespace server {
     }
 
     int Network::bindSocket() {
-        #ifdef __linux__
+        #if defined(__linux__) || defined(__APPLE__)
             if (bind(_fd, (struct sockaddr *)&_addr, sizeof(_addr)) == -1) {
                 std::cerr << "Error: socket binding failed" << std::endl;
                 return 84;
@@ -197,7 +194,7 @@ namespace server {
                 std::cerr << "Error: socket binding failed" << std::endl;
                 return 84;
             }
-            return 0;
+            return 0; 
         #endif
     }
 

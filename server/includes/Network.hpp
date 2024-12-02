@@ -5,7 +5,7 @@
 ** Network.hpp
 */
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
     #pragma once
     #include <sys/socket.h>
     #include <netinet/in.h>
@@ -13,11 +13,9 @@
     #include <netinet/in.h>
     #include <arpa/inet.h>
     #include <unistd.h>
-    #define OS "linux"
 #endif
 
 #ifdef _WIN64
-    #pragma comment(lib, "Ws2_32.lib")
     #define NOGDI
     #define NOUSER
     #define MMNOSOUND
@@ -25,7 +23,6 @@
     #include <ws2tcpip.h>
     #include <io.h>
     #include <process.h>
-    #define OS "windows"
 #endif
 
 #include <string>
@@ -71,15 +68,11 @@ namespace server {
             bool _isRunning = true;
             int _fd;
             std::vector<Client> _clients;
-            #ifdef __linux__
-                struct sockaddr_in _addr;
-                struct sockaddr_in _clientAddr;
-                socklen_t _clientAddrLen;
-            #endif
+            struct sockaddr_in _addr;
+            struct sockaddr_in _clientAddr;
+            socklen_t _clientAddrLen;
+
             #ifdef _WIN64
-                struct sockaddr_in _addr;
-                struct sockaddr_in _clientAddr;
-                socklen_t _clientAddrLen;
                 WSADATA _wsaData;
             #endif
             int fillSocket();
