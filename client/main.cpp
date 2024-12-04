@@ -92,9 +92,9 @@ int main()
 void PlayGame(MenuState &currentMenu) {
     while (!WindowShouldClose()) {
         BeginDrawing();
-        ClearBackground(DARKGRAY);
+        ClearBackground(DARKBLUE);
         DrawText("Playing the game...", 300, 250, 30, WHITE);
-        DrawText("Press SPACE to return to Menu", 250, 300, 20, GRAY);
+        DrawText("Press SPACE to return to Menu", 250, 300, 20, WHITE);
         EndDrawing();
         if (IsKeyPressed(KEY_SPACE)) {
             currentMenu = MAIN_MENU;
@@ -106,9 +106,9 @@ void PlayGame(MenuState &currentMenu) {
 void ShowLeaderboard(MenuState &currentMenu) {
     while (!WindowShouldClose()) {
         BeginDrawing();
-        ClearBackground(DARKGRAY);
+        ClearBackground(DARKBLUE);
         DrawText("Leaderboard Section", 300, 250, 30, WHITE);
-        DrawText("Press SPACE to return to Menu", 250, 300, 20, GRAY);
+        DrawText("Press SPACE to return to Menu", 250, 300, 20, WHITE);
         EndDrawing();
         if (IsKeyPressed(KEY_SPACE)) {
             currentMenu = MAIN_MENU;
@@ -120,9 +120,9 @@ void ShowLeaderboard(MenuState &currentMenu) {
 void ShowSettings(MenuState &currentMenu) {
     while (!WindowShouldClose()) {
         BeginDrawing();
-        ClearBackground(DARKGRAY);
+        ClearBackground(DARKBLUE);
         DrawText("Settings Section", 300, 250, 30, WHITE);
-        DrawText("Press SPACE to return to Menu", 250, 300, 20, GRAY);
+        DrawText("Press SPACE to return to Menu", 250, 300, 20, WHITE);
         EndDrawing();
         if (IsKeyPressed(KEY_SPACE)) {
             currentMenu = MAIN_MENU;
@@ -134,9 +134,9 @@ void ShowSettings(MenuState &currentMenu) {
 void ShowCredits(MenuState &currentMenu) {
     while (!WindowShouldClose()) {
         BeginDrawing();
-        ClearBackground(DARKGRAY);
+        ClearBackground(DARKBLUE);
         DrawText("Credits Section", 300, 250, 30, WHITE);
-        DrawText("Press SPACE to return to Menu", 250, 300, 20, GRAY);
+        DrawText("Press SPACE to return to Menu", 250, 300, 20, WHITE);
         EndDrawing();
         if (IsKeyPressed(KEY_SPACE)) {
             currentMenu = MAIN_MENU;
