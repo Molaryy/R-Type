@@ -16,7 +16,8 @@ int main(int argc, char **argv) {
     if (error[0] == 84)
         return 84;
     try {
-        server::Server my_server(error[1], error[2]);
+        asio::io_context io_context;
+        server::Server my_server(io_context, error[1], error[2]);
         return my_server.run();
     } catch (std::invalid_argument &e) {
         std::cerr << e.what() << std::endl;

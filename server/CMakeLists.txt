@@ -11,7 +11,7 @@ file(GLOB SOURCES
 add_executable(r-type_server ${SOURCES})
 
 list(APPEND SERVER_EXTRA_INCLUDES "includes")
-target_include_directories(r-type_server PUBLIC ${SERVER_EXTRA_INCLUDES})
+target_include_directories(r-type_server PUBLIC ${SERVER_EXTRA_INCLUDES} ${asio_SOURCE_DIR}/asio/include)
 
 target_link_libraries(r-type_server PRIVATE EcsLib)
 
