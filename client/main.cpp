@@ -1,4 +1,4 @@
-#include <raylib.h>
+#include "../raylib/raylib.hh"
 #include <functional>
 
 typedef enum {
@@ -10,21 +10,23 @@ typedef enum {
     EXIT
 } MenuState;
 
-void PlayGame(MenuState &currentMenu);
-void ShowLeaderboard(MenuState &currentMenu);
-void ShowSettings(MenuState &currentMenu);
-void ShowCredits(MenuState &currentMenu);
-void QuitGame(MenuState &currentMenu);
+void PlayGame(MenuState &currentMenu, rtype::RayLib &rl);
+void ShowLeaderboard(MenuState &currentMenu, rtype::RayLib &rl);
+void ShowSettings(MenuState &currentMenu, rtype::RayLib &rl);
+void ShowCredits(MenuState &currentMenu, rtype::RayLib &rl);
+void QuitGame(MenuState &currentMenu, rtype::RayLib &rl);
 
 int main()
 {
-    InitWindow(800, 600, "R-Type");
-    SetTargetFPS(60);
+    rtype::RayLib rl;
+
+    rl.initWindow(800, 600, "R-Type");
+    rl.setTargetFPS(60);
 
     MenuState currentMenu = MAIN_MENU;
     int selectedOption = 0;
 
-    // change to STD::PAIR here?
+    // STD::PAIR here ?
     const char *options[] = {
         "New Game",
         "Leaderboard",
@@ -33,6 +35,7 @@ int main()
         "Quit"
     };
 
+    // STD::PAIR here ?
     const char *menuDescriptions[] = {
         "Start a new game.",
         "View the top scores and player rankings.",
@@ -43,7 +46,7 @@ int main()
 
     int menuOptionCount = sizeof(options) / sizeof(options[0]);
 
-    std::function<void(MenuState &)> actions[] = {
+    std::function<void(MenuState &, rtype::RayLib &)> actions[] = {
         PlayGame,
         ShowLeaderboard,
         ShowSettings,
@@ -51,100 +54,90 @@ int main()
         QuitGame
     };
 
-    Font menuFont = GetFontDefault();
+    Font menuFont = rl.getFontDefault();
 
-    while (!WindowShouldClose()) {
-        if (IsKeyPressed(KEY_DOWN)) selectedOption = (selectedOption + 1) % menuOptionCount;
-        if (IsKeyPressed(KEY_UP)) selectedOption = (selectedOption - 1 + menuOptionCount) % menuOptionCount;
+    while (!rl.windowShouldClose()) {
+        if (rl.isKeyPressed(KEY_DOWN)) selectedOption = (selectedOption + 1) % menuOptionCount;
+        if (rl.isKeyPressed(KEY_UP)) selectedOption = (selectedOption - 1 + menuOptionCount) % menuOptionCount;
 
-        BeginDrawing();
-        ClearBackground(BLACK);
+        rl.beginDrawing();
+        rl.clearBackground(BLACK);
 
-        DrawTextEx(menuFont, "R-TYPE", (Vector2){ 50, 50 }, 40, 2, WHITE);
+        rl.drawTextEx(menuFont, "R-TYPE", (Vector2){50, 50}, 40, 2, WHITE);
 
         for (int i = 0; i < menuOptionCount; i++) {
             Color optionColor = (i == selectedOption) ? DARKBLUE : GRAY;
-            DrawText(
-                options[i],
-                100, 150 + i * 40,
-                20,
-                optionColor
-            );
+            rl.drawText(options[i], 100, 150 + i * 40, 20, optionColor);
         }
 
-        DrawText(
-            menuDescriptions[selectedOption],
-            50,
-            550,
-            20,
-            LIGHTGRAY
-        );
+        rl.drawText(menuDescriptions[selectedOption], 50, 550, 20, LIGHTGRAY);
 
-        if (IsKeyPressed(KEY_ENTER))
-            actions[selectedOption](currentMenu);
+        if (rl.isKeyPressed(KEY_ENTER))
+            actions[selectedOption](currentMenu, rl);
 
-        EndDrawing();
+        rl.endDrawing();
     }
 
-    CloseWindow();
+    rl.closeWindow();
+    return 0;
 }
 
-void PlayGame(MenuState &currentMenu) {
-    while (!WindowShouldClose()) {
-        BeginDrawing();
-        ClearBackground(DARKBLUE);
-        DrawText("Playing the game...", 300, 250, 30, WHITE);
-        DrawText("Press SPACE to return to Menu", 250, 300, 20, WHITE);
-        EndDrawing();
-        if (IsKeyPressed(KEY_SPACE)) {
+void PlayGame(MenuState &currentMenu, rtype::RayLib &rl) {
+    while (!rl.windowShouldClose()) {
+        rl.beginDrawing();
+        rl.clearBackground(DARKBLUE);
+        rl.drawText("Playing the game...", 300, 250, 30, WHITE);
+        rl.drawText("Press SPACE to return to Menu", 250, 300, 20, WHITE);
+        rl.endDrawing();
+        if (rl.isKeyPressed(KEY_SPACE)) {
             currentMenu = MAIN_MENU;
             break;
         }
     }
 }
 
-void ShowLeaderboard(MenuState &currentMenu) {
-    while (!WindowShouldClose()) {
-        BeginDrawing();
-        ClearBackground(DARKBLUE);
-        DrawText("Leaderboard Section", 300, 250, 30, WHITE);
-        DrawText("Press SPACE to return to Menu", 250, 300, 20, WHITE);
-        EndDrawing();
-        if (IsKeyPressed(KEY_SPACE)) {
+void ShowLeaderboard(MenuState &currentMenu, rtype::RayLib &rl) {
+    while (!rl.windowShouldClose()) {
+        rl.beginDrawing();
+        rl.clearBackground(DARKBLUE);
+        rl.drawText("Leaderboard Section", 300, 250, 30, WHITE);
+        rl.drawText("Press SPACE to return to Menu", 250, 300, 20, WHITE);
+        rl.endDrawing();
+        if (rl.isKeyPressed(KEY_SPACE)) {
             currentMenu = MAIN_MENU;
             break;
         }
     }
 }
 
-void ShowSettings(MenuState &currentMenu) {
-    while (!WindowShouldClose()) {
-        BeginDrawing();
-        ClearBackground(DARKBLUE);
-        DrawText("Settings Section", 300, 250, 30, WHITE);
-        DrawText("Press SPACE to return to Menu", 250, 300, 20, WHITE);
-        EndDrawing();
-        if (IsKeyPressed(KEY_SPACE)) {
+void ShowSettings(MenuState &currentMenu, rtype::RayLib &rl) {
+    while (!rl.windowShouldClose()) {
+        rl.beginDrawing();
+        rl.clearBackground(DARKBLUE);
+        rl.drawText("Settings Section", 300, 250, 30, WHITE);
+        rl.drawText("Press SPACE to return to Menu", 250, 300, 20, WHITE);
+        rl.endDrawing();
+        if (rl.isKeyPressed(KEY_SPACE)) {
             currentMenu = MAIN_MENU;
             break;
         }
     }
 }
 
-void ShowCredits(MenuState &currentMenu) {
-    while (!WindowShouldClose()) {
-        BeginDrawing();
-        ClearBackground(DARKBLUE);
-        DrawText("Credits Section", 300, 250, 30, WHITE);
-        DrawText("Press SPACE to return to Menu", 250, 300, 20, WHITE);
-        EndDrawing();
-        if (IsKeyPressed(KEY_SPACE)) {
+void ShowCredits(MenuState &currentMenu, rtype::RayLib &rl) {
+    while (!rl.windowShouldClose()) {
+        rl.beginDrawing();
+        rl.clearBackground(DARKBLUE);
+        rl.drawText("Credits Section", 300, 250, 30, WHITE);
+        rl.drawText("Press SPACE to return to Menu", 250, 300, 20, WHITE);
+        rl.endDrawing();
+        if (rl.isKeyPressed(KEY_SPACE)) {
             currentMenu = MAIN_MENU;
             break;
         }
     }
 }
 
-void QuitGame(MenuState &currentMenu) {
+void QuitGame(MenuState &currentMenu, rtype::RayLib &rl) {
     currentMenu = EXIT;
 }
