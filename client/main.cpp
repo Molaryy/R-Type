@@ -1,4 +1,4 @@
-#include "../raylib/raylib.hh"
+#include "raylib/raylib.hh"
 #include <functional>
 
 typedef enum {
@@ -62,7 +62,6 @@ int main()
 
         rl.beginDrawing();
         rl.clearBackground(BLACK);
-
         rl.drawTextEx(menuFont, "R-TYPE", (Vector2){50, 50}, 40, 2, WHITE);
 
         for (int i = 0; i < menuOptionCount; i++) {
@@ -83,16 +82,32 @@ int main()
 }
 
 void PlayGame(MenuState &currentMenu, rtype::RayLib &rl) {
+    Camera camera = { 0 };
+    camera.position = (Vector3){ 0.0f, 10.0f, 20.0f }; // Pos caméra
+    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };     // Point que regarde la caméra
+    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };         // haut
+    camera.fovy = 45.0f;                              // POV
+    camera.projection = CAMERA_PERSPECTIVE;           // Perspective MODE
+
+    Vector3 cubePosition = { 0.0f, 0.0f, 0.0f };
+    float cubeRotation = 0.0f;
+
     while (!rl.windowShouldClose()) {
-        rl.beginDrawing();
-        rl.clearBackground(DARKBLUE);
-        rl.drawText("Playing the game...", 300, 250, 30, WHITE);
-        rl.drawText("Press SPACE to return to Menu", 250, 300, 20, WHITE);
-        rl.endDrawing();
         if (rl.isKeyPressed(KEY_SPACE)) {
             currentMenu = MAIN_MENU;
             break;
         }
+        cubeRotation += 1.0f;
+
+        rl.beginDrawing();
+        rl.clearBackground(BLACK);
+        rl.beginMode3D(camera);
+        rl.drawCube(cubePosition, 2.0f, 2.0f, 2.0f, DARKBLUE);
+        rl.drawCubeWires(cubePosition, 2.0f, 2.0f, 2.0f, DARKGRAY);
+        rl.drawGrid(100, 1.0f);
+        rl.endMode3D();
+        rl.drawText("Press SPACE to return to Menu", 10, 10, 20, WHITE);
+        rl.endDrawing();
     }
 }
 

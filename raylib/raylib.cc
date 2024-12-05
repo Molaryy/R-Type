@@ -96,4 +96,29 @@ namespace rtype
     {
         CloseWindow();
     }
+
+    void rtype::RayLib::beginMode3D(Camera3D camera)
+    {
+        BeginMode3D(camera);
+    }
+
+    void rtype::RayLib::drawCube(Vector3 position, float width, float height, float length, Color color)
+    {
+        DrawCube(position, width, height, length, color);
+    }
+
+    void rtype::RayLib::drawCubeWires(Vector3 position, float width, float height, float length, Color color)
+    {
+        DrawCubeWires(position, width, height, length, color);
+    }
+
+    void rtype::RayLib::drawGrid(int slices, float spacing)
+    {
+        DrawGrid(slices, spacing);
+    }
+
+    void rtype::RayLib::endMode3D()
+    {
+        EndMode3D();
+    }
 }
