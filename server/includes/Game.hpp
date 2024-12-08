@@ -73,6 +73,7 @@ class Interaction : public AInteraction
         int _connect;
         int _gameID;
 };
+
 class Game {
     public:
         Game();
