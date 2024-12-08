@@ -19,7 +19,7 @@ int main(int argc, char const *const *argv)
     try
     {
         asio::io_context io_context;
-        server::Server my_server(io_context, args.getPort(), args.getNbClients());
+        Server my_server(io_context, args.getPort(), args.getNbClients());
         my_server.run();
     }
     catch (Arguments::ArgumentsException &e)
