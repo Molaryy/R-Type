@@ -5,51 +5,31 @@
 ** Server.hpp
 */
 
-// #include <iostream>
-// #include <thread>
-// #include "Network.hpp"
 
-// namespace server {
-//     class Server {
-//         public:
-//             Server(int port, int maxClients): _network(port, maxClients) {};
-//             ~Server() {};
-//             int run();
-//         private:
-//             Network _network;
-//             std::thread _gameThread;
-//             std::thread _checkClientThread;
-//     };
-// }
 
 #pragma once
 
+#include "Network.hpp"
 #include <asio.hpp>
 #include <thread>
-#include "Network.hpp"
 
-namespace server {
-    class Server {
+class Server
+{
     public:
-        Server(asio::io_context& ioContext, int port, int maxClients)
-            : _network(ioContext, port, maxClients), _ioContext(ioContext) {}
-
-        ~Server() {
-            if (_gameThread.joinable())
-                _gameThread.join();
-            if (_checkClientThread.joinable())
-                _checkClientThread.join();
+        Server(asio::io_context &ioContext, const int port, const int maxClients) : network_(ioContext, port, maxClients), ioContext_(ioContext){}
+        ~Server()
+        {
+            if (gameThread_.joinable())
+                gameThread_.join();
+            if (checkClientThread_.joinable())
+                checkClientThread_.join();
         }
-
-        int run();
-
-    private:
-        asio::io_context &_ioContext;
-        Network _network;
-        std::thread _gameThread;
-        std::thread _checkClientThread;
-
+        void run();
         void gameLoop();
         void monitorClients();
-    };
-}
+    private:
+        Network network_;
+        asio::io_context &ioContext_;
+        std::thread gameThread_;
+        std::thread checkClientThread_;
+};

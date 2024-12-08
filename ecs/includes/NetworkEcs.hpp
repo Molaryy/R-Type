@@ -15,6 +15,7 @@
 
 class INetwork {
     public:
+        virtual ~INetwork() = default;
         virtual int getConnected() const = 0;
         virtual int getCreateGame() const = 0;
         virtual void setCreateGame(int createGame) = 0;
@@ -28,59 +29,63 @@ class INetwork {
         virtual void setGameIds(std::vector<int> gameIds) = 0;
         virtual std::vector<int> getGameIds() const = 0;
         virtual std::vector<char> serializeConnection() = 0;
-        virtual void deserializeConnection(std::vector<char> data) = 0;
+        virtual void deserializeConnection(const std::vector<char> &data) = 0;
 };
 
-class ANetwork: public INetwork {
+class ANetwork: public INetwork
+{
     public:
         ANetwork() = default;
         ~ANetwork() = default;
-        int getConnected() const override {return _connected;};
-        int getCreateGame() const override {return _createGame;};
-        void setCreateGame(int createGame) override {_createGame = createGame;};
-        void setConnected(int connected) override {_connected = connected;};
-        void setId(int id) override {_id = id;};
-        int getId() const override {return _id;};
-        void setJoinGame(int joinGame) override {_JoinGame = joinGame;};
-        int getJoinGame() const override {return _JoinGame;};
-        void setGameId(int gameId) override {_gameId = gameId;};
-        int getGameId() const override {return _gameId;};
-        void setGameIds(std::vector<int> gameIds) override {_gameIds = gameIds;};
-        std::vector<int> getGameIds() const override {return _gameIds;};
+        int getConnected() const override {return connected_;};
+        int getCreateGame() const override {return createGame_;};
+        void setCreateGame(int createGame) override {createGame_ = createGame;};
+        void setConnected(int connected) override {connected_ = connected;};
+        void setId(int id) override {ID_ = id;};
+        int getId() const override {return ID_;};
+        void setJoinGame(int joinGame) override {JoinGame_ = joinGame;};
+        int getJoinGame() const override {return JoinGame_;};
+        void setGameId(int gameId) override {gameID_ = gameId;};
+        int getGameId() const override {return gameID_;};
+        void setGameIds(std::vector<int> gameIds) override {gameIDs_ = gameIds;};
+        std::vector<int> getGameIds() const override {return gameIDs_;};
         std::vector<char> serializeConnection() override;
-        void deserializeConnection(std::vector<char> data) override;
+        void deserializeConnection(const std::vector<char> &data) override;
 
     protected:
-        int _createGame;
-        int _connected;
-        int _JoinGame;
-        int _id;
-        int _gameId;
-        std::vector<int> _gameIds;
+        int connected_;
+        int createGame_;
+        int JoinGame_;
+        int ID_;
+        int gameID_;
+        std::vector<int> gameIDs_;
 };
 
-class IInteraction {
+class IInteraction
+{
     public:
+        virtual ~IInteraction() = default;
         virtual void setInteraction(int mov, int shoot, int quit, int createGame) = 0;
         virtual int getMovement() const = 0;
         virtual int getQuit() const = 0;
         virtual int getCreateGame() const = 0;
 };
 
-class AInteraction : public IInteraction{
+class AInteraction : public IInteraction
+{
     public:
         AInteraction() = default;
         ~AInteraction() = default;
         void setInteraction(int mov, int shoot, int quit, int createGame) override {
             _movement = mov;
             _quit = quit;
-            _createGame = createGame;
+            createGame_ = createGame;
         };
         int getMovement() const override {return _movement;};
         int getQuit() const override {return _quit;};
-        int getCreateGame() const override {return _createGame;};
+        int getCreateGame() const override {return createGame_;};
     protected:
         int _movement = 0;
         int _quit = 0;
-        int _createGame = 0;
+        int createGame_ = 0;
 };

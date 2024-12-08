@@ -15,124 +15,93 @@
 
 #define TICK_SPEED 30
 
-namespace server {
-    class Interaction : public AInteraction {
+class Interaction : public AInteraction
+{
     public:
-        Interaction() : _clientId(-1), _connect(-1), _gameId(-1) {}
+        Interaction() : _clientID(-1), _connect(-1), _gameID(-1) {}
         ~Interaction() = default;
-
-        int getClientID() const { return _clientId; }
-        void setClientID(int clientID) { _clientId = clientID; }
-
+        int getClientID() const { return _clientID; }
+        void setClientID(const int clientID) { _clientID = clientID; }
         int getConnect() const { return _connect; }
-        void setConnect(int connect) { _connect = connect; }
+        void setConnect(const int connect) { _connect = connect; }
+        int getGameID() const { return _gameID; }
+        void setGameID(const int gameID) { _gameID = gameID; }
 
-        int getGameId() const { return _gameId; }
-        void setGameId(int gameId) { _gameId = gameId; }
-
-        void deserializeInteraction(const std::vector<char> &data) {
-            std::memcpy(this, data.data(), sizeof(Interaction));
+        /**
+         * @brief deserialize the interaction from a vector of char
+         * 
+         * @param data 
+         */
+        void deserializeInteraction(const std::vector<char> &data)
+        {
+            auto iter = data.begin();
+            auto extractFromData = [&iter](auto &value)
+            {
+                std::memcpy(&value, &(*iter), sizeof(value));
+                iter += sizeof(value);
+            };
+            extractFromData(_clientID);
+            extractFromData(_connect);
+            extractFromData(_gameID);
+            extractFromData(_movement);
+            extractFromData(_quit);
+            extractFromData(createGame_);
         }
 
-        std::vector<char> serializeInteraction() const {
-            std::vector<char> serializedData(sizeof(Interaction));
-            std::memcpy(serializedData.data(), this, sizeof(Interaction));
-            return serializedData;
+        /**
+         * @brief serialize the interaction to a vector of char
+         * 
+         * @return std::vector<char> 
+         */
+        std::vector<char> serializeInteraction() const
+        {
+            std::vector<char> data;
+            auto appendToData = [&data](auto &value)
+            {
+                data.insert(data.end(), reinterpret_cast<const char *>(&value), reinterpret_cast<const char *>(&value) + sizeof(value));
+            };
+            appendToData(_clientID);
+            appendToData(_connect);
+            appendToData(_gameID);
+            appendToData(_movement);
+            appendToData(_quit);
+            appendToData(createGame_);
+            return data;
         }
-
     private:
-        int _clientId;
+        int _clientID;
         int _connect;
-        int _gameId;
-    };
-
-    class Game {
+        int _gameID;
+};
+class Game {
     public:
         Game();
         ~Game() = default;
-
         void run();
         void addInteraction(const Interaction& interaction);
-
-        void setGameId(int gameId) { _gameId = gameId; }
-        int getGameId() const { return _gameId; }
-
-        void setAvailaibleId(int id) {
-            _avalaible_id = (id > 4) ? -1 : id;
+        void setGameID(const int gameID) { gameID_ = gameID; }
+        int getGameID() const { return gameID_; }
+        inline void setAvailableID(const int ID) {
+            availableID_ = (ID > 4) ? -1 : ID;
         }
-        int getAvailaibleId() const { return _avalaible_id; }
-
-        Game& operator=(const Game& other) {
-            if (this == &other) return *this;
-
-            _tickSpeed = other._tickSpeed;
-            _tick = other._tick;
-            _gameId = other._gameId;
-            _interaction_client = other._interaction_client;
-            _functions = other._functions;
-            _functions_client = other._functions_client;
-
+        int getAvailableID() const { return availableID_; }
+        Game& operator=(const Game& gameToCompare) {
+            if (this == &gameToCompare) return *this;
+            tickSpeed_ = gameToCompare.tickSpeed_;
+            tick_ = gameToCompare.tick_;
+            gameID_ = gameToCompare.gameID_;
+            interactionClient_ = gameToCompare.interactionClient_;
+            functions_ = gameToCompare.functions_;
+            functionsClient_ = gameToCompare.functionsClient_;
             return *this;
         }
-
     private:
-        int _tickSpeed = TICK_SPEED;
-        int _tick = 0;
-        int _gameId = -1;
-        int _avalaible_id = 1;
-
+        int tickSpeed_ = TICK_SPEED;
+        int tick_ = 0;
+        int gameID_ = -1;
+        int availableID_ = 1;
         std::mutex _mutex;
-        std::vector<Interaction> _interaction_client;
-        std::vector<std::string> _functions;
-        std::vector<std::string> _functions_client;
-    };
-
-    // class Game {
-    //     public:
-    //         Game();
-    //         ~Game() = default;
-
-    //         void run();
-    //         void addInteraction(Interaction interaction) {
-    //             _mutex.lock();
-    //             _interaction_client.push_back(interaction);
-    //             _mutex.unlock();
-    //         }
-    //         void setGameId(int gameId) {_gameId = gameId;};
-    //         int getGameId() const {return _gameId;};
-    //         void setAvailaibleId(int id) {
-    //             if (id > 4)
-    //                 _avalaible_id = -1;
-    //             else
-    //                 _avalaible_id = id;
-    //         };
-    //         int getAvailaibleId() const {return _avalaible_id;};
-    //         Game &operator=(const Game &other) {
-    //             if (this == &other)
-    //                 return *this;
-
-    //             _tickSpeed = other._tickSpeed;
-    //             _tick = other._tick;
-    //             _gameId = other._gameId;
-
-    //             _interaction_client = other._interaction_client;
-    //             _functions = other._functions;
-    //             _functions_client = other._functions_client;
-
-    //             return *this;
-    //         }
-
-    //     private:
-    //         int _tickSpeed = TICK_SPEED;
-    //         int _tick;
-    //         std::mutex _mutex_tick_send;
-    //         int _last_tick_send = 0;
-    //         int _gameId;
-    //         std::mutex _mutex;
-    //         std::vector<Interaction> _interaction_client;
-    //         std::vector<std::string> _functions;
-    //         std::vector<std::string> _functions_client;
-    //         std::mutex _mutex_client;
-    //         int _avalaible_id = 1;
-    // };
-}
+        std::vector<Interaction> interactionClient_;
+        std::vector<std::string> functions_;
+        std::vector<std::string> functionsClient_;
+};

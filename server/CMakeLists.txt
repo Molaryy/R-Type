@@ -1,7 +1,7 @@
 project(server)
 
 file(GLOB SOURCES
-    "src/ErrorHandling.cpp"
+    "src/Arguments.cpp"
     "src/Game.cpp"
     "src/Network.cpp"
     "src/Server.cpp"

@@ -6,20 +6,24 @@
 */
 
 #include <iostream>
+
 #include "Server.hpp"
-#include "ErrorHandling.hpp"
+#include "Arguments.hpp"
 
-int main(int argc, char **argv) {
-    ErrorHandling err;
-    std::vector<int> error = err.errorHandling(argc, argv);
+int main(int argc, char const *const *argv)
+{
+    Arguments args;
 
-    if (error[0] == 84)
-        return 84;
-    try {
+    args.getArguments(argc, argv);
+
+    try
+    {
         asio::io_context io_context;
-        server::Server my_server(io_context, error[1], error[2]);
-        return my_server.run();
-    } catch (std::invalid_argument &e) {
+        server::Server my_server(io_context, args.getPort(), args.getNbClients());
+        my_server.run();
+    }
+    catch (Arguments::ArgumentsException &e)
+    {
         std::cerr << e.what() << std::endl;
         return 84;
     }
