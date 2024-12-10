@@ -1,24 +1,26 @@
-#include <SFML/Graphics.hpp>
+/*
+** EPITECH PROJECT, 2024
+** R-Type
+** File description:
+** main.cpp
+*/
 
-int main()
-{
-  sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
-  sf::CircleShape shape(100.f);
-  shape.setFillColor(sf::Color::Green);
+#include "Client.hpp"
+#include "../../server/includes/Game.hpp"
+#include <iostream>
 
-  while (window.isOpen())
-  {
-    sf::Event event;
-    while (window.pollEvent(event))
-    {
-      if (event.type == sf::Event::Closed)
-        window.close();
+int main() {
+    try {
+        const std::string serverIP = "0.0.0.0";
+        const unsigned int port = 8081;
+
+        Client client(serverIP, port);
+        client.run();
+        Interaction interaction;
+        interaction.setInteraction(1, 0, 0, 0);
+        client.sendInteraction(interaction);
+    } catch (const std::exception &e) {
+        std::cerr << "Client error: " << e.what() << std::endl;
     }
-
-    window.clear();
-    window.draw(shape);
-    window.display();
-  }
-
-  return 0;
+    return 0;
 }
