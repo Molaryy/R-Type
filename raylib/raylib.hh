@@ -3,6 +3,7 @@
 extern "C"
 {
     #include "raylib.h"
+    #include <rlgl.h>
 }
 
 namespace rtype
@@ -32,13 +33,18 @@ namespace rtype
             Font getFontDefault();
             void drawTextEx(Font font, const char *text, Vector2 position, float fontSize, float spacing, Color color); // NEW
             void closeWindow();
-            void beginMode3D(Camera3D camera);
             void drawCube(Vector3 position, float width, float height, float length, Color color);
             void drawCubeWires(Vector3 position, float width, float height, float length, Color color);
             void drawGrid(int slices, float spacing);
-            void endMode3D();
             void drawCubeTexture(Texture2D cubemap, Vector3 position, float size, Color tint);
             Texture2D loadCubeMap(const char *filePath);
             void unloadTexture(Texture2D texture);
+            float getFrameTime();
+            bool isKeyDown(KeyboardKey key);
+            TextureCubemap loadTextureCubemap(const char *fileName, int layoutType);
+            void unloadTextureCubemap(TextureCubemap cubeMap);
+            void drawCubeMap(TextureCubemap cubeMap, Vector3 position, float size);
+            Vector3 vector3Zero();
+            void SetWindowSize(int width, int height);
     };
 }

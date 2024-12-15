@@ -97,11 +97,6 @@ namespace rtype
         CloseWindow();
     }
 
-    void rtype::RayLib::beginMode3D(Camera3D camera)
-    {
-        BeginMode3D(camera);
-    }
-
     void rtype::RayLib::drawCube(Vector3 position, float width, float height, float length, Color color)
     {
         DrawCube(position, width, height, length, color);
@@ -117,8 +112,44 @@ namespace rtype
         DrawGrid(slices, spacing);
     }
 
-    void rtype::RayLib::endMode3D()
+    bool rtype::RayLib::isKeyDown(KeyboardKey key)
     {
-        EndMode3D();
+        return IsKeyDown(key);
+    }
+
+    float rtype::RayLib::getFrameTime()
+    {
+        return GetFrameTime();
+    }
+
+    void rtype::RayLib::drawCubeMap(TextureCubemap cubeMap, Vector3 position, float size)
+    {
+        rlDrawRenderBatchActive();
+        rlDisableBackfaceCulling();
+        DrawCube(position, size, size, size, WHITE);
+        rlEnableBackfaceCulling();
+    }
+
+    void rtype::RayLib::unloadTextureCubemap(TextureCubemap cubeMap)
+    {
+        UnloadTexture(cubeMap);
+    }
+
+    TextureCubemap rtype::RayLib::loadTextureCubemap(const char *fileName, int layoutType)
+    {
+        Image image = LoadImage(fileName);
+        TextureCubemap cubemap = LoadTextureCubemap(image, layoutType);
+        UnloadImage(image);
+        return cubemap;
+    }
+
+    Vector3 rtype::RayLib::vector3Zero()
+    {
+        return (Vector3){0.0f, 0.0f, 0.0f};
+    }
+
+    void rtype::RayLib::SetWindowSize(int width, int height)
+    {
+        SetWindowSize(width, height);
     }
 }
