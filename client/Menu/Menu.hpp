@@ -2,6 +2,7 @@
     #define MENU_HPP
 
 #include "../Gameplay/Game.hpp"
+#include "../raylib/raylib.hh"
 #include <functional>
 #include <vector>
 #include <string>
@@ -34,15 +35,15 @@ class Menu {
         int selectedOption;
         MenuState currentMenu;
 
-        void playGame();
-        void showLeaderboard();
-        void showSettings();
-        void showCredits();
+        void playGame(rtype::RayLib &rl);
+        void showLeaderboard(rtype::RayLib &rl);
+        void showSettings(rtype::RayLib &rl);
+        void showCredits(rtype::RayLib &rl);
         void quitGame();
 
     public:
-        Menu();
-        void run();
+        Menu(rtype::RayLib &rl);
+        void run(rtype::RayLib &rl);
 };
 
 #endif // MENU_HPP

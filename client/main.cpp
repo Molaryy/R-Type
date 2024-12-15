@@ -2,6 +2,8 @@
 
 int main()
 {
-    Menu menu;
-    menu.run();
+    rtype::RayLib rl;
+
+    Menu menu(rl);
+    menu.run(rl);
 }
