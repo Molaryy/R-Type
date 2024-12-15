@@ -1,4 +1,3 @@
-// game.cpp
 #include "Game.hpp"
 #include "../raylib/raylib.hh"
 #include <algorithm>

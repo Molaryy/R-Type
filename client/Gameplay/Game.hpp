@@ -17,28 +17,28 @@ struct Obstacle {
 };
 
 class Game {
-private:
-    Vector2 playerPosition;
-    float playerSpeed;
+    private:
+        Vector2 playerPosition;
+        float playerSpeed;
 
-    std::vector<Missile> missiles;
-    float missileSpeed;
+        std::vector<Missile> missiles;
+        float missileSpeed;
 
-    std::vector<Obstacle> obstacles;
-    float obstacleSpawnTimer;
-    float obstacleSpawnInterval;
+        std::vector<Obstacle> obstacles;
+        float obstacleSpawnTimer;
+        float obstacleSpawnInterval;
 
-    int score;
+        int score;
 
-    void handleInput(float frameTime);
-    void updateMissiles(float frameTime);
-    void spawnObstacles(float frameTime);
-    void checkCollisions();
-    void draw();
+        void handleInput(float frameTime);
+        void updateMissiles(float frameTime);
+        void spawnObstacles(float frameTime);
+        void checkCollisions();
+        void draw();
 
-public:
-    Game();
-    void run();
+    public:
+        Game();
+        void run();
 };
 
 #endif // GAME_HPP
