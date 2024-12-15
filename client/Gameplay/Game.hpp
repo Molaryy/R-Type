@@ -30,11 +30,15 @@ class Game {
         float obstacleSpawnTimer;
         float obstacleSpawnInterval;
         int score;
+        bool inGameMenu;
+        int playerHealth;
     
         void handleInput(rtype::RayLib &rl, float frameTime);
         void updateMissiles(float frameTime);
         void spawnObstacles(float frameTime);
         void checkCollisions();
+        void saveScore();
+        void handleInGameMenu(rtype::RayLib &rl, bool &inGameMenu);
         void draw(rtype::RayLib &rl);
 };
 

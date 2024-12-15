@@ -4,7 +4,7 @@
 #include <cmath>
 
 Game::Game() : playerPosition({50.0f, 300.0f}), playerSpeed(300.0f), missileSpeed(400.0f),
-    obstacleSpawnTimer(0.0f), obstacleSpawnInterval(2.0f), score(0) {}
+    obstacleSpawnTimer(0.0f), obstacleSpawnInterval(2.0f), score(0), playerHealth(100) {}
 
 void Game::run(rtype::RayLib &rl)
 {
@@ -45,7 +45,8 @@ void Game::updateMissiles(float frameTime)
     for (auto &missile : missiles) {
         if (missile.active) {
             missile.position.x += missile.speed * frameTime;
-            if (missile.position.x > 800) missile.active = false;
+            if (missile.position.x > 800)
+                missile.active = false;
         }
     }
     missiles.erase(std::remove_if(missiles.begin(),
@@ -75,6 +76,7 @@ void Game::spawnObstacles(float frameTime)
 
 void Game::checkCollisions()
 {
+    // collisions w/missiles
     for (auto &obstacle : obstacles) {
         if (!obstacle.active)
             continue;
@@ -95,15 +97,29 @@ void Game::checkCollisions()
             }
         }
     }
+
+    // collisions w/sprite
+    for (auto &obstacle : obstacles) {
+        if (obstacle.active && CheckCollisionRecs({playerPosition.x, playerPosition.y, 50, 50},
+            {obstacle.position.x, obstacle.position.y, 50, 50})) {
+            obstacle.active = false;
+            playerHealth -= 10;
+
+            if (playerHealth < 0)
+                playerHealth = 0;
+        }
+    }
 }
 
 void Game::draw(rtype::RayLib &rl)
 {
     rl.drawRectangle(playerPosition.x, playerPosition.y, 50, 50, DARKBLUE);
+    rl.drawRectangle(playerPosition.x, playerPosition.y - 10, 50, 5, GRAY);
+    rl.drawRectangle(playerPosition.x, playerPosition.y - 10, static_cast<int>(50 * (playerHealth / 100.0f)), 5, GREEN);
 
-    for (const auto &missile : missiles) {
+    for (const auto &missile : missiles)
         if (missile.active) rl.drawRectangle(missile.position.x, missile.position.y, 20, 10, GOLD);
-    }
+
     for (const auto &obstacle : obstacles) {
         if (obstacle.active) {
             rl.drawRectangle(obstacle.position.x, obstacle.position.y, 50, 50, RED);
@@ -112,4 +128,5 @@ void Game::draw(rtype::RayLib &rl)
     }
     rl.drawText(TextFormat("Score: %d", score), 10, 10, 20, WHITE);
     rl.drawText("Use arrows to move, SPACE to shoot", 10, 40, 20, LIGHTGRAY);
+    rl.drawText(TextFormat("Health: %d", playerHealth), 10, 70, 20, RED);
 }

@@ -1,11 +1,5 @@
 #include "Menu.hpp"
-#include <iostream>
 #include <fstream>
-#include <algorithm>
-#include <functional>
-#include <utility>
-#include <vector>
-#include <string>
 #include <sstream>
 
 Menu::Menu(rtype::RayLib &rl) : selectedOption(0), currentMenu(MAIN_MENU)
