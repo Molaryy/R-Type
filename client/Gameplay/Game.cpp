@@ -105,7 +105,6 @@ void Game::checkCollisions()
             }
         }
     }
-
     // collisions w/sprite
     for (auto &obstacle : obstacles) {
         if (obstacle.active && CheckCollisionRecs({playerPosition.x, playerPosition.y, 50, 50},
@@ -144,6 +143,6 @@ void Game::draw(rtype::RayLib &rl)
 void Game::drawGameOver(rtype::RayLib &rl)
 {
     rl.drawText("GAME OVER", 250, 250, 50, RED);
-    rl.drawText(TextFormat("Score: %d", score), 350, 310, 30, WHITE);
+    rl.drawText(TextFormat("Score: %d", score), 250, 310, 20, WHITE);
     rl.drawText("Press ESC to exit", 50, 550, 20, LIGHTGRAY);
 }

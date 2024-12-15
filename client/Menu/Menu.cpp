@@ -193,7 +193,7 @@ void Menu::run(rtype::RayLib &rl)
         rl.beginDrawing();
         rl.clearBackground(BLACK);
 
-        rl.drawText("Main Menu", 50, 50, 40, WHITE);
+        rl.drawText("R-TYPE", 50, 50, 40, WHITE);
 
         for (size_t i = 0; i < menuItems.size(); ++i) {
             Color color = (i == selectedOption) ? DARKBLUE : GRAY;
