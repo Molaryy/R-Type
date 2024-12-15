@@ -39,7 +39,7 @@ std::vector<PlayerScore> loadScores(const std::string &filename)
 
 void Menu::showLeaderboard(rtype::RayLib &rl)
 {
-    std::vector<PlayerScore> scores = loadScores("scores.txt");
+    std::vector<PlayerScore> scores = loadScores("../scores.txt");
 
     while (!rl.windowShouldClose()) {
         rl.beginDrawing();

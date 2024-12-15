@@ -32,6 +32,7 @@ class Game {
         int score;
         bool inGameMenu;
         int playerHealth;
+        int gameOver;
     
         void handleInput(rtype::RayLib &rl, float frameTime);
         void updateMissiles(float frameTime);
@@ -40,6 +41,7 @@ class Game {
         void saveScore();
         void handleInGameMenu(rtype::RayLib &rl, bool &inGameMenu);
         void draw(rtype::RayLib &rl);
+        void drawGameOver(rtype::RayLib &rl);
 };
 
 #endif //GAME_HPP

@@ -4,7 +4,8 @@
 #include <cmath>
 
 Game::Game() : playerPosition({50.0f, 300.0f}), playerSpeed(300.0f), missileSpeed(400.0f),
-    obstacleSpawnTimer(0.0f), obstacleSpawnInterval(2.0f), score(0), playerHealth(100) {}
+    obstacleSpawnTimer(0.0f), obstacleSpawnInterval(2.0f), score(0), playerHealth(100),
+    gameOver(false) {}
 
 void Game::run(rtype::RayLib &rl)
 {
@@ -14,13 +15,20 @@ void Game::run(rtype::RayLib &rl)
     while (!rl.windowShouldClose()) {
         float frameTime = rl.getFrameTime();
 
-        handleInput(rl, frameTime);
-        updateMissiles(frameTime);
-        spawnObstacles(frameTime);
-        checkCollisions();
+        if (!gameOver) {
+            handleInput(rl, frameTime);
+            updateMissiles(frameTime);
+            spawnObstacles(frameTime);
+            checkCollisions();
+        }
         rl.beginDrawing();
         rl.clearBackground(BLACK);
-        draw(rl);
+
+        if (gameOver)
+            drawGameOver(rl);
+        else
+            draw(rl);
+
         rl.endDrawing();
     }
     rl.closeWindow();
@@ -105,8 +113,10 @@ void Game::checkCollisions()
             obstacle.active = false;
             playerHealth -= 10;
 
-            if (playerHealth < 0)
+            if (playerHealth <= 0) {
                 playerHealth = 0;
+                gameOver = true;
+            }
         }
     }
 }
@@ -129,4 +139,11 @@ void Game::draw(rtype::RayLib &rl)
     rl.drawText(TextFormat("Score: %d", score), 10, 10, 20, WHITE);
     rl.drawText("Use arrows to move, SPACE to shoot", 10, 40, 20, LIGHTGRAY);
     rl.drawText(TextFormat("Health: %d", playerHealth), 10, 70, 20, RED);
+}
+
+void Game::drawGameOver(rtype::RayLib &rl)
+{
+    rl.drawText("GAME OVER", 250, 250, 50, RED);
+    rl.drawText(TextFormat("Score: %d", score), 350, 310, 30, WHITE);
+    rl.drawText("Press ESC to exit", 50, 550, 20, LIGHTGRAY);
 }
