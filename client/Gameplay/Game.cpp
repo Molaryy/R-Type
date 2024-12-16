@@ -3,11 +3,21 @@
 #include <cstdlib>
 #include <cmath>
 
+/**
+ * @brief Construct a new Game:: Game object
+ * 
+ */
 Game::Game() : playerPosition({50.0f, 300.0f}), playerSpeed(300.0f), missileSpeed(400.0f),
     obstacleSpawnTimer(0.0f), obstacleSpawnInterval(2.0f), score(0), playerHealth(100),
     enemyHealth_(300), enemyPosition_({700.0f, 300.0f}), enemySpeed_(200.0f),
     enemyFireTimer_(0.0f), enemyFireInterval_(2.5f), gameOver(false) {}
  
+
+/**
+ * @brief Game main function
+ * 
+ * @param rl
+ */
 void Game::run(rtype::RayLib &rl)
 {
     rl.setTargetFPS(60);
@@ -35,6 +45,11 @@ void Game::run(rtype::RayLib &rl)
     rl.closeWindow();
 }
 
+/**
+ * @brief Handle keys imputs
+ * 
+ * @param rl 
+ */
 void Game::handleInput(rtype::RayLib &rl)
 {
     if (rl.isKeyDown(KEY_RIGHT)) playerPosition.x += playerSpeed * frameTime;
@@ -49,6 +64,10 @@ void Game::handleInput(rtype::RayLib &rl)
         missiles.push_back({{playerPosition.x + 50.0f, playerPosition.y + 20.0f}, missileSpeed, true});
 }
 
+/**
+ * @brief Updates player & enemy missiles positions 
+ * 
+ */
 void Game::updateMissiles()
 {
     for (auto &missile : missiles) {
@@ -72,6 +91,10 @@ void Game::updateMissiles()
     enemyMissiles_.end(), [](const Missile &m) { return !m.active; }), enemyMissiles_.end());
 }
 
+/**
+ * @brief Update enemy position (up, down) & speed
+ * 
+ */
 void Game::updateEnemy()
 {
     static bool movingDown = true;
@@ -92,6 +115,10 @@ void Game::updateEnemy()
     }
 }
 
+/**
+ * @brief Spawn random obstacles on game
+ * 
+ */
 void Game::spawnObstacles()
 {
     obstacleSpawnTimer += frameTime;
@@ -112,6 +139,10 @@ void Game::spawnObstacles()
     obstacles.end(), [](const Obstacle &o) { return !o.active; }), obstacles.end());
 }
 
+/**
+ * @brief Check if collisions, then update entities health bars
+ * 
+ */
 void Game::checkCollisions()
 {
     // Collisions with missiles
@@ -173,6 +204,11 @@ void Game::checkCollisions()
     }
 }
 
+/**
+ * @brief Display all resources & texts
+ * 
+ * @param rl 
+ */
 void Game::draw(rtype::RayLib &rl)
 {
     rl.drawRectangle(playerPosition.x, playerPosition.y, 50, 50, DARKBLUE);
@@ -181,15 +217,15 @@ void Game::draw(rtype::RayLib &rl)
 
     for (const auto &missile : missiles)
         if (missile.active)
-            rl.drawRectangle(missile.position.x, missile.position.y, 20, 10, GOLD);
+            rl.drawRectangle(missile.position.x, missile.position.y, 20, 10, GOLD); // change by blue missile sprite here
 
     for (const auto &missile : enemyMissiles_)
         if (missile.active)
-            rl.drawRectangle(missile.position.x, missile.position.y, 20, 10, RED);
+            rl.drawRectangle(missile.position.x, missile.position.y, 20, 10, RED); // change by red missile sprite here
 
     for (const auto &obstacle : obstacles) {
         if (obstacle.active) {
-            rl.drawRectangle(obstacle.position.x, obstacle.position.y, 50, 50, RED);
+            rl.drawRectangle(obstacle.position.x, obstacle.position.y, 50, 50, RED); // change by asteroid sprite here
             rl.drawText(TextFormat("%d", obstacle.hitsRemaining), obstacle.position.x + 15, obstacle.position.y + 15, 20, WHITE);
         }
     }
@@ -202,6 +238,11 @@ void Game::draw(rtype::RayLib &rl)
     rl.drawText(TextFormat("Health: %d", playerHealth), 10, 70, 20, RED);
 }
 
+/**
+ * @brief Display game over when player loses
+ * 
+ * @param rl 
+ */
 void Game::drawGameOver(rtype::RayLib &rl)
 {
     rl.drawText("GAME OVER", 250, 250, 50, RED);
