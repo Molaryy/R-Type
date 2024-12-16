@@ -65,7 +65,7 @@ void Game::handleInput(rtype::RayLib &rl)
 }
 
 /**
- * @brief Updates player & enemy missiles positions 
+ * @brief Update player & enemy missiles positions 
  * 
  */
 void Game::updateMissiles()

@@ -3,6 +3,11 @@
 #include <sstream>
 #include <iostream>
 
+/**
+ * @brief Construct a new Menu:: Menu object
+ * 
+ * @param rl 
+ */
 Menu::Menu(rtype::RayLib &rl) : selectedOption(0), currentMenu(MAIN_MENU)
 {
     menuItems = {
@@ -14,6 +19,12 @@ Menu::Menu(rtype::RayLib &rl) : selectedOption(0), currentMenu(MAIN_MENU)
     };
 }
 
+/**
+ * @brief Get & Sort players by scores
+ * 
+ * @param filename 
+ * @return std::vector<PlayerScore> 
+ */
 std::vector<PlayerScore> loadScores(const std::string &filename)
 {
     std::vector<PlayerScore> scores;
@@ -38,6 +49,11 @@ std::vector<PlayerScore> loadScores(const std::string &filename)
     return scores;
 }
 
+/**
+ * @brief Display best players from a save file
+ * 
+ * @param rl 
+ */
 void Menu::showLeaderboard(rtype::RayLib &rl)
 {
     std::vector<PlayerScore> scores = loadScores("../scores.txt");
@@ -62,6 +78,11 @@ void Menu::showLeaderboard(rtype::RayLib &rl)
     }
 }
 
+/**
+ * @brief Handle & display settings
+ * 
+ * @param rl 
+ */
 void Menu::showSettings(rtype::RayLib &rl)
 {
     const int maxFPSOptions[] = {30, 60, 120};
@@ -139,6 +160,11 @@ void Menu::showSettings(rtype::RayLib &rl)
     }
 }
 
+/**
+ * @brief Display credits
+ * 
+ * @param rl 
+ */
 void Menu::showCredits(rtype::RayLib &rl)
 {
     const char* credits[] = {
@@ -179,17 +205,31 @@ void Menu::showCredits(rtype::RayLib &rl)
     }
 }
 
+/**
+ * @brief Game main function when section is pressed 
+ * 
+ * @param rl 
+ */
 void Menu::playGame(rtype::RayLib &rl)
 {
     Game game;
     game.run(rl);
 }
 
+/**
+ * @brief Quit game when section is pressed
+ * 
+ */
 void Menu::quitGame()
 {
     currentMenu = EXIT;
 }
 
+/**
+ * @brief Menu main function
+ * 
+ * @param rl 
+ */
 void Menu::run(rtype::RayLib &rl)
 {
     rl.initWindow(800, 600, "R-TYPE");
