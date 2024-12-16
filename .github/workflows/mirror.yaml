@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
 
 env:
-  MIRROR_URL: z
+  MIRROR_URL: git@github.com:EpitechPromo2027/B-CPP-500-PAR-5-2-rtype-nicolas.gillard.git
 
 jobs:
   r-type-mirror:
