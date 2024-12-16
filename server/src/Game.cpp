@@ -60,10 +60,10 @@ void Game::run() {
         for (auto &entity : entities_) {
             entity.x += entity.velocityX;
             entity.y += entity.velocityY;
-            if (entity.type == "player")
-                std::cout << "Player " << entity.id << " is at position (" << entity.x << ", " << entity.y << ")" << std::endl;
-            else if (entity.type == "projectile")
-                std::cout << "Projectile " << entity.id << " is at position (" << entity.x << ", " << entity.y << ")" << std::endl;
+            // if (entity.type == "player")
+            //     std::cout << "Player " << entity.id << " is at position (" << entity.x << ", " << entity.y << ")" << std::endl;
+            // else if (entity.type == "projectile")
+            //     std::cout << "Projectile " << entity.id << " is at position (" << entity.x << ", " << entity.y << ")" << std::endl;
         }
 
         std::vector<Interaction> localInteractions;
