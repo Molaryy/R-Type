@@ -1,9 +1,11 @@
+set shell := ["bash", "-c"]
+
 build:
     cmake -S . -B build/
-    { cd build && make; }
+    make build/
 run:
-    { cd build && make; }
+    make build
 clean:
-    cmake --build build --target clean
+    cmake --build build --target clean-all
     rm -f r-type_client
     rm -f r-type_server
