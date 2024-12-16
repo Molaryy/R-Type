@@ -5,57 +5,62 @@
 ** Network.hpp
 */
 
-#ifdef __linux__
-    #pragma once
-    #include <sys/socket.h>
-    #include <netinet/in.h>
-    #include <sys/types.h>
-    #include <netinet/in.h>
-    #include <arpa/inet.h>
-    #include <unistd.h>
-    #define OS "linux"
-#endif
+#pragma once
 
-#ifdef _WIN64
-    #pragma comment(lib, "Ws2_32.lib")
-    #define NOGDI
-    #define NOUSER
-    #define MMNOSOUND
-    #include <winsock2.h>
-    #include <ws2tcpip.h>
-    #include <io.h>
-    #include <process.h>
-    #define OS "windows"
-#endif
-
+#include <asio.hpp>
 #include <string>
+#include <vector>
+#include <memory>
 #include <iostream>
-#include <cstring>
+#include "NetworkEcs.hpp"
+#include "Game.hpp"
 
-namespace server {
-    class Network {
-        public:
-            Network(int port, int maxClients);
-            ~Network();
-            void run();
-        private:
-            int _port;
-            unsigned int _maxClients;
-            bool _isRunning = true;
-            int _fd;
-            #ifdef __linux__
-                struct sockaddr_in _addr;
-                struct sockaddr_in _clientAddr;
-                socklen_t _clientAddrLen;
-            #endif
-            #ifdef _WIN64
-                struct sockaddr_in _addr;
-                struct sockaddr_in _clientAddr;
-                socklen_t _clientAddrLen;
-                WSADATA _wsaData;
-            #endif
-            int fillSocket();
-            int fillAddr();
-            int bindSocket();
-    };
-}
+class Client : public ANetwork
+{
+    public:
+        Client(asio::ip::tcp::socket socket, int id, std::string name)
+            : socket_(std::move(socket)), id_(id), name_(std::move(name)) {}
+        asio::ip::tcp::socket &getSocket() { return socket_; }
+        const std::string &getName() const { return name_; }
+        void setId(const int id) override { id_ = id; }
+        int getId() const override { return id_; }
+    private:
+        asio::ip::tcp::socket socket_;
+        const std::string name_;
+        int id_;
+};
+
+class Network
+{
+    public:
+        Network(asio::io_context &ioContext, unsigned int port, unsigned int maxClients);
+        ~Network()
+        {
+            isRunning_ = false;
+            for (auto &[gameId, thread] : gameThreads_)
+            {
+                if (thread.joinable())
+                {
+                    thread.join();
+                }
+            }
+            std::cout << "Server shutting down..." << std::endl;
+        }
+        void run();
+        const std::vector<std::shared_ptr<Client>>& getClients() const { return clients_; }
+        std::shared_ptr<Game> getGame(int gameId);
+        void writeToClient(const std::shared_ptr<Client> &client, const std::string &message);
+    private:
+        unsigned int port_;
+        unsigned int maxClients_;
+        bool isRunning_;
+        std::vector<std::shared_ptr<Client>> clients_;
+        std::vector<std::shared_ptr<Game>> games_;
+        std::map<int, std::thread> gameThreads_;
+        asio::io_context &ioContext_;
+        asio::ip::tcp::acceptor acceptor_;
+        void accept();
+        void handleClient(const std::shared_ptr<Client> &client);
+        void readFromClient(const std::shared_ptr<Client> &client);
+        std::shared_ptr<Game> createGame();
+};

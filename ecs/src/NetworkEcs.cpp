@@ -7,39 +7,53 @@
 
 #include "NetworkEcs.hpp"
 
-std::vector<char> ANetwork::serializeConnection() {
+std::vector<char> ANetwork::serializeConnection()
+{
     std::vector<char> data;
-    data.insert(data.end(), reinterpret_cast<char*>(&_connected), reinterpret_cast<char*>(&_connected) + sizeof(_connected));
-    data.insert(data.end(), reinterpret_cast<char*>(&_createGame), reinterpret_cast<char*>(&_createGame) + sizeof(_createGame));
-    data.insert(data.end(), reinterpret_cast<char*>(&_JoinGame), reinterpret_cast<char*>(&_JoinGame) + sizeof(_JoinGame));
-    data.insert(data.end(), reinterpret_cast<char*>(&_gameId), reinterpret_cast<char*>(&_gameId) + sizeof(_gameId));
-    int end = -1;
+    auto appendToData = [&data](auto &value)
+    {
+        data.insert(data.end(), reinterpret_cast<char *>(&value), reinterpret_cast<char *>(&value) + sizeof(value));
+    };
 
-    for (int id : _gameIds) {
-        data.insert(data.end(), reinterpret_cast<char*>(&id), reinterpret_cast<char*>(&id) + sizeof(id));
+    appendToData(connected_);
+    appendToData(createGame_);
+    appendToData(JoinGame_);
+    appendToData(gameID_);
+
+    int end = -1;
+    for (int gameID : gameIDs_)
+    {
+        appendToData(gameID);
     }
-    data.insert(data.end(), reinterpret_cast<char*>(&end), reinterpret_cast<char*>(&end) + sizeof(end));
+    appendToData(end);
+
     return data;
 }
 
-void ANetwork::deserializeConnection(std::vector<char> data) {
-    int size = 0;
+void ANetwork::deserializeConnection(const std::vector<char> &data)
+{
+    auto iter = data.begin();
 
-    std::memcpy(&_connected, data.data() + size, sizeof(_connected));
-    size += sizeof(_connected);
-    std::memcpy(&_createGame, data.data() + size, sizeof(_createGame));
-    size += sizeof(_createGame);
-    std::memcpy(&_JoinGame, data.data() + size, sizeof(_JoinGame));
-    size += sizeof(_JoinGame);
-    std::memcpy(&_gameId, data.data() + size, sizeof(_gameId));
-    size += sizeof(_gameId);
-    while (size < data.size() && data[size] != -1) {
-        int gameId;
+    auto extractFromData = [&iter](auto &value)
+    {
+        std::memcpy(&value, &(*iter), sizeof(value));
+        iter += sizeof(value);
+    };
 
-        if (size < data.size() && data[size] != -1) {
-            std::memcpy(&gameId, data.data() + size, sizeof(gameId));
-            _gameIds.push_back(gameId);
-            size += sizeof(gameId);
-        }
+    extractFromData(connected_);
+    extractFromData(createGame_);
+    extractFromData(JoinGame_);
+    extractFromData(gameID_);
+
+    gameIDs_.clear(); // Clear the vector before filling it
+
+    while (iter != data.end())
+    {
+        int gameID;
+
+        extractFromData(gameID);
+        if (gameID == -1)
+            break;
+        gameIDs_.push_back(gameID);
     }
 }
