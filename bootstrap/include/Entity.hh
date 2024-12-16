@@ -9,7 +9,7 @@
 
 #include <cstddef> // std::size_t
 
-#include "component.hh"
+#include "Component.hh"
 
 using entity_id = std::size_t;
 using entity_t = sparse_array<>;

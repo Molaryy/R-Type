@@ -1,7 +1,11 @@
+/*
+** EPITECH PROJECT, 2024
+** R-Type
+** File description:
+** Main
+*/
 
-#include <iostream>
-
-#include "include/component.hh"
+#include "Registry.hh"
 
 #include <iostream>
 #include <any>
