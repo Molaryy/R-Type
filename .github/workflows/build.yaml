@@ -1,0 +1,27 @@
+name: Build and run C++
+
+on:
+  push:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get install build-essential cmake -y
+
+    - name: Configure with CMake
+      run: cmake -S . -B build/
+
+    - name: Build project
+      run: cmake --build build/
+
+    - name: Run server part
+      run: ./build/r-type_server
+
+    # - name : Run client part
+    #   run: ./build/r-type_client
