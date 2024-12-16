@@ -50,3 +50,6 @@ r-type_server
 cpm-package-lock.cmake
 _deps/
 CPM_modules/
+
+r-type_server
+r-type_client
