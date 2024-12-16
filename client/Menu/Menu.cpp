@@ -1,6 +1,7 @@
 #include "Menu.hpp"
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 Menu::Menu(rtype::RayLib &rl) : selectedOption(0), currentMenu(MAIN_MENU)
 {
@@ -69,9 +70,14 @@ void Menu::showSettings(rtype::RayLib &rl)
     bool soundEffectsEnabled = true;
     bool colorBlindMode = false;
 
+    const std::pair<int, int> MIN = {800, 600};
+    const std::pair<int, int> HD = {1280, 720};
+    const std::pair<int, int> FHD = {1920, 1080};
+
     const std::vector<std::pair<int, int>> resolutions = {
-        {800, 600}, {1024, 768}, {1280, 720}, {1920, 1080}
+        MIN, HD, FHD
     };
+
     int currentResolutionIndex = 0; // 800x600 défaut
     int selectedOption = 0;
 
@@ -104,7 +110,7 @@ void Menu::showSettings(rtype::RayLib &rl)
                     break;
                 case 3:
                     currentResolutionIndex = (currentResolutionIndex + 1) % resolutions.size();
-                    rl.SetWindowSize(resolutions[currentResolutionIndex].first, resolutions[currentResolutionIndex].second);
+                    rl.setWindowSize(resolutions[currentResolutionIndex].first, resolutions[currentResolutionIndex].second);
                     break;
                 case 4:
                     colorBlindMode = !colorBlindMode;
@@ -186,7 +192,7 @@ void Menu::quitGame()
 
 void Menu::run(rtype::RayLib &rl)
 {
-    rl.initWindow(800, 600, "Menu");
+    rl.initWindow(800, 600, "R-TYPE");
     rl.setTargetFPS(60);
 
     while (currentMenu != EXIT && !rl.windowShouldClose()) {

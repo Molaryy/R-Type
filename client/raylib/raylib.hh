@@ -45,6 +45,6 @@ namespace rtype
             void unloadTextureCubemap(TextureCubemap cubeMap);
             void drawCubeMap(TextureCubemap cubeMap, Vector3 position, float size);
             Vector3 vector3Zero();
-            void SetWindowSize(int width, int height);
+            void setWindowSize(int width, int height);
     };
 }

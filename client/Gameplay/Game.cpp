@@ -7,10 +7,9 @@ Game::Game() : playerPosition({50.0f, 300.0f}), playerSpeed(300.0f), missileSpee
     obstacleSpawnTimer(0.0f), obstacleSpawnInterval(2.0f), score(0), playerHealth(100),
     enemyHealth_(300), enemyPosition_({700.0f, 300.0f}), enemySpeed_(200.0f),
     enemyFireTimer_(0.0f), enemyFireInterval_(2.5f), gameOver(false) {}
-
+ 
 void Game::run(rtype::RayLib &rl)
 {
-    rl.initWindow(800, 600, "R-TYPE");
     rl.setTargetFPS(60);
 
     while (!rl.windowShouldClose()) {

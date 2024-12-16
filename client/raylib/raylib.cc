@@ -148,7 +148,7 @@ namespace rtype
         return (Vector3){0.0f, 0.0f, 0.0f};
     }
 
-    void rtype::RayLib::SetWindowSize(int width, int height)
+    void rtype::RayLib::setWindowSize(int width, int height)
     {
         SetWindowSize(width, height);
     }
