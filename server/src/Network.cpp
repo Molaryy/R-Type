@@ -5,7 +5,6 @@
 ** Network.cpp
 */
 
-
 #include "Network.hpp"
 #include "Game.hpp"
 #include <iostream>
@@ -39,6 +38,15 @@ void Network::run()
 {
     accept();
     ioContext_.run();
+}
+
+std::shared_ptr<Game> Network::getGame(int gameId) {
+    for (const auto &game : games_) {
+        if (game->getGameID() == gameId) {
+            return game;
+        }
+    }
+    return nullptr;
 }
 
 /**
@@ -104,7 +112,7 @@ void Network::readFromClient(const std::shared_ptr<Client>& client)
             readFromClient(client);
         } else {
             std::cerr << "Client disconnected: " << client->getName() << std::endl;
-            std::erase(clients_, client);
+            // std::erase(clients_, client);
         }
     });
 }

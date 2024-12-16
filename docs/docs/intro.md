@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# R-Type Introduction
+# Introduction
 
 This is our guide on how to start contributing to R-Type.
 
