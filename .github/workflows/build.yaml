@@ -2,9 +2,7 @@ name: Build and run C++
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
+    branches: [ "main", "master" ]
 
 jobs:
   build-and-run:
@@ -24,3 +22,6 @@ jobs:
 
     - name: Run server part
       run: ./build/r-type_server
+
+    # - name : Run client part
+    #   run: ./build/r-type_client
