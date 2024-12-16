@@ -33,10 +33,11 @@ class Game {
         bool inGameMenu;
         int playerHealth;
         int gameOver;
+        float frameTime;
     
-        void handleInput(rtype::RayLib &rl, float frameTime);
-        void updateMissiles(float frameTime);
-        void spawnObstacles(float frameTime);
+        void handleInput(rtype::RayLib &rl);
+        void updateMissiles();
+        void spawnObstacles();
         void checkCollisions();
         void saveScore();
         void handleInGameMenu(rtype::RayLib &rl, bool &inGameMenu);
@@ -49,7 +50,7 @@ class Game {
         float enemyFireTimer;
         float enemySpeed;
         Vector2 enemyPosition;
-        void updateEnemy(float frameTime);
+        void updateEnemy();
         std::vector<Missile> enemyMissiles;
 };
 

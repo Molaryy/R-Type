@@ -14,13 +14,13 @@ void Game::run(rtype::RayLib &rl)
     rl.setTargetFPS(60);
 
     while (!rl.windowShouldClose()) {
-        float frameTime = rl.getFrameTime();
+        frameTime = rl.getFrameTime();
 
         if (!gameOver) {
-            handleInput(rl, frameTime);
-            updateMissiles(frameTime);
-            updateEnemy(frameTime);
-            spawnObstacles(frameTime);
+            handleInput(rl);
+            updateMissiles();
+            updateEnemy();
+            spawnObstacles();
             checkCollisions();
         }
         rl.beginDrawing();
@@ -36,7 +36,7 @@ void Game::run(rtype::RayLib &rl)
     rl.closeWindow();
 }
 
-void Game::handleInput(rtype::RayLib &rl, float frameTime)
+void Game::handleInput(rtype::RayLib &rl)
 {
     if (rl.isKeyDown(KEY_RIGHT)) playerPosition.x += playerSpeed * frameTime;
     if (rl.isKeyDown(KEY_LEFT)) playerPosition.x -= playerSpeed * frameTime;
@@ -50,7 +50,7 @@ void Game::handleInput(rtype::RayLib &rl, float frameTime)
         missiles.push_back({{playerPosition.x + 50.0f, playerPosition.y + 20.0f}, missileSpeed, true});
 }
 
-void Game::updateMissiles(float frameTime)
+void Game::updateMissiles()
 {
     for (auto &missile : missiles) {
         if (missile.active) {
@@ -73,7 +73,7 @@ void Game::updateMissiles(float frameTime)
     enemyMissiles.end(), [](const Missile &m) { return !m.active; }), enemyMissiles.end());
 }
 
-void Game::updateEnemy(float frameTime)
+void Game::updateEnemy()
 {
     static bool movingDown = true;
 
@@ -93,7 +93,7 @@ void Game::updateEnemy(float frameTime)
     }
 }
 
-void Game::spawnObstacles(float frameTime)
+void Game::spawnObstacles()
 {
     obstacleSpawnTimer += frameTime;
 
