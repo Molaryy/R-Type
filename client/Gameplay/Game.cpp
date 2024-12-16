@@ -140,7 +140,7 @@ void Game::checkCollisions()
         if (CheckCollisionRecs({missile.position.x, missile.position.y, 20, 10},
         {enemyPosition_.x, enemyPosition_.y, 50, 50})) {
             missile.active = false;
-            enemyHealth_ -= 50;
+            enemyHealth_ -= 10;
 
             if (enemyHealth_ <= 0)
                 enemyHealth_ = 0;
@@ -151,7 +151,7 @@ void Game::checkCollisions()
         if (CheckCollisionRecs({missile.position.x, missile.position.y, 20, 10},
         {playerPosition.x, playerPosition.y, 50, 50})) {
             missile.active = false;
-            playerHealth -= 20;
+            playerHealth -= 10;
             if (playerHealth <= 0) {
                 playerHealth = 0;
                 gameOver = true;
@@ -163,7 +163,7 @@ void Game::checkCollisions()
         if (obstacle.active && CheckCollisionRecs({playerPosition.x, playerPosition.y, 50, 50},
             {obstacle.position.x, obstacle.position.y, 50, 50})) {
             obstacle.active = false;
-            playerHealth -= 10;
+            playerHealth -= 5;
 
             if (playerHealth <= 0) {
                 playerHealth = 0;
