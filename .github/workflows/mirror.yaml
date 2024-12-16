@@ -1,18 +1,18 @@
-name: area-mirror
+name: r-type-mirror
 
 on:
   push:
-    branches: [ "test" ]
+    branches: [ "main" ]
 
 env:
-  MIRROR_URL: git@github.com:EpitechPromo2027/B-DEV-500-PAR-5-1-r-type-mohammed.jbilou.git
+  MIRROR_URL: git@github.com:EpitechPromo2027/B-CPP-500-PAR-5-2-rtype-nicolas.gillard.git
 
 jobs:
-  area-mirror:
+  r-type-mirror:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout's a repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: mirror repository
