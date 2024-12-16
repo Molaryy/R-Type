@@ -4,6 +4,6 @@ build:
 run:
     { cd build && make; }
 clean:
-    cmake --build build --target clean-all
+    cmake --build build --target clean
     rm -f r-type_client
     rm -f r-type_server
