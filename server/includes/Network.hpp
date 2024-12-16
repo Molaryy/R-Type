@@ -12,7 +12,7 @@
 #include <vector>
 #include <memory>
 #include <iostream>
-#include "NetworkEcs.hpp"
+#include "includes/NetworkEcs.hpp"
 #include "Game.hpp"
 
 class Client : public ANetwork
@@ -34,7 +34,7 @@ class Network
 {
     public:
         Network(asio::io_context &ioContext, unsigned int port, unsigned int maxClients);
-        ~Network() 
+        ~Network()
         {
             isRunning_ = false;
             for (auto &[gameId, thread] : gameThreads_)

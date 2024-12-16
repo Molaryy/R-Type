@@ -11,7 +11,7 @@
 #include <thread>
 #include <mutex>
 #include <map>
-#include "NetworkEcs.hpp"
+#include "includes/NetworkEcs.hpp"
 
 #define TICK_SPEED 30
 

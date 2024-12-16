@@ -5,7 +5,6 @@
 ** Network.cpp
 */
 
-
 #include "Network.hpp"
 #include "Game.hpp"
 #include <iostream>
@@ -104,7 +103,7 @@ void Network::readFromClient(const std::shared_ptr<Client>& client)
             readFromClient(client);
         } else {
             std::cerr << "Client disconnected: " << client->getName() << std::endl;
-            std::erase(clients_, client);
+            // std::erase(clients_, client);
         }
     });
 }

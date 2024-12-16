@@ -10,7 +10,6 @@
 #include <thread>
 #include <chrono>
 
-
 Game::Game() : tick_(0), gameID_(-1), availableID_(1) {}
 
 /**
