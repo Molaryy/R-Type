@@ -45,13 +45,13 @@ class Game {
         void drawGameOver(rtype::RayLib &rl);
 
         // enemies
-        int enemyHealth;
-        float enemyFireInterval;
-        float enemyFireTimer;
-        float enemySpeed;
-        Vector2 enemyPosition;
+        int enemyHealth_;
+        float enemyFireInterval_;
+        float enemyFireTimer_;
+        float enemySpeed_;
+        Vector2 enemyPosition_;
         void updateEnemy();
-        std::vector<Missile> enemyMissiles;
+        std::vector<Missile> enemyMissiles_;
 };
 
 #endif //GAME_HPP

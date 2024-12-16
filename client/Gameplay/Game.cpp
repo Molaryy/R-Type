@@ -5,8 +5,8 @@
 
 Game::Game() : playerPosition({50.0f, 300.0f}), playerSpeed(300.0f), missileSpeed(400.0f),
     obstacleSpawnTimer(0.0f), obstacleSpawnInterval(2.0f), score(0), playerHealth(100),
-    enemyHealth(300), enemyPosition({700.0f, 300.0f}), enemySpeed(200.0f),
-    enemyFireTimer(0.0f), enemyFireInterval(2.5f), gameOver(false) {}
+    enemyHealth_(300), enemyPosition_({700.0f, 300.0f}), enemySpeed_(200.0f),
+    enemyFireTimer_(0.0f), enemyFireInterval_(2.5f), gameOver(false) {}
 
 void Game::run(rtype::RayLib &rl)
 {
@@ -62,15 +62,15 @@ void Game::updateMissiles()
     missiles.erase(std::remove_if(missiles.begin(),
     missiles.end(), [](const Missile &m) { return !m.active; }), missiles.end());
 
-    for (auto &missile : enemyMissiles) {
+    for (auto &missile : enemyMissiles_) {
         if (missile.active) {
             missile.position.x -= missile.speed * frameTime;
             if (missile.position.x < 0)
                 missile.active = false;
         }
     }
-    enemyMissiles.erase(std::remove_if(enemyMissiles.begin(),
-    enemyMissiles.end(), [](const Missile &m) { return !m.active; }), enemyMissiles.end());
+    enemyMissiles_.erase(std::remove_if(enemyMissiles_.begin(),
+    enemyMissiles_.end(), [](const Missile &m) { return !m.active; }), enemyMissiles_.end());
 }
 
 void Game::updateEnemy()
@@ -78,18 +78,18 @@ void Game::updateEnemy()
     static bool movingDown = true;
 
     if (movingDown) {
-        enemyPosition.y += enemySpeed * frameTime;
-        if (enemyPosition.y >= 550.0f)
+        enemyPosition_.y += enemySpeed_ * frameTime;
+        if (enemyPosition_.y >= 550.0f)
             movingDown = false;
     } else {
-        enemyPosition.y -= enemySpeed * frameTime;
-        if (enemyPosition.y <= 0.0f)
+        enemyPosition_.y -= enemySpeed_ * frameTime;
+        if (enemyPosition_.y <= 0.0f)
             movingDown = true;
     }
-    enemyFireTimer += frameTime;
-    if (enemyFireTimer >= enemyFireInterval) {
-        enemyMissiles.push_back({{enemyPosition.x - 20.0f, enemyPosition.y + 20.0f}, missileSpeed, true});
-        enemyFireTimer = 0.0f;
+    enemyFireTimer_ += frameTime;
+    if (enemyFireTimer_ >= enemyFireInterval_) {
+        enemyMissiles_.push_back({{enemyPosition_.x - 20.0f, enemyPosition_.y + 20.0f}, missileSpeed, true});
+        enemyFireTimer_ = 0.0f;
     }
 }
 
@@ -139,16 +139,16 @@ void Game::checkCollisions()
 
     for (auto &missile : missiles) {
         if (CheckCollisionRecs({missile.position.x, missile.position.y, 20, 10},
-        {enemyPosition.x, enemyPosition.y, 50, 50})) {
+        {enemyPosition_.x, enemyPosition_.y, 50, 50})) {
             missile.active = false;
-            enemyHealth -= 50;
+            enemyHealth_ -= 50;
 
-            if (enemyHealth <= 0)
-                enemyHealth = 0;
+            if (enemyHealth_ <= 0)
+                enemyHealth_ = 0;
         }
     }
 
-    for (auto &missile : enemyMissiles) {
+    for (auto &missile : enemyMissiles_) {
         if (CheckCollisionRecs({missile.position.x, missile.position.y, 20, 10},
         {playerPosition.x, playerPosition.y, 50, 50})) {
             missile.active = false;
@@ -184,7 +184,7 @@ void Game::draw(rtype::RayLib &rl)
         if (missile.active)
             rl.drawRectangle(missile.position.x, missile.position.y, 20, 10, GOLD);
 
-    for (const auto &missile : enemyMissiles)
+    for (const auto &missile : enemyMissiles_)
         if (missile.active)
             rl.drawRectangle(missile.position.x, missile.position.y, 20, 10, RED);
 
@@ -194,9 +194,9 @@ void Game::draw(rtype::RayLib &rl)
             rl.drawText(TextFormat("%d", obstacle.hitsRemaining), obstacle.position.x + 15, obstacle.position.y + 15, 20, WHITE);
         }
     }
-    rl.drawRectangle(enemyPosition.x, enemyPosition.y, 50, 50, PURPLE);
-    rl.drawRectangle(enemyPosition.x, enemyPosition.y - 10, 50, 5, GRAY);
-    rl.drawRectangle(enemyPosition.x, enemyPosition.y - 10, static_cast<int>(50 * (enemyHealth / 300.0f)), 5, RED);
+    rl.drawRectangle(enemyPosition_.x, enemyPosition_.y, 50, 50, PURPLE);
+    rl.drawRectangle(enemyPosition_.x, enemyPosition_.y - 10, 50, 5, GRAY);
+    rl.drawRectangle(enemyPosition_.x, enemyPosition_.y - 10, static_cast<int>(50 * (enemyHealth_ / 300.0f)), 5, RED);
 
     rl.drawText(TextFormat("Score: %d", score), 10, 10, 20, WHITE);
     rl.drawText("Use arrows to move, SPACE to shoot", 10, 40, 20, LIGHTGRAY);
