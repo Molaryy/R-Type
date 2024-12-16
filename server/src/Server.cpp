@@ -39,15 +39,15 @@ void Server::gameLoop()
 
         auto entities = game->getEntities();
 
-        for (const auto& client : network_.getClients())
-        {
-            for (const auto& entity : entities)
-            {
-                std::string message = "Entity " + std::to_string(entity.id) +
-                    " at position (" + std::to_string(entity.x) + ", " + std::to_string(entity.y) + ")";
-                network_.writeToClient(client, message);
-            }
-        }
+        // for (const auto& client : network_.getClients())
+        // {
+            // for (const auto& entity : entities)
+            // {
+                // std::string message = "Entity " + std::to_string(entity.id) +
+                //     " at position (" + std::to_string(entity.x) + ", " + std::to_string(entity.y) + ")";
+                // network_.writeToClient(client, message);
+            // }
+        // }
     }
 }
 
