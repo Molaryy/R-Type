@@ -47,6 +47,9 @@ class Network
             std::cout << "Server shutting down..." << std::endl;
         }
         void run();
+        const std::vector<std::shared_ptr<Client>>& getClients() const { return clients_; }
+        std::shared_ptr<Game> getGame(int gameId);
+        void writeToClient(const std::shared_ptr<Client> &client, const std::string &message);
     private:
         unsigned int port_;
         unsigned int maxClients_;
@@ -59,6 +62,5 @@ class Network
         void accept();
         void handleClient(const std::shared_ptr<Client> &client);
         void readFromClient(const std::shared_ptr<Client> &client);
-        static void writeToClient(const std::shared_ptr<Client> &client, const std::string &message);
         std::shared_ptr<Game> createGame();
 };

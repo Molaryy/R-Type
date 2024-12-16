@@ -40,6 +40,15 @@ void Network::run()
     ioContext_.run();
 }
 
+std::shared_ptr<Game> Network::getGame(int gameId) {
+    for (const auto &game : games_) {
+        if (game->getGameID() == gameId) {
+            return game;
+        }
+    }
+    return nullptr;
+}
+
 /**
  * @brief accept incoming connections
  * 
