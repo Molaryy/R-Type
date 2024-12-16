@@ -12,7 +12,7 @@
 #include <vector>
 #include <memory>
 #include <iostream>
-#include "includes/NetworkEcs.hpp"
+#include "NetworkEcs.hpp"
 #include "Game.hpp"
 
 class Client : public ANetwork
