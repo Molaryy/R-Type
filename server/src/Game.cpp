@@ -86,8 +86,6 @@ void Game::run() {
         }
 
         tick_++;
-        if (tick_ % 100 == 0)
-            std::cout << "Game tick: " << tick_ << std::endl;
     }
 }
 
