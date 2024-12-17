@@ -14,8 +14,10 @@ list(APPEND SERVER_EXTRA_INCLUDES "includes")
 target_include_directories(r-type_server PUBLIC ${SERVER_EXTRA_INCLUDES} ${asio_SOURCE_DIR}/asio/include)
 
 target_link_libraries(r-type_server PRIVATE NetworkLib)
+target_link_libraries(r-type_server PRIVATE EcsLib)
 
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/network)
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/bootstrap)
 
 add_custom_command(TARGET r-type_server POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:r-type_server> ${CMAKE_SOURCE_DIR}

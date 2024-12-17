@@ -16,6 +16,7 @@ CPMAddPackage("gh:chriskohlhoff/asio#asio-1-32-0@${ASIO_TAG}")
 add_subdirectory(network)
 add_subdirectory(server)
 add_subdirectory(test_client)
+add_subdirectory(bootstrap)
 
 add_custom_target(clean_server
     COMMAND ${CMAKE_COMMAND} -E remove $<TARGET_FILE:r-type_server>

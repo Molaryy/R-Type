@@ -12,4 +12,7 @@
 #include "SparseArray.hh"
 
 using entity_id = std::size_t;
-using entity_t = sparse_array<>;
+struct entity_t {
+    entity_id id;
+    sparse_array<> components;
+};
