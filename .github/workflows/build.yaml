@@ -1,8 +1,7 @@
 name: Build and run C++
 
 on:
-  push:
-    branches: [ "main" ]
+  - pull-request
 
 jobs:
   build-and-run:
@@ -12,7 +11,14 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install build-essential cmake -y
+      run: sudo apt-get update && sudo apt-get install build-essential cmake libglfw3-dev libopenal-dev -y
+
+    - name: Install Raylib
+      run: |
+        git clone https://github.com/raysan5/raylib.git
+        cd raylib/src
+        make PLATFORM=PLATFORM_DESKTOP
+        sudo make install
 
     - name: Install dependencies
       run: sudo apt-get update && sudo apt-get install build-essential cmake libglfw3-dev libopenal-dev -y
