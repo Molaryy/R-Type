@@ -1,8 +1,7 @@
 name: Build and run C++
 
 on:
-  push:
-    branches: [ "main", "master" ]
+  pull-request:
 
 jobs:
   build-and-run:
