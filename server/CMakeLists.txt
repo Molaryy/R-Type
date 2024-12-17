@@ -13,6 +13,8 @@ add_executable(r-type_server ${SOURCES})
 list(APPEND SERVER_EXTRA_INCLUDES "includes")
 target_include_directories(r-type_server PUBLIC ${SERVER_EXTRA_INCLUDES} ${asio_SOURCE_DIR}/asio/include)
 
+target_compile_options(r-type_server PRIVATE -Wall -Wextra -std=c++23 -g3)
+
 target_link_libraries(r-type_server PRIVATE NetworkLib)
 target_link_libraries(r-type_server PRIVATE EcsLib)
 

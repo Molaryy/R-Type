@@ -117,7 +117,8 @@ class Game {
         Systems systems_;
 };
 
-std::ostream &operator<<(std::ostream &os, const entity_t &entity) {
-    os << "Entity ID: " << entity.id;
-    return os;
-}
+// std::ostream &operator<<(std::ostream &os, const entity_id &eid)
+// {
+    // os << static_cast<unsigned long long>(eid);
+    // return os;
+// }

@@ -10,7 +10,7 @@
 #include "Registry.hh"
 #include "Components.hh"
 
-#include "raylib.hh"
+#include "../../client/raylib/raylib.hh"
 
 //! la gestion de renderer doit être celle de la raylib, pareil pour input
 class Systems
@@ -106,30 +106,30 @@ class Systems
             raylib.endDrawing();
         }
 
-        void PlayerInputSystem(registry &reg, Input &input)
-        {
-            auto &controllable = reg.get_components<Controllable_t>();
-            auto &velocity = reg.get_components<Velocity_t>();
-
-            for (std::size_t i = 0; i < controllable.size(); ++i)
-            {
-                if (controllable[i].has_value() && velocity[i].has_value())
-                {
-                    auto &vel = std::any_cast<Velocity_t &>(velocity[i]);
-                    vel.x = 0;
-                    vel.y = 0;
-
-                    if (input.is_key_pressed("UP"))
-                        vel.y = -std::any_cast<Controllable_t &>(controllable[i]).speed;
-                    if (input.is_key_pressed("DOWN"))
-                        vel.y = std::any_cast<Controllable_t &>(controllable[i]).speed;
-                    if (input.is_key_pressed("LEFT"))
-                        vel.x = -std::any_cast<Controllable_t &>(controllable[i]).speed;
-                    if (input.is_key_pressed("RIGHT"))
-                        vel.x = std::any_cast<Controllable_t &>(controllable[i]).speed;
-                }
-            }
-        }
+        // void PlayerInputSystem(registry &reg, Input &input)
+        // {
+            // auto &controllable = reg.get_components<Controllable_t>();
+            // auto &velocity = reg.get_components<Velocity_t>();
+// 
+            // for (std::size_t i = 0; i < controllable.size(); ++i)
+            // {
+                // if (controllable[i].has_value() && velocity[i].has_value())
+                // {
+                    // auto &vel = std::any_cast<Velocity_t &>(velocity[i]);
+                    // vel.x = 0;
+                    // vel.y = 0;
+// 
+                    // if (input.is_key_pressed("UP"))
+                        // vel.y = -std::any_cast<Controllable_t &>(controllable[i]).speed;
+                    // if (input.is_key_pressed("DOWN"))
+                        // vel.y = std::any_cast<Controllable_t &>(controllable[i]).speed;
+                    // if (input.is_key_pressed("LEFT"))
+                        // vel.x = -std::any_cast<Controllable_t &>(controllable[i]).speed;
+                    // if (input.is_key_pressed("RIGHT"))
+                        // vel.x = std::any_cast<Controllable_t &>(controllable[i]).speed;
+                // }
+            // }
+        // }
 
         void ProjectileSystem(registry &reg, float t)
         {

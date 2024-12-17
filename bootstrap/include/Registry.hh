@@ -1,15 +1,9 @@
-/*
-** EPITECH PROJECT, 2024
-** R-Type
-** File description:
-** Registry
-*/
-
 #pragma once
 
 #include <unordered_map> // std::unordered_map
 #include <typeindex> // std::type_index
 #include <any> // std::any
+#include <stdexcept> // std::runtime_error
 
 #include "Entity.hh"
 
@@ -40,6 +34,9 @@ class registry
         sparse_array<Component> &get_components()
         {
             auto type = std::type_index(typeid(Component));
+            if (components_arrays_.find(type) == components_arrays_.end()) {
+                throw std::runtime_error("Component not registered");
+            }
             return std::any_cast<sparse_array<Component> &>(components_arrays_.at(type));
         }
 
@@ -53,6 +50,9 @@ class registry
         sparse_array<Component> const &get_components() const
         {
             auto type = std::type_index(typeid(Component));
+            if (components_arrays_.find(type) == components_arrays_.end()) {
+                throw std::runtime_error("Component not registered");
+            }
             return std::any_cast<sparse_array<Component> const &>(components_arrays_.at(type));
         }
 
@@ -63,10 +63,9 @@ class registry
          */
         entity_t spawn_entity()
         {
-            entity_t entity;
-            entity.id = next_entity_id_++;
-            entities_container_[entity.id] = entity;
-            return entity;
+            entity_t new_id = next_entity_id_++;
+            entities_container_[new_id] = new_id;
+            return new_id;
         }
 
         /**
@@ -77,7 +76,7 @@ class registry
          */
         entity_t entity_from_id(std::size_t index)
         {
-            return entities_container_.at(index);
+            return entities_container_[index];
         }
 
         /**
