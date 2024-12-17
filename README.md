@@ -1,6 +1,6 @@
 # R-TYPE
 
-[![Demo Video]()
+[🎥 Demo Video](https://www.veed.io/view/b9bdc967-fcf0-42a8-a4e2-44849b347b99?panel=share)
 
 Learn more in our documentation !
 
@@ -39,5 +39,3 @@ We encourage all contributions and will do our best to address your issues or co
 | :---: | :---: | :---: | :---: |
 
 > Don't hesitate to put a star 🌟
-
-
