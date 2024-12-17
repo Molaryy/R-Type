@@ -5,11 +5,11 @@
 ** Main
 */
 
-#include "Registry.hh"
+#include "SparseArray.hh"
 
-#include <iostream>
-#include <any>
-#include <typeinfo>
+#include <iostream> // std::cout
+#include <any> // std::any
+#include <typeinfo> // typeid
 
 void print_any(const std::any& a)
 {
@@ -33,7 +33,7 @@ void print_any(const std::any& a)
 
 int main()
 {
-    sparse_array array;
+    sparse_array<int> array;
     array.insert_at(0, 42);
     print_any(array[0]);
     return 0;

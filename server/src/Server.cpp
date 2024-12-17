@@ -37,7 +37,7 @@ void Server::gameLoop()
             continue;
         }
 
-        auto entities = game->getEntities();
+        // auto entities = game->getEntities();
 
         // for (const auto& client : network_.getClients())
         // {

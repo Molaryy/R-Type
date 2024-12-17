@@ -22,6 +22,7 @@ namespace rtype
             void endDrawing();
             void drawCircle(int centerX, int centerY, float radius, Color color);
             void drawRectangle(int x, int y, int width, int height, Color color);
+            void drawTexture(Texture2D texture, int x, int y, Color color);
             void drawRectangleRec(Rectangle rec, Color color);
             bool isKeyPressed(KeyboardKey key);
             void beginMode2D(Camera2D camera);
@@ -38,7 +39,9 @@ namespace rtype
             void drawGrid(int slices, float spacing);
             void drawCubeTexture(Texture2D cubemap, Vector3 position, float size, Color tint);
             Texture2D loadCubeMap(const char *filePath);
+            Texture2D loadTexture(const char *filePath);
             void unloadTexture(Texture2D texture);
+            void drawTexturePro(Texture2D texture, Rectangle source, Rectangle dest, Vector2 origin, float rotation, Color tint);
             float getFrameTime();
             bool isKeyDown(KeyboardKey key);
             TextureCubemap loadTextureCubemap(const char *fileName, int layoutType);
@@ -46,5 +49,6 @@ namespace rtype
             void drawCubeMap(TextureCubemap cubeMap, Vector3 position, float size);
             Vector3 vector3Zero();
             void setWindowSize(int width, int height);
+            void drawTextureRec(Texture2D texture, Rectangle source, Vector2 position, Color tint);
     };
 }
