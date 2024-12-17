@@ -73,6 +73,8 @@ typedef struct Bonus
 
 typedef struct Collision
 {
+    int x;
+    int y;
     int width;
     int height;
     bool is_colliding = false;

@@ -22,6 +22,7 @@ namespace rtype
             void endDrawing();
             void drawCircle(int centerX, int centerY, float radius, Color color);
             void drawRectangle(int x, int y, int width, int height, Color color);
+            void drawTexture(Texture2D texture, int x, int y, Color color);
             void drawRectangleRec(Rectangle rec, Color color);
             bool isKeyPressed(KeyboardKey key);
             void beginMode2D(Camera2D camera);

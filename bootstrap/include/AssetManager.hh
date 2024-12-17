@@ -16,18 +16,18 @@ class AssetManager
 {
     public:
 
-        rtype::RayLib::Texture2D GetTexture(const std::string &path)
+        Texture2D GetTexture(const std::string &path)
         {
             if (textures_.find(path) == textures_.end())
-                textures_[path] = rtype::RayLib::LoadTexture(path);
+                textures_[path] = rtype::RayLib().loadTexture(path.c_str());
             return textures_[path];
         }
 
         ~AssetManager()
         {
             for (auto &pair : textures_)
-                rtype::RayLib::UnloadTexture(pair.second);
+                rtype::RayLib().unloadTexture(pair.second);
         }
     private:
-        std::unordered_map<std::string, rtype::RayLib::Texture2D> textures_;
+        std::unordered_map<std::string, Texture2D> textures_;
 };

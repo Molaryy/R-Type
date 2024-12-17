@@ -27,8 +27,8 @@ class Systems
             {
                 if (positions[i].has_value() && velocities[i].has_value())
                 {
-                    auto &position = positions[i].value();
-                    auto &velocity = velocities[i].value();
+                    auto &position = std::any_cast<Position_t &>(positions[i]);
+                    auto &velocity = std::any_cast<Velocity_t &>(velocities[i]);
 
                     position.x += velocity.x * t;
                     position.y += velocity.y * t;
@@ -39,25 +39,28 @@ class Systems
         void CollisionSystem(registry &reg)
         {
             auto &position = reg.get_components<Position_t>();
-            auto &collider = reg.get_components<Collider_t>();
+            auto &collider = reg.get_components<Collision_t>();
 
             for (std::size_t i = 0; i < position.size(); ++i)
             {
                 if (!position[i].has_value() || !collider[i].has_value())
                     continue;
-                collider[i]->is_colliding = false;
+                auto &colliderComponent = std::any_cast<Collision_t &>(collider[i]);
+                colliderComponent.is_colliding = false;
 
                 for (std::size_t j = i + 1; j < collider.size(); ++j)
                 {
                     if (!position[j].has_value() || !collider[j].has_value())
                         continue;
-                    if (collider[i]->x + collider[i]->width > collider[j]->x &&
-                        collider[i]->x < collider[j]->x + collider[j]->width &&
-                        collider[i]->y + collider[i]->height > collider[j]->y &&
-                        collider[i]->y < collider[j]->y + collider[j]->height)
+                    auto &colliderComponent2 = std::any_cast<Collision_t &>(collider[j]);
+
+                    if (colliderComponent.x < colliderComponent2.x + colliderComponent2.width &&
+                        colliderComponent.x + colliderComponent.width > colliderComponent2.x &&
+                        colliderComponent.y < colliderComponent2.y + colliderComponent2.height &&
+                        colliderComponent.y + colliderComponent.height > colliderComponent2.y)
                     {
-                        collider[i]->is_colliding = true;
-                        collider[j]->is_colliding = true;
+                        colliderComponent.is_colliding = true;
+                        colliderComponent2.is_colliding = true;
                     }
                 }
             }
@@ -80,27 +83,27 @@ class Systems
         //! using raylib
         void RenderSystem(registry &reg)
         {
-            rtype::RayLib &raylib;
+            rtype::RayLib raylib;
 
             auto &positions = reg.get_components<Position_t>();
             auto &drawables = reg.get_components<Drawable_t>();
 
-            raylib.BeginDrawing();
-            raylib.ClearBackground(BLACK);
+            raylib.beginDrawing();
+            raylib.clearBackground(BLACK);
 
             for (std::size_t i = 0; i < positions.size(); ++i)
             {
                 if (positions[i].has_value() && drawables[i].has_value())
                 {
-                    auto &position = positions[i].value();
-                    auto &drawable = drawables[i].value();
+                    auto &position = std::any_cast<Position_t &>(positions[i]);
+                    auto &drawable = std::any_cast<Drawable_t &>(drawables[i]);
 
-                    Texture2D texture = raylib.LoadTexture(drawable.path.c_str());
-                    raylib.DrawTexture(texture, position.x, position.y, WHITE);
-                    raylib.UnloadTexture(texture);
+                    Texture2D texture = raylib.loadTexture(drawable.path.c_str());
+                    raylib.drawTexture(texture, position.x, position.y, WHITE);
+                    raylib.unloadTexture(texture);
                 }
             }
-            raylib.EndDrawing();
+            raylib.endDrawing();
         }
 
         void PlayerInputSystem(registry &reg, Input &input)
@@ -112,17 +115,18 @@ class Systems
             {
                 if (controllable[i].has_value() && velocity[i].has_value())
                 {
-                    velocity[i]->x = 0;
-                    velocity[i]->y = 0;
+                    auto &vel = std::any_cast<Velocity_t &>(velocity[i]);
+                    vel.x = 0;
+                    vel.y = 0;
 
                     if (input.is_key_pressed("UP"))
-                        velocity[i]->y = -controllable[i]->speed;
+                        vel.y = -std::any_cast<Controllable_t &>(controllable[i]).speed;
                     if (input.is_key_pressed("DOWN"))
-                        velocity[i]->y = controllable[i]->speed;
+                        vel.y = std::any_cast<Controllable_t &>(controllable[i]).speed;
                     if (input.is_key_pressed("LEFT"))
-                        velocity[i]->x = -controllable[i]->speed;
+                        vel.x = -std::any_cast<Controllable_t &>(controllable[i]).speed;
                     if (input.is_key_pressed("RIGHT"))
-                        velocity[i]->x = controllable[i]->speed;
+                        vel.x = std::any_cast<Controllable_t &>(controllable[i]).speed;
                 }
             }
         }
@@ -136,11 +140,14 @@ class Systems
             {
                 if (positions[i].has_value() && projectile[i].has_value())
                 {
-                    positions[i]->x += projectile[i]->speed * t;
-                    projectile[i]->lifetime -= t;
+                    auto &position = std::any_cast<Position_t &>(positions[i]);
+                    auto &proj = std::any_cast<Projectile_t &>(projectile[i]);
 
-                    if (projectile[i]->lifetime <= 0)
-                        reg.remove_component<Projectile_t>(i);
+                    position.x += proj.speed * t;
+                    proj.lifetime -= t;
+
+                    if (proj.lifetime <= 0)
+                        reg.kill_entity(i);
                 }
             }
         }

@@ -170,4 +170,9 @@ namespace rtype
     {
         UnloadTexture(texture);
     }
+
+    void rtype::RayLib::drawTexture(Texture2D texture, int x, int y, Color color)
+    {
+        DrawTexture(texture, x, y, color);
+    }
 }
