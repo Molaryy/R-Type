@@ -11,6 +11,11 @@
 #include <chrono>
 
 Game::Game() : tick_(0), gameID_(-1) {
+    reg_.register_component<Position_t>();
+    reg_.register_component<Velocity_t>();
+    reg_.register_component<Controllable_t>();
+    reg_.register_component<Life_t>();
+
     auto player = reg_.spawn_entity();
 
     reg_.add_component(player, Position_t{100.0f, 100.0f});
