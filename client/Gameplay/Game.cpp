@@ -20,18 +20,18 @@ void Game::run(rtype::RayLib &rl)
 {
     rl.setTargetFPS(60);
     // TODO: change by correct path
-    playerSpriteSheet = rl.loadTexture("/Users/moonia/3/cpp/R-Type/assets/spaceship.gif");
+    playerSpriteSheet = rl.loadTexture("../assets/spaceship.gif");
     playerFrameRec = {0.0f, 0.0f, 33, 13};
     currentFrame = 0;
     animationTimer = 0.0f;
     // TODO: change by correct path
-    missileSpriteSheet = rl.loadTexture("/Users/moonia/3/cpp/R-Type/assets/missiles.gif");
+    missileSpriteSheet = rl.loadTexture("../assets/missiles.gif");
     missileFrameRec = {0.0f, 0.0f, 20, 10};
     // TODO: change by correct path
-    explosionSpriteSheet = rl.loadTexture("/Users/moonia/3/cpp/R-Type/assets/damage.gif");
+    explosionSpriteSheet = rl.loadTexture("../assets/damage.gif");
     explosionFrameRec = {0.0f, 0.0f, 64, 64};
     // TODO: change by correct path
-    enemySpriteSheet = rl.loadTexture("/Users/moonia/3/cpp/R-Type/assets/enemies.gif");
+    enemySpriteSheet = rl.loadTexture("../assets/enemies.gif");
     enemyFrameRec = {0.0f, 0.0f, 65, 50};
 
     while (!rl.windowShouldClose()) {
