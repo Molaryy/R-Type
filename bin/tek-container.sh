@@ -1,4 +1,3 @@
-SOURCE_FOLDER=$(pwd)
-DEST_FOLDER=~
+#!/usr/bin/env bash
 
-docker run --rm -v "$SOURCE_FOLDER:$DEST_FOLDER" -it epitechcontent/epitest-docker /bin/bash -c "useradd $(whoami) && su - $(whoami)"
+docker run -it --rm -v "$(pwd):/home/project" -w /home/project epitechcontent/epitest-docker:latest /bin/bash

@@ -32,21 +32,16 @@ class Interaction : public AInteraction
          * 
          * @param data 
          */
-        void deserializeInteraction(const std::vector<char> &data)
-        {
+        void deserializeInteraction(const std::vector<char> &data) {
             auto iter = data.begin();
-            auto extractFromData = [&iter](auto &value)
-            {
+            auto extractFromData = [&iter](auto &value) {
                 std::memcpy(&value, &(*iter), sizeof(value));
                 iter += sizeof(value);
             };
-            extractFromData(_clientID);
-            extractFromData(_connect);
-            extractFromData(_gameID);
-            extractFromData(_movement);
-            extractFromData(_quit);
             extractFromData(createGame_);
+            extractFromData(_gameID);
         }
+
 
         /**
          * @brief serialize the interaction to a vector of char

@@ -58,6 +58,8 @@ void Menu::showLeaderboard(rtype::RayLib &rl)
 {
     std::vector<PlayerScore> scores = loadScores("../scores.txt");
 
+    //! TODO: check if scores.txt exists
+
     while (!rl.windowShouldClose()) {
         rl.beginDrawing();
         rl.clearBackground(BLACK);

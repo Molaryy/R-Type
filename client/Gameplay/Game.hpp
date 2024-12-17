@@ -41,6 +41,7 @@ private:
     int currentFrame;
     float animationTimer;
     float animationSpeed;
+    bool isMoving_ = false;
 
     // Missile variables
     Texture2D missileSpriteSheet;
@@ -76,6 +77,7 @@ private:
     // Game state
     bool gameOver;
     int score;
+    bool isMoving;
 
     // Frame timing
     float frameTime;

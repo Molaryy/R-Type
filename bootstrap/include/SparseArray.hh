@@ -26,62 +26,62 @@ class sparse_array
     public:
         /**
          * @brief Construct a new sparse array object
-         * 
+         *
          */
         sparse_array() noexcept = default;
 
         /**
          * @brief Construct a new sparse array object
-         * 
+         *
          */
         sparse_array(sparse_array const &) noexcept = default;
 
         /**
          * @brief Construct a new sparse array object
-         * 
+         *
          */
         sparse_array(sparse_array &&) noexcept = default;
 
         /**
          * @brief Destroy the sparse array object
-         * 
+         *
          */
         ~sparse_array() noexcept = default;
 
         /**
          * @brief Copy assignment operator
-         * 
-         * @return sparse_array& 
+         *
+         * @return sparse_array&
          */
         sparse_array &operator=(sparse_array const &) noexcept = default;
 
         /**
          * @brief Move assignment operator
-         * 
-         * @return sparse_array& 
+         *
+         * @return sparse_array&
          */
         sparse_array &operator=(sparse_array &&) noexcept = default;
 
         /**
          * @brief Get the value at the index
-         * 
-         * @param index 
-         * @return reference_type 
+         *
+         * @param index
+         * @return reference_type
          */
         reference_type operator[](size_t index) { return data_[index]; }
 
         /**
          * @brief Get the value at the index
-         * 
-         * @param index 
-         * @return const_reference_type 
+         *
+         * @param index
+         * @return const_reference_type
          */
         const_reference_type operator[](size_t index) const { return data_[index]; }
 
         /**
          * @brief Get the begin of the sparse array
-         * 
-         * @return iterator 
+         *
+         * @return iterator
          */
         iterator begin() noexcept { return data_.begin(); }
 
@@ -151,11 +151,11 @@ class sparse_array
 
         /**
          * @brief Insert a value in the sparse array
-         * 
-         * @tparam Component 
-         * @param pos 
-         * @param value 
-         * @return reference_type 
+         *
+         * @tparam Component
+         * @param pos
+         * @param value
+         * @return reference_type
          */
         template <typename Component>
         reference_type insert_at(size_type pos, Component &&value)
@@ -171,11 +171,11 @@ class sparse_array
 
         /**
          * @brief Emplace a value in the sparse array
-         * 
-         * @tparam Params 
-         * @param pos 
-         * @param params 
-         * @return reference_type 
+         *
+         * @tparam Params
+         * @param pos
+         * @param params
+         * @return reference_type
          */
         template <class... Params>
         reference_type emplace_at(size_type pos, Params &&...params)
@@ -191,8 +191,8 @@ class sparse_array
 
         /**
          * @brief Erase a value in the sparse array
-         * 
-         * @param pos 
+         *
+         * @param pos
          */
         void erase(size_type pos)
         {
@@ -205,9 +205,9 @@ class sparse_array
 
         /**
          * @brief Get the index object
-         * 
-         * @param value 
-         * @return size_type 
+         *
+         * @param value
+         * @return size_type
          */
         size_type get_index(value_type const &value) const
         {

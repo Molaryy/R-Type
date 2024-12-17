@@ -13,22 +13,34 @@
 
 class Interaction {
     public:
-        Interaction() : createGame_(0), gameID_(-1) {}
+        Interaction() : _clientID(0), _connect(0), _gameID(-1), _movement(0), _quit(0), createGame_(0) {}
 
         void setCreateGame(int createGame) { createGame_ = createGame; }
-        void setGameID(int gameID) { gameID_ = gameID; }
+        void setGameID(int gameID) { _gameID = gameID; }
 
         std::vector<char> serializeInteraction() const {
             std::vector<char> data;
-            data.insert(data.end(), reinterpret_cast<const char*>(&createGame_), reinterpret_cast<const char*>(&createGame_) + sizeof(createGame_));
-            data.insert(data.end(), reinterpret_cast<const char*>(&gameID_), reinterpret_cast<const char*>(&gameID_) + sizeof(gameID_));
+            auto appendToData = [&data](auto value) {
+                data.insert(data.end(), reinterpret_cast<const char*>(&value), reinterpret_cast<const char*>(&value) + sizeof(value));
+            };
+            appendToData(_clientID);
+            appendToData(_connect);
+            appendToData(_gameID);
+            appendToData(_movement);
+            appendToData(_quit);
+            appendToData(createGame_);
             return data;
         }
 
     private:
+        int _clientID;
+        int _connect;
+        int _gameID;
+        int _movement;
+        int _quit;
         int createGame_;
-        int gameID_;
 };
+
 
 class Client {
     public:
@@ -73,11 +85,10 @@ class Client {
 int main() {
     try {
         asio::io_context ioContext;
-
+        Interaction interaction;
         Client client(ioContext, "0.0.0.0", 8081);
 
         std::cout << "Sending CREATE_GAME command..." << std::endl;
-        Interaction interaction;
         interaction.setCreateGame(1);
         client.sendMessage(interaction.serializeInteraction());
 
