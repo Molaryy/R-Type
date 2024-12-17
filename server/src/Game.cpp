@@ -48,7 +48,6 @@ void Game::run() {
                 reg_.add_component(entity, Position_t{50.0f, 50.0f});
                 reg_.add_component(entity, Velocity_t{0.0f, 0.0f});
                 reg_.add_component(entity, Controllable_t{200.0f});
-                std::cout << "Created player entity with ID: " << entity << std::endl;
             } else if (interaction.getQuit() == 1) {
                 std::cout << "Player disconnected: " << interaction.getClientID() << std::endl;
             } else if (interaction.getMovement() != -1) {

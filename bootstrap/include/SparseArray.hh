@@ -11,7 +11,7 @@
 #include <memory> // std::allocator_traits
 #include <any> //std::any
 
-template <class Allocator = std::allocator<std::any>>
+template<typename Component, class Allocator = std::allocator<std::any>>
 class sparse_array
 {
     public:
@@ -137,8 +137,8 @@ class sparse_array
          * @param value
          * @return reference_type
          */
-        template <typename Component>
-        reference_type insert_at(size_type pos, Component const &value)
+        template <typename T>
+        reference_type insert_at(size_type pos, T const &value)
         {
             if (pos >= data_.size())
                 data_.resize(pos + 1);
@@ -157,15 +157,15 @@ class sparse_array
          * @param value
          * @return reference_type
          */
-        template <typename Component>
-        reference_type insert_at(size_type pos, Component &&value)
+        template <typename T>
+        reference_type insert_at(size_type pos, T &&value)
         {
             if (pos >= data_.size())
                 data_.resize(pos + 1);
             else
                 data_[pos].reset();
 
-            data_[pos] = std::forward<Component>(value);
+            data_[pos] = std::forward<T>(value);
             return data_[pos];
         }
 
@@ -225,10 +225,10 @@ class sparse_array
          * @param index 
          * @return Component& 
          */
-        template <typename Component>
-        Component &get_at(size_t index)
+        template <typename T>
+        T &get_at(size_t index)
         {
-            return std::any_cast<Component&>(data_[index]);
+            return std::any_cast<T &>(data_[index]);
         }
 
         /**
@@ -238,10 +238,10 @@ class sparse_array
          * @param index 
          * @return const Component& 
          */
-        template <typename Component>
-        const Component &get_at(size_t index) const
+        template <typename T>
+        const T &get_at(size_t index) const
         {
-            return std::any_cast<const Component&>(data_[index]);
+            return std::any_cast<const T &>(data_[index]);
         }
 
     private:
