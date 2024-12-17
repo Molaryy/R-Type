@@ -217,6 +217,33 @@ class sparse_array
                 return iter - data_.begin();
             return data_.size();
         }
+
+        /**
+         * @brief Get the at object
+         * 
+         * @tparam Component 
+         * @param index 
+         * @return Component& 
+         */
+        template <typename Component>
+        Component &get_at(size_t index)
+        {
+            return std::any_cast<Component&>(data_[index]);
+        }
+
+        /**
+         * @brief Get the at object
+         * 
+         * @tparam Component 
+         * @param index 
+         * @return const Component& 
+         */
+        template <typename Component>
+        const Component &get_at(size_t index) const
+        {
+            return std::any_cast<const Component&>(data_[index]);
+        }
+
     private:
         container_t data_;
 };

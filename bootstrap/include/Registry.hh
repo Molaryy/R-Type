@@ -63,8 +63,10 @@ class registry
          */
         entity_t spawn_entity()
         {
-            entities_container_[next_entity_id_++] = entity_t{ };
-            return entities_container_.at(next_entity_id_ - 1);
+            entity_t entity;
+            entity.id = next_entity_id_++;
+            entities_container_[entity.id] = entity;
+            return entity;
         }
 
         /**
