@@ -29,6 +29,25 @@ void Server::gameLoop()
     while (true)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
+
+        // test without ecs
+        auto game = network_.getGame(1);
+        if (!game) {
+            std::cerr << "No game found with ID 1!" << std::endl;
+            continue;
+        }
+
+        // auto entities = game->getEntities();
+
+        // for (const auto& client : network_.getClients())
+        // {
+            // for (const auto& entity : entities)
+            // {
+                // std::string message = "Entity " + std::to_string(entity.id) +
+                //     " at position (" + std::to_string(entity.x) + ", " + std::to_string(entity.y) + ")";
+                // network_.writeToClient(client, message);
+            // }
+        // }
     }
 }
 

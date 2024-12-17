@@ -5,8 +5,6 @@
 ** Server.hpp
 */
 
-
-
 #pragma once
 
 #include "Network.hpp"

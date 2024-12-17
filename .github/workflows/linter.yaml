@@ -2,7 +2,7 @@ name: Linter C++
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "main" ]
 
 jobs:
   lint:

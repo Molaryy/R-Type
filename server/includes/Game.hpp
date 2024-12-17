@@ -12,6 +12,9 @@
 #include <mutex>
 #include <map>
 #include "NetworkEcs.hpp"
+#include "Registry.hh"
+#include "Components.hh"
+#include "Systems.hh"
 
 #define TICK_SPEED 30
 
@@ -32,21 +35,16 @@ class Interaction : public AInteraction
          * 
          * @param data 
          */
-        void deserializeInteraction(const std::vector<char> &data)
-        {
+        void deserializeInteraction(const std::vector<char> &data) {
             auto iter = data.begin();
-            auto extractFromData = [&iter](auto &value)
-            {
+            auto extractFromData = [&iter](auto &value) {
                 std::memcpy(&value, &(*iter), sizeof(value));
                 iter += sizeof(value);
             };
-            extractFromData(_clientID);
-            extractFromData(_connect);
-            extractFromData(_gameID);
-            extractFromData(_movement);
-            extractFromData(_quit);
             extractFromData(createGame_);
+            extractFromData(_gameID);
         }
+
 
         /**
          * @brief serialize the interaction to a vector of char
@@ -74,6 +72,13 @@ class Interaction : public AInteraction
         int _gameID;
 };
 
+// struct Entity {
+//     int id;
+//     std::string type;
+//     float x, y;
+//     float velocityX, velocityY;
+// };
+
 class Game {
     public:
         Game();
@@ -86,6 +91,7 @@ class Game {
             availableID_ = (ID > 4) ? -1 : ID;
         }
         int getAvailableID() const { return availableID_; }
+        // const std::vector<Entity> &getEntities() const { return entities_; }
         Game& operator=(const Game& gameToCompare) {
             if (this == &gameToCompare) return *this;
             tickSpeed_ = gameToCompare.tickSpeed_;
@@ -96,6 +102,8 @@ class Game {
             functionsClient_ = gameToCompare.functionsClient_;
             return *this;
         }
+        registry &getRegistry() { return reg_; }
+
     private:
         int tickSpeed_ = TICK_SPEED;
         int tick_ = 0;
@@ -105,4 +113,12 @@ class Game {
         std::vector<Interaction> interactionClient_;
         std::vector<std::string> functions_;
         std::vector<std::string> functionsClient_;
+        registry reg_;
+        Systems systems_;
 };
+
+// std::ostream &operator<<(std::ostream &os, const entity_id &eid)
+// {
+    // os << static_cast<unsigned long long>(eid);
+    // return os;
+// }

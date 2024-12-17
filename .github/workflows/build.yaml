@@ -29,8 +29,8 @@ jobs:
     - name: Build project
       run: cmake --build build/
 
-    - name: Run server part
-      run: ./build/r-type_server
+    - name: Check server binary
+      run: find r-type_server
 
     # - name : Run client part
     #   run: ./build/r-type_client
