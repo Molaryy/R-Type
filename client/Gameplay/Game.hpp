@@ -10,48 +10,75 @@ struct Missile {
     bool active;
 };
 
-struct Obstacle {
+struct Asteroid {
     Vector2 position;
     int hitsRemaining;
     bool active;
 };
 
 class Game {
-    public:
-        Game();
-        void run(rtype::RayLib &rl);
+public:
+    Game();
+    void run(rtype::RayLib &rl);
 
-    private:
-        Vector2 playerPosition;
-        float playerSpeed;
-        float missileSpeed;
-        std::vector<Missile> missiles;
-        std::vector<Obstacle> obstacles;
-        float obstacleSpawnTimer;
-        float obstacleSpawnInterval;
-        int score;
-        bool inGameMenu;
-        int playerHealth;
-        int gameOver;
-        float frameTime;
-    
-        void handleInput(rtype::RayLib &rl);
-        void updateMissiles();
-        void spawnObstacles();
-        void checkCollisions();
-        void saveScore();
-        void handleInGameMenu(rtype::RayLib &rl, bool &inGameMenu);
-        void draw(rtype::RayLib &rl);
-        void drawGameOver(rtype::RayLib &rl);
+private:
+    void handleInput(rtype::RayLib &rl);
+    void updateAnimations();
+    void updateExplosion();
+    void updateMissiles();
+    void updateEnemy();
+    void spawnAsteroids();
+    void checkCollisions();
+    void draw(rtype::RayLib &rl);
+    void drawGameOver(rtype::RayLib &rl);
 
-        // enemies
-        int enemyHealth_;
-        float enemyFireInterval_;
-        float enemyFireTimer_;
-        float enemySpeed_;
-        Vector2 enemyPosition_;
-        void updateEnemy();
-        std::vector<Missile> enemyMissiles_;
+    // Player variables
+    Vector2 playerPosition;
+    float playerSpeed;
+    int playerHealth;
+    Texture2D playerSpriteSheet;
+    Rectangle playerFrameRec;
+    int currentFrame;
+    float animationTimer;
+    float animationSpeed;
+
+    // Missile variables
+    Texture2D missileSpriteSheet;
+    Rectangle missileFrameRec;
+    float missileAnimationTimer;
+    float missileSpeed;
+    std::vector<Missile> missiles;
+
+    // Explosion variables
+    Texture2D explosionSpriteSheet;
+    Rectangle explosionFrameRec;
+    bool isExploding;
+    float explosionTimer;
+    float explosionSpeed;
+    int explosionCurrentFrame;
+
+    // Enemy variables
+    Vector2 enemyPosition_;
+    float enemySpeed_;
+    int enemyHealth_;
+    Texture2D enemySpriteSheet;
+    Rectangle enemyFrameRec;
+    float enemyFireTimer_;
+    float enemyFireInterval_;
+    float enemyAnimationTimer;
+    std::vector<Missile> enemyMissiles_;
+
+    // Asteroid variables
+    std::vector<Asteroid> asteroids;
+    float asteroidSpawnTimer;
+    float asteroidSpawnInterval;
+
+    // Game state
+    bool gameOver;
+    int score;
+
+    // Frame timing
+    float frameTime;
 };
 
 #endif //GAME_HPP
