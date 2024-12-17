@@ -83,7 +83,6 @@ void Network::accept()
 void Network::handleClient(const std::shared_ptr<Client> &client)
 {
     std::vector<char> serializedData = client->serializeConnection();
-    writeToClient(client, std::string(serializedData.begin(), serializedData.end()));
     readFromClient(client);
 }
 
@@ -92,46 +91,113 @@ void Network::handleClient(const std::shared_ptr<Client> &client)
  * 
  * @param client 
  */
+void Network::readFromClient(const std::shared_ptr<Client>& client)
+{
+    auto buffer = std::make_shared<std::vector<char>>(1024);
+    auto &socket = client->getSocket();
+
+    std::cout << "Preparing to read from client: " << client->getName() << std::endl;
+    asio::async_read(socket, asio::buffer(*buffer), [this, client, buffer](std::error_code errorCode, std::size_t length)
+    {
+        std::cout << "Async read callback triggered!" << std::endl;
+        if (!errorCode)
+        {
+            std::vector<char> serializedData(buffer->begin(), buffer->begin() + length);
+            client->deserializeConnection(serializedData);
+            Interaction interaction;
+            interaction.deserializeInteraction(serializedData);
+
+            std::cout << "Deserialized Interaction: CreateGame=" << interaction.getCreateGame() << ", GameID=" << interaction.getGameID() << std::endl;
+
+            if (interaction.getCreateGame() == 1) {
+                auto newGameLobby = createGame();
+                interaction.setGameID(newGameLobby->getGameID());
+                writeToClient(client, "Lobby " + std::to_string(newGameLobby->getGameID()) + " created !");
+            } else if (interaction.getGameID() != -1) {
+                auto it = std::find_if(games_.begin(), games_.end(), [&](const auto &game) {
+                    return game->getGameID() == interaction.getGameID();
+                });
+
+                if (it != games_.end()) {
+                    (*it)->addInteraction(interaction);
+                    writeToClient(client, "Joined Lobby " + std::to_string(interaction.getGameID()));
+                } else {
+                    writeToClient(client, "Lobby not found !");
+                }
+            } else {
+                for (auto &game : games_)
+                {
+                    if (game->getGameID() == interaction.getGameID())
+                    {
+                        game->addInteraction(interaction);
+                        break;
+                    }
+                }
+            }
+            readFromClient(client);
+        } else {
+            std::cerr << "Client disconnected: " << client->getName() << std::endl;
+            // std::erase(clients_, client);
+        }
+    });
+}
+
 // void Network::readFromClient(const std::shared_ptr<Client>& client)
 // {
-//     auto buffer = std::make_shared<std::vector<char>>(1024);
-//     auto &socket = client->getSocket();
-//     asio::async_read(socket, asio::buffer(*buffer), [this, client, buffer](std::error_code errorCode, std::size_t length)
+//     auto buffer = std::make_shared<asio::streambuf>();
+//     auto& socket = client->getSocket();
+
+//     std::cout << "Preparing to read from client: " << client->getName() << std::endl;
+//     asio::async_read_until(socket, *buffer, '\n', [this, client, buffer](std::error_code errorCode, std::size_t length)
 //     {
 //         if (!errorCode)
 //         {
-//             std::string message(buffer->begin(), buffer->begin() + length);
-//             std::vector<char> serializedData(message.begin(), message.end());
-//             client->deserializeConnection(serializedData);
-//             Interaction interaction;
-//             interaction.deserializeInteraction(serializedData);
+//             const char *data = asio::buffer_cast<const char*>(buffer->data());
+//             std::vector<char> bufferData(data, data + length);
+//             std::string message(bufferData.begin(), bufferData.end());
 
-//             if (interaction.getCreateGame() == 1) {
+//             message.erase(std::remove(message.begin(), message.end(), '\r'), message.end());
+//             message.erase(std::remove(message.begin(), message.end(), '\n'), message.end());
+//             std::cout << "Received from client: " << message << std::endl;
+
+//             if (message == "CREATE_GAME") {
 //                 auto newGameLobby = createGame();
-//                 interaction.setGameID(newGameLobby->getGameID());
-//                 writeToClient(client, "Lobby " + std::to_string(newGameLobby->getGameID()) + " created !");
-//                 return;
-//             }
-//             if (interaction.getGameID() != -1) {
-//                 auto it = std::find_if(games_.begin(), games_.end(), [&](const auto &game) {
-//                     return game->getGameID() == interaction.getGameID();
+//                 writeToClient(client, "Lobby " + std::to_string(newGameLobby->getGameID()) + " created!");
+//             } else if (message.find("JOIN_LOBBY") != std::string::npos) {
+//                 int gameID = std::stoi(message.substr(message.find(" ") + 1));
+
+//                 std::cout << "Client " << client->getName() << " is attempting to join Lobby " << gameID << std::endl;
+
+//                 Interaction interaction;
+//                 interaction.setClientID(client->getId());
+//                 interaction.setGameID(gameID);
+
+//                 auto it = std::find_if(games_.begin(), games_.end(), [&](const auto& game) {
+//                     return game->getGameID() == gameID;
 //                 });
+
 //                 if (it != games_.end()) {
-//                     (*it)->addInteraction(interaction);
-//                     writeToClient(client, "Joined Lobby " + std::to_string(interaction.getGameID()));
+//                     (*it)->addInteraction(Interaction());
+//                     writeToClient(client, "Joined Lobby " + std::to_string(gameID));
 //                 } else {
-//                     writeToClient(client, "Lobby not found !");
+//                     writeToClient(client, "Lobby not found!");
 //                 }
-//                 return;
-//             }
-//             for (auto &game : games_)
-//             {
-//                 if (game->getGameID() == interaction.getGameID())
+//             } else {
+//                 Interaction interaction;
+//                 interaction.deserializeInteraction(bufferData);
+
+//                 std::cout << "Deserialized Interaction: ClientID = " << interaction.getClientID() << ", GameID = " << interaction.getGameID() << std::endl;
+
+//                 for (auto& game : games_)
 //                 {
-//                     game->addInteraction(interaction);
-//                     break;
+//                     if (game->getGameID() == interaction.getGameID())
+//                     {
+//                         game->addInteraction(interaction);
+//                         break;
+//                     }
 //                 }
 //             }
+
 //             readFromClient(client);
 //         } else {
 //             std::cerr << "Client disconnected: " << client->getName() << std::endl;
@@ -139,67 +205,6 @@ void Network::handleClient(const std::shared_ptr<Client> &client)
 //         }
 //     });
 // }
-
-void Network::readFromClient(const std::shared_ptr<Client>& client)
-{
-    auto buffer = std::make_shared<asio::streambuf>();
-    auto& socket = client->getSocket();
-
-    std::cout << "Preparing to read from client: " << client->getName() << std::endl;
-    asio::async_read_until(socket, *buffer, '\n', [this, client, buffer](std::error_code errorCode, std::size_t length)
-    {
-        std::cout << "Async read callback triggered!" << std::endl;
-        if (!errorCode)
-        {
-            // std::istream is(buffer.get());
-            // std::string message;
-            // std::getline(is, message);
-            const char* data = asio::buffer_cast<const char*>(buffer->data());
-            std::vector<char> bufferData(data, data + length);
-            std::string message(bufferData.begin(), bufferData.end());
-            std::cout << "Received from client: " << message << std::endl;
-
-            if (message == "CREATE_GAME") {
-                auto newGameLobby = createGame();
-                writeToClient(client, "Lobby " + std::to_string(newGameLobby->getGameID()) + " created!");
-                return;
-            }
-
-            if (message.find("JOIN_LOBBY") != std::string::npos) {
-                int gameID = std::stoi(message.substr(message.find(" ") + 1));
-                auto it = std::find_if(games_.begin(), games_.end(), [&](const auto& game) {
-                    return game->getGameID() == gameID;
-                });
-
-                if (it != games_.end()) {
-                    (*it)->addInteraction(Interaction());
-                    writeToClient(client, "Joined Lobby " + std::to_string(gameID));
-                } else {
-                    writeToClient(client, "Lobby not found!");
-                }
-                return;
-            }
-
-            Interaction interaction;
-            interaction.deserializeInteraction(bufferData);
-            for (auto& game : games_)
-            {
-                if (game->getGameID() == interaction.getGameID())
-                {
-                    game->addInteraction(interaction);
-                    break;
-                }
-            }
-
-            readFromClient(client);
-        }
-        else
-        {
-            std::cerr << "Client disconnected: " << client->getName() << std::endl;
-            // std::erase(clients_, client);
-        }
-    });
-}
 
 /**
  * @brief Write data to client & serialize it
@@ -209,13 +214,15 @@ void Network::readFromClient(const std::shared_ptr<Client>& client)
  */
 void Network::writeToClient(const std::shared_ptr<Client> &client, const std::string &message)
 {
-    auto buffer = std::make_shared<std::string>(message);
-    auto& socket = client->getSocket();
-    asio::async_write(socket, asio::buffer(*buffer), [buffer](std::error_code errorCode, std::size_t)
-    {
-        if (errorCode)
-            std::cerr << "Error sending message to client" << std::endl;
-    });
+    // std::string buffer = message + "\n";
+    // auto& socket = client->getSocket();
+    std::cout << "Sending message to client: '" << message << "'" << std::endl;
+    asio::write(client->getSocket(), asio::buffer(message + "\n"));
+    // asio::async_write(client->getSocket(), asio::buffer(buffer), [](std::error_code errorCode, std::size_t)
+    // {
+    //     if (errorCode)
+    //         std::cerr << "Error sending message to client" << std::endl;
+    // });
 }
 
 /**
