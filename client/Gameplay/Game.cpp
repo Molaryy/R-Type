@@ -68,12 +68,15 @@ void Game::run(rtype::RayLib &rl)
     rl.closeWindow();
 }
 
+/**
+ * @brief Infinite loop for background
+ * 
+ */
 void Game::updateBackground()
 {
     backgroundPosX1 -= backgroundSpeed * frameTime;
     backgroundPosX2 -= backgroundSpeed * frameTime;
 
-    // Réinitialiser les positions lorsque l'image sort de l'écran
     if (backgroundPosX1 <= -backgroundTexture.width)
         backgroundPosX1 = backgroundPosX2 + backgroundTexture.width;
     if (backgroundPosX2 <= -backgroundTexture.width)
@@ -219,7 +222,6 @@ void Game::updateEnemy()
         enemyFireTimer_ = 0.0f;
     }
 }
-
 
 /**
  * @brief Spawn random asteroids on game
