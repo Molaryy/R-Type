@@ -19,18 +19,14 @@ Game::Game() : playerPosition({50.0f, 300.0f}), playerSpeed(300.0f), missileSpee
 void Game::run(rtype::RayLib &rl)
 {
     rl.setTargetFPS(60);
-    // TODO: change by correct path
     playerSpriteSheet = rl.loadTexture("../assets/spaceship.gif");
     playerFrameRec = {0.0f, 0.0f, 33, 13};
     currentFrame = 0;
     animationTimer = 0.0f;
-    // TODO: change by correct path
     missileSpriteSheet = rl.loadTexture("../assets/missiles.gif");
     missileFrameRec = {0.0f, 0.0f, 20, 10};
-    // TODO: change by correct path
     explosionSpriteSheet = rl.loadTexture("../assets/damage.gif");
     explosionFrameRec = {0.0f, 0.0f, 64, 64};
-    // TODO: change by correct path
     enemySpriteSheet = rl.loadTexture("../assets/enemies.gif");
     enemyFrameRec = {0.0f, 0.0f, 65, 50};
 
@@ -42,7 +38,8 @@ void Game::run(rtype::RayLib &rl)
         frameTime = rl.getFrameTime();
         updateBackground();
 
-        if (!gameOver || isExploding) {
+        if (!gameOver || !isExploding)
+        {
             handleInput(rl);
             updateMissiles();
             updateEnemy();
@@ -54,7 +51,7 @@ void Game::run(rtype::RayLib &rl)
         rl.beginDrawing();
         rl.clearBackground(BLACK);
 
-        if (gameOver && !isExploding)
+        if (gameOver && isExploding)
             drawGameOver(rl);
         else
             draw(rl);
@@ -91,28 +88,30 @@ void Game::handleInput(rtype::RayLib &rl)
     if (isExploding)
         return;
 
-    bool isMoving = false;
+    isMoving_ = false;
+
+
     if (rl.isKeyDown(KEY_RIGHT)) {
         playerPosition.x += playerSpeed * frameTime;
-        isMoving = true;
+        isMoving_ = true;
     }
     if (rl.isKeyDown(KEY_LEFT)) {
         playerPosition.x -= playerSpeed * frameTime;
-        isMoving = true;
+        isMoving_ = true;
     }
     if (rl.isKeyDown(KEY_UP)) {
         playerPosition.y -= playerSpeed * frameTime;
-        isMoving = true;
+        isMoving_ = true;
     }
     if (rl.isKeyDown(KEY_DOWN)) {
         playerPosition.y += playerSpeed * frameTime;
-        isMoving = true;
+        isMoving_ = true;
     }
 
     playerPosition.x = std::max(0.0f, std::min(750.0f, playerPosition.x));
     playerPosition.y = std::max(0.0f, std::min(550.0f, playerPosition.y));
 
-    if (isMoving) {
+    if (isMoving_) {
         animationTimer += frameTime;
         if (animationTimer >= animationSpeed) {
             animationTimer = 0.0f;

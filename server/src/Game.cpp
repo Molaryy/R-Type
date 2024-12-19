@@ -10,19 +10,34 @@
 #include <thread>
 #include <chrono>
 
+Game::Game() : tick_(0), gameID_(-1) {
+    reg_.register_component<Position_t>();
+    reg_.register_component<Velocity_t>();
+    reg_.register_component<Controllable_t>();
+    reg_.register_component<Life_t>();
 
-Game::Game() : tick_(0), gameID_(-1), availableID_(1) {}
+    auto player = reg_.spawn_entity();
+
+    reg_.add_component(player, Position_t{100.0f, 100.0f});
+    reg_.add_component(player, Velocity_t{0.0f, 0.0f});
+    reg_.add_component(player, Controllable_t{200.0f});
+    reg_.add_component(player, Life_t{100, 100});
+}
 
 /**
  * @brief Construct a new Game:: Game object
  * 
  */
-void Game::run()
-{
+void Game::run() {
     std::cout << "Lobby is ready to start with ID: " << gameID_ << std::endl;
-    while (true)
-    {
+
+    while (true) {
         std::this_thread::sleep_for(std::chrono::milliseconds(tickSpeed_));
+        auto &positions = reg_.get_components<Position_t>();
+        auto &velocities = reg_.get_components<Velocity_t>();
+
+        systems_.MovementSystem(reg_, tickSpeed_);
+
         std::vector<Interaction> localInteractions;
         {
             std::lock_guard<std::mutex> lock(_mutex);
@@ -34,17 +49,25 @@ void Game::run()
         {
             if (interaction.getConnect() == 1) {
                 std::cout << "Player connected: " << interaction.getClientID() << std::endl;
+                auto entity = reg_.spawn_entity();
+                reg_.add_component(entity, Position_t{50.0f, 50.0f});
+                reg_.add_component(entity, Velocity_t{0.0f, 0.0f});
+                reg_.add_component(entity, Controllable_t{200.0f});
             } else if (interaction.getQuit() == 1) {
                 std::cout << "Player disconnected: " << interaction.getClientID() << std::endl;
             } else if (interaction.getMovement() != -1) {
                 std::cout << "Player " << interaction.getClientID()
                     << " moved to position " << interaction.getMovement() << std::endl;
+                auto &velocities = reg_.get_components<Velocity_t>();
+                if (interaction.getClientID() < velocities.size() && velocities[interaction.getClientID()].has_value()) {
+                    auto &vel = velocities.get_at<Velocity_t>(interaction.getClientID());
+                    vel.x = interaction.getMovement();
+                    vel.y = interaction.getMovement();
+                }
             }
         }
+
         tick_++;
-        if (tick_ % 100 == 0)
-            std::cout << "Game tick: " << tick_ << std::endl;
-        // Update game next
     }
 }
 

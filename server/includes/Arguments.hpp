@@ -15,6 +15,7 @@
 #include <optional>
 #include <variant>
 #include <algorithm>
+#include <cstring>
 
 #define PORT 8081
 #define NB_CLIENTS 4
