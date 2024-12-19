@@ -16,13 +16,35 @@ struct Asteroid {
     bool active;
 };
 
+struct Player {
+    bool isPlayer;
+    // Game state
+    bool gameOver;
+    int score;
+    // Player variables
+    Vector2 playerPosition;
+    float playerSpeed;
+    int playerHealth;
+    Texture2D playerSpriteSheet;
+    Rectangle playerFrameRec;
+    int currentFrame;
+    float animationTimer;
+    float animationSpeed;
+};
+
 class Game {
 public:
     Game();
     void run(rtype::RayLib &rl);
 
 private:
+    Texture2D backgroundTexture;
+    float backgroundPosX1;
+    float backgroundPosX2;
+    float backgroundSpeed = 100.0f;
+
     void handleInput(rtype::RayLib &rl);
+    void updateBackground();
     void updateAnimations();
     void updateExplosion();
     void updateMissiles();
