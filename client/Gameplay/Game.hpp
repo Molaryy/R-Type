@@ -14,6 +14,8 @@ struct Asteroid {
     Vector2 position;
     int hitsRemaining;
     bool active;
+    float animationTimer;
+    int currentFrame;
 };
 
 struct Player {
@@ -95,6 +97,8 @@ private:
     std::vector<Asteroid> asteroids;
     float asteroidSpawnTimer;
     float asteroidSpawnInterval;
+    Texture2D asteroidSpriteSheet;
+    Rectangle asteroidFrameRec;
 
     // Game state
     bool gameOver;

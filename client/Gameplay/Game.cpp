@@ -23,12 +23,18 @@ void Game::run(rtype::RayLib &rl)
     playerFrameRec = {0.0f, 0.0f, 33, 13};
     currentFrame = 0;
     animationTimer = 0.0f;
+
     missileSpriteSheet = rl.loadTexture("../assets/missiles.gif");
     missileFrameRec = {0.0f, 0.0f, 20, 10};
+
     explosionSpriteSheet = rl.loadTexture("../assets/damage.gif");
     explosionFrameRec = {0.0f, 0.0f, 64, 64};
+
     enemySpriteSheet = rl.loadTexture("../assets/enemies.gif");
     enemyFrameRec = {0.0f, 0.0f, 65, 50};
+
+    asteroidSpriteSheet = rl.loadTexture("../assets/asteroids.gif");
+    asteroidFrameRec = {0.0f, 0.0f, 65, 50};
 
     backgroundTexture = rl.loadTexture("../assets/maps/space.png");
     backgroundPosX1 = 0.0f;
@@ -62,6 +68,7 @@ void Game::run(rtype::RayLib &rl)
     rl.unloadTexture(missileSpriteSheet);
     rl.unloadTexture(explosionSpriteSheet);
     rl.unloadTexture(enemySpriteSheet);
+    rl.unloadTexture(asteroidSpriteSheet);
     rl.closeWindow();
 }
 
@@ -347,7 +354,8 @@ void Game::draw(rtype::RayLib &rl)
 
     for (const auto &asteroid : asteroids) {
         if (asteroid.active) {
-            rl.drawRectangle(asteroid.position.x, asteroid.position.y, 50, 50, RED);
+            rl.drawTextureRec(asteroidSpriteSheet, asteroidFrameRec, {asteroid.position.x, asteroid.position.y}, WHITE);
+            // rl.drawRectangle(astew/x/roid.position.x, asteroid.position.y, 50, 50, RED);
             rl.drawText(TextFormat("%d", asteroid.hitsRemaining), asteroid.position.x + 15, asteroid.position.y + 15, 20, WHITE);
         }
     }
