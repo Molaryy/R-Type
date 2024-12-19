@@ -1,0 +1,15 @@
+name: Check Conventional Commits
+
+on:
+  pull_request:
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run commit lint
+        uses: wagoid/commitlint-github-action@v5
