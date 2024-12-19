@@ -162,12 +162,24 @@ namespace rtype
     {
         return LoadTexture(filePath);
     }
+
     void rtype::RayLib::drawTexturePro(Texture2D texture, Rectangle source, Rectangle dest, Vector2 origin, float rotation, Color tint)
     {
         DrawTexturePro(texture, source, dest, origin, rotation, tint);
     }
+
     void rtype::RayLib::unloadTexture(Texture2D texture)
     {
         UnloadTexture(texture);
+    }
+
+    void rtype::RayLib::drawTexture(Texture2D texture, int posX, int posY, Color tint)
+    {
+        return DrawTexture(texture, posX, posY, tint);
+    }
+
+    void rtype::RayLib::drawTextureEx(Texture2D texture, Vector2 position, float rotation, float scale, Color tint)
+    {
+        return DrawTextureEx(texture, position, rotation, scale, tint);
     }
 }
