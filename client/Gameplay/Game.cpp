@@ -361,7 +361,7 @@ void Game::draw(rtype::RayLib &rl)
 
     rl.drawText(TextFormat("Score: %d", score), 10, 10, 20, WHITE);
 
-    if (playerHealth > 50)
+    if (playerHealth > 30)
         rl.drawText(TextFormat("Health: %d", playerHealth), 10, 40, 20, GREEN);
     else
         rl.drawText(TextFormat("Health (critical): %d", playerHealth), 10, 40, 20, RED);
