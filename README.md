@@ -2,15 +2,28 @@
 
 [🎥 Demo Video](https://www.veed.io/view/b9bdc967-fcf0-42a8-a4e2-44849b347b99?panel=share)
 
-Learn more in our documentation !
+This project reimagines the iconic arcade game R-Type, introducing modern multiplayer functionality. Developed with an Entity-Component-System (ECS) architecture, it ensures smooth performance on both Windows and Linux, with straightforward compilation using CMake.
+
+### Key Features 🌟
+
+- Multiplayer Gameplay: Experience the thrill of R-Type with friends through networked multiplayer action.
+- ECS Architecture: Benefit from a modular, scalable design that simplifies the management and development of game entities.
+- CMake Integration: Enjoy simplified setup with streamlined compilation and dependency management.
+- Cross-Platform Support: Easily build and play on both Windows and Linux without compatibility issues.
+
+Learn more in our docs directory !
 
 ## Getting started 🔧
 
+### Installation
+
+#### Prerequisites
+
 Before you begin, make sure you have the following prerequisites installed on your machine:
 
-- **Raylib**: Ensure that Raylib is installed.
+- **Raylib**: Ensure that Raylib is installed. If it's not, refer to the [Raylib installation guide.](https://www.raylib.com/)
 
-### Installation
+- **CMake**: Ensure that CMake is installed on your system. If not, check out the [CMake installation documentation.](https://cmake.org/download/)
 
 1. Clone the repository:
    ```bash
