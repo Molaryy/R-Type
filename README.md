@@ -15,14 +15,15 @@ Learn more in our docs directory !
 
 ## Getting started 🔧
 
-Before you begin, make sure you have the following prerequisites installed on your machine:
-
-- **Raylib**: Ensure that Raylib is installed.
-
 ### Installation
 
 #### Prerequisites
-- CMake: Make sure you have CMake installed on your system.
+
+Before you begin, make sure you have the following prerequisites installed on your machine:
+
+- **Raylib**: Ensure that Raylib is installed. If it's not, refer to the [Raylib installation guide.](https://www.raylib.com/)
+
+- **CMake**: Ensure that CMake is installed on your system. If not, check out the [CMake installation documentation.](https://cmake.org/download/)
 
 1. Clone the repository:
    ```bash
