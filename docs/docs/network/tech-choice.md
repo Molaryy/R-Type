@@ -2,7 +2,9 @@
 sidebar_position: 1
 ---
 
-# Technology Choice: Why We Chose ASIO for Network Operations in C++
+# Technology Choice
+
+## Why we chosed ASIO for Network Operations in C++?
 
 ## Introduction
 When implementing network operations for our project in C++, we evaluated various approaches, including built-in functions and alternative third-party libraries. After thorough consideration, we selected **ASIO** as our network library of choice. This document explains the reasons behind this decision and outlines the challenges we faced with built-in functions and other options.

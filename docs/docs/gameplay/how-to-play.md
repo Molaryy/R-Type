@@ -2,30 +2,29 @@
 sidebar_position: 1
 ---
 
-# Deploy your site
+# The gameplay!
 
-Docusaurus is a **static-site-generator** (also called **[Jamstack](https://jamstack.org/)**).
+## Welcome to the mene :)
 
-It builds your site as simple **static HTML, JavaScript and CSS files**.
+An explanation of the menu:
 
-## Build your site
+- **New Game**: Create a new game
+- **Leaderboard**: You will find the game leaderboard, this means you can play with your games and have different games.
+- **Settings**: Settings to configure your game
+- **Credits**: The contributors credits
+- **Quit**: Take a pause and quit the game to restart next day :)
 
-Build your site **for production**:
 
-```bash
-npm run build
-```
+![menu](./assets/menu.png)
 
-The static files are generated in the `build` folder.
 
-## Deploy your site
+## The gameplay
 
-Test your production build locally:
+Here you will find the `Score` & the `Health` of the actual player. And also the asteroids, the numbers in them represent how many hits you need to destroy them.
 
-```bash
-npm run serve
-```
+And you also have the boss.
 
-The `build` folder is now served at [http://localhost:3000/](http://localhost:3000/).
+![game](./assets/game.png)
 
-You can now deploy the `build` folder **almost anywhere** easily, **for free** or very small cost (read the **[Deployment Guide](https://docusaurus.io/docs/deployment)**).
+## Be ready to die, it's really difficult
+![game_over](./assets/game_over.png)
