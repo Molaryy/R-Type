@@ -111,33 +111,31 @@ void Network::readFromClient(const std::shared_ptr<Client>& client)
 
             if (interaction.getCreateGame() == 1) {
                 auto newGameLobby = createGame();
-                interaction.setGameID(newGameLobby->getGameID());
+                newGameLobby->addInteraction(interaction);
+                client->setGame(newGameLobby.get());
+                newGameLobby->addClient(client);
                 writeToClient(client, "Lobby " + std::to_string(newGameLobby->getGameID()) + " created !");
             } else if (interaction.getGameID() != -1) {
-                auto it = std::find_if(games_.begin(), games_.end(), [&](const auto &game) {
-                    return game->getGameID() == interaction.getGameID();
-                });
+                auto game = getGame(interaction.getGameID());
 
-                if (it != games_.end()) {
-                    (*it)->addInteraction(interaction);
-                    writeToClient(client, "Joined Lobby " + std::to_string(interaction.getGameID()));
+                if (game) {
+                    game->addInteraction(interaction);
+                    client->setGame(game.get());
+                    game->addClient(client);
+                    writeToClient(client, "Joined lobby " + std::to_string(interaction.getGameID()));
                 } else {
                     writeToClient(client, "Lobby not found !");
                 }
-            } else {
-                for (auto &game : games_)
-                {
-                    if (game->getGameID() == interaction.getGameID())
-                    {
-                        game->addInteraction(interaction);
-                        break;
-                    }
-                }
+            }
+            if (client->getGame()) {
+                client->getGame()->addInteraction(interaction);
             }
             readFromClient(client);
         } else {
             std::cerr << "Client disconnected: " << client->getName() << std::endl;
-            // std::erase(clients_, client);
+            if (client->getGame()) {
+                client->getGame()->removeClient(client);
+            }
         }
     });
 }

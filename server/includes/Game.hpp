@@ -16,6 +16,8 @@
 #include "Components.hh"
 #include "Systems.hh"
 
+class Client;
+
 #define TICK_SPEED 30
 
 class Interaction : public AInteraction
@@ -103,6 +105,17 @@ class Game {
             return *this;
         }
         registry &getRegistry() { return reg_; }
+        void addClient(const std::shared_ptr<Client> &client) {
+            clients_.push_back(client);
+        }
+        void removeClient(const std::shared_ptr<Client> &client) {
+            clients_.erase(std::remove(clients_.begin(), clients_.end(), client), clients_.end());
+        }
+
+        const std::vector<std::shared_ptr<Client>> &getClients() const {
+            return clients_;
+        }
+        std::string serializeGameState() const;
 
     private:
         int tickSpeed_ = TICK_SPEED;
@@ -115,10 +128,5 @@ class Game {
         std::vector<std::string> functionsClient_;
         registry reg_;
         Systems systems_;
+        std::vector<std::shared_ptr<Client>> clients_;
 };
-
-// std::ostream &operator<<(std::ostream &os, const entity_id &eid)
-// {
-    // os << static_cast<unsigned long long>(eid);
-    // return os;
-// }

@@ -6,7 +6,9 @@
 */
 
 #include "Game.hpp"
+#include "Network.hpp"
 #include <iostream>
+#include <asio.hpp>
 #include <thread>
 #include <chrono>
 
@@ -55,18 +57,13 @@ void Game::run() {
                 reg_.add_component(entity, Controllable_t{200.0f});
             } else if (interaction.getQuit() == 1) {
                 std::cout << "Player disconnected: " << interaction.getClientID() << std::endl;
-            } else if (interaction.getMovement() != -1) {
-                std::cout << "Player " << interaction.getClientID()
-                    << " moved to position " << interaction.getMovement() << std::endl;
-                auto &velocities = reg_.get_components<Velocity_t>();
-                if (interaction.getClientID() < velocities.size() && velocities[interaction.getClientID()].has_value()) {
-                    auto &vel = velocities.get_at<Velocity_t>(interaction.getClientID());
-                    vel.x = interaction.getMovement();
-                    vel.y = interaction.getMovement();
-                }
             }
         }
 
+        for (const auto &client : clients_) {
+            std::string message = serializeGameState();
+            client->getSocket().write_some(asio::buffer(message));
+        }
         tick_++;
     }
 }
@@ -80,4 +77,17 @@ void Game::addInteraction(const Interaction &interaction)
 {
     std::lock_guard<std::mutex> lock(_mutex);
     interactionClient_.push_back(interaction);
+}
+
+std::string Game::serializeGameState() const
+{
+    std::ostringstream stream;
+    auto &positions = reg_.get_components<Position_t>();
+    for (std::size_t i = 0; i < positions.size(); ++i) {
+        if (positions[i].has_value()) {
+            const auto &pos = std::any_cast<const Position_t &>(positions[i]);
+            stream << "Entity " << i << " position: (" << pos.x << ", " << pos.y << ")\n";
+        }
+    }
+    return stream.str();
 }

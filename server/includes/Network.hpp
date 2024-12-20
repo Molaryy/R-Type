@@ -24,10 +24,13 @@ class Client : public ANetwork
         const std::string &getName() const { return name_; }
         void setId(const int id) override { id_ = id; }
         int getId() const override { return id_; }
+        void setGame(Game *game) { game_ = game; }
+        Game *getGame() const { return game_; }
     private:
         asio::ip::tcp::socket socket_;
         const std::string name_;
         int id_;
+        Game *game_;
 };
 
 class Network
@@ -49,6 +52,7 @@ class Network
         void run();
         const std::vector<std::shared_ptr<Client>>& getClients() const { return clients_; }
         std::shared_ptr<Game> getGame(int gameId);
+        const std::vector<std::shared_ptr<Game>> &getGames() const { return games_; }
         void writeToClient(const std::shared_ptr<Client> &client, const std::string &message);
     private:
         unsigned int port_;
