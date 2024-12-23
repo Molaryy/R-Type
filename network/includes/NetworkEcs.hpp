@@ -64,6 +64,13 @@ class ANetwork: public INetwork
 class IInteraction
 {
     public:
+        enum InteractionType {
+            CREATE_GAME,
+            JOIN_GAME,
+            SEND_MOVEMENT,
+            NONE
+        };
+
         virtual ~IInteraction() = default;
         virtual void setInteraction(int mov, int shoot, int quit, int createGame) = 0;
         virtual int getMovement() const = 0;

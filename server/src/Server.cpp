@@ -32,10 +32,7 @@ void Server::gameLoop()
 
         for (const auto &game : network_.getGames()) {
             std::string gameState = game->serializeGameState();
-            // for (const auto &client : network_.getClients())
-            // {
-            //     network_.writeToClient(client, gameState);
-            // }
+            network_.broadcastToClients(gameState);
         }
     }
 }

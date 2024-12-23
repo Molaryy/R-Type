@@ -97,7 +97,7 @@ void Network::readFromClient(const std::shared_ptr<Client>& client)
     auto &socket = client->getSocket();
 
     std::cout << "Preparing to read from client: " << client->getName() << std::endl;
-    asio::async_read(socket, asio::buffer(*buffer), [this, client, buffer](std::error_code errorCode, std::size_t length)
+    socket.async_read_some(asio::buffer(*buffer), [this, client, buffer](std::error_code errorCode, std::size_t length)
     {
         std::cout << "Async read callback triggered!" << std::endl;
         if (!errorCode)
@@ -109,26 +109,58 @@ void Network::readFromClient(const std::shared_ptr<Client>& client)
 
             std::cout << "Deserialized Interaction: CreateGame=" << interaction.getCreateGame() << ", GameID=" << interaction.getGameID() << std::endl;
 
-            if (interaction.getCreateGame() == 1) {
-                auto newGameLobby = createGame();
-                newGameLobby->addInteraction(interaction);
-                client->setGame(newGameLobby.get());
-                newGameLobby->addClient(client);
-                writeToClient(client, "Lobby " + std::to_string(newGameLobby->getGameID()) + " created !");
-            } else if (interaction.getGameID() != -1) {
-                auto game = getGame(interaction.getGameID());
+            // if (interaction.getCreateGame() == 1 && interaction.getGameID() == -1) {
+            //     auto newGameLobby = createGame();
+            //     newGameLobby->addInteraction(interaction);
+            //     client->setGame(newGameLobby.get());
+            //     newGameLobby->addClient(client);
+            //     writeToClient(client, "Lobby " + std::to_string(newGameLobby->getGameID()) + " created !");
+            // } else if (interaction.getGameID() != -1) {
+            //     auto game = getGame(interaction.getGameID());
 
-                if (game) {
-                    game->addInteraction(interaction);
-                    client->setGame(game.get());
-                    game->addClient(client);
-                    writeToClient(client, "Joined lobby " + std::to_string(interaction.getGameID()));
-                } else {
-                    writeToClient(client, "Lobby not found !");
+            //     if (game) {
+            //         game->addInteraction(interaction);
+            //         client->setGame(game.get());
+            //         game->addClient(client);
+            //         writeToClient(client, "Joined lobby " + std::to_string(interaction.getGameID()));
+            //     } else {
+            //         writeToClient(client, "Lobby not found !");
+            //     }
+            // } else if (interaction.getMovementX() != 0.0f || interaction.getMovementY() != 0.0f) {
+            //     if (client->getGame()) {
+            //         client->getGame()->addInteraction(interaction);
+            //     }
+            // }
+            switch (interaction.getType())
+            {
+                case Interaction::CREATE_GAME: {
+                    auto newGameLobby = createGame();
+                    newGameLobby->addInteraction(interaction);
+                    client->setGame(newGameLobby.get());
+                    newGameLobby->addClient(client);
+                    writeToClient(client, "Lobby " + std::to_string(newGameLobby->getGameID()) + " created !");
+                    break;
                 }
-            }
-            if (client->getGame()) {
-                client->getGame()->addInteraction(interaction);
+                case Interaction::JOIN_GAME: {
+                    auto game = getGame(interaction.getGameID());
+                    if (game) {
+                        game->addInteraction(interaction);
+                        client->setGame(game.get());
+                        game->addClient(client);
+                        writeToClient(client, "Joined lobby " + std::to_string(interaction.getGameID()));
+                    } else {
+                        writeToClient(client, "Lobby not found !");
+                    }
+                    break;
+                }
+                case Interaction::SEND_MOVEMENT: {
+                    if (client->getGame()) {
+                        client->getGame()->addInteraction(interaction);
+                    }
+                    break;
+                }
+                default:
+                    std::cerr << "Unknown interaction type received!" << std::endl;
             }
             readFromClient(client);
         } else {

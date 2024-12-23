@@ -54,6 +54,19 @@ class Network
         std::shared_ptr<Game> getGame(int gameId);
         const std::vector<std::shared_ptr<Game>> &getGames() const { return games_; }
         void writeToClient(const std::shared_ptr<Client> &client, const std::string &message);
+
+        void broadcastToClients(const std::string &message)
+        {
+            for (auto it = clients_.begin(); it != clients_.end();) {
+                try {
+                    // writeToClient(*it, message);
+                    ++it;
+                } catch (const std::system_error &e) {
+                    it = clients_.erase(it);
+                }
+            }
+        }
+
     private:
         unsigned int port_;
         unsigned int maxClients_;

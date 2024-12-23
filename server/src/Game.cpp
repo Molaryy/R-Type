@@ -47,16 +47,35 @@ void Game::run() {
             interactionClient_.clear();
         }
 
-        for (const auto &interaction : localInteractions)
-        {
-            if (interaction.getConnect() == 1) {
-                std::cout << "Player connected: " << interaction.getClientID() << std::endl;
-                auto entity = reg_.spawn_entity();
-                reg_.add_component(entity, Position_t{50.0f, 50.0f});
-                reg_.add_component(entity, Velocity_t{0.0f, 0.0f});
-                reg_.add_component(entity, Controllable_t{200.0f});
-            } else if (interaction.getQuit() == 1) {
-                std::cout << "Player disconnected: " << interaction.getClientID() << std::endl;
+        // for (const auto &interaction : localInteractions)
+        // {
+        //     if (interaction.getConnect() == 1) {
+        //         std::cout << "Player connected: " << interaction.getClientID() << std::endl;
+        //         auto entity = reg_.spawn_entity();
+        //         reg_.add_component(entity, Position_t{50.0f, 50.0f});
+        //         reg_.add_component(entity, Velocity_t{0.0f, 0.0f});
+        //         reg_.add_component(entity, Controllable_t{200.0f});
+        //     } else if (interaction.getQuit() == 1) {
+        //         std::cout << "Player disconnected: " << interaction.getClientID() << std::endl;
+        //     } else if (interaction.getMovementX() != 0.0f || interaction.getMovementY() != 0.0f) {
+        //         auto entity = reg_.entity_from_id(interaction.getClientID());
+        //         auto &velocities = reg_.get_components<Velocity_t>();
+
+        //         if (entity < velocities.size() && velocities[entity].has_value()) {
+        //             auto &velocity = std::any_cast<Velocity_t &>(velocities[entity]);
+        //             velocity.x = interaction.getMovementX();
+        //             velocity.y = interaction.getMovementY();
+        //         }
+        //     }
+        // }
+
+        for (const auto &interaction : localInteractions) {
+            if (interaction.getType() == Interaction::SEND_MOVEMENT) {
+                processPlayerMovement(interaction);
+            } else if (interaction.getType() == Interaction::CREATE_GAME) {
+                std::cout << "Player requested game creation: " << interaction.getClientID() << std::endl;
+            } else if (interaction.getType() == Interaction::JOIN_GAME) {
+                std::cout << "Player joined the game: " << interaction.getClientID() << std::endl;
             }
         }
 
@@ -65,6 +84,21 @@ void Game::run() {
             client->getSocket().write_some(asio::buffer(message));
         }
         tick_++;
+    }
+}
+
+void Game::processPlayerMovement(const Interaction &interaction) {
+    auto &velocities = reg_.get_components<Velocity_t>();
+
+    if (interaction.getClientID() < velocities.size() && velocities[interaction.getClientID()].has_value()) {
+        auto &velocity = std::any_cast<Velocity_t &>(velocities[interaction.getClientID()]);
+        velocity.x = interaction.getMovementX();
+        velocity.y = interaction.getMovementY();
+
+        std::cout << "Player " << interaction.getClientID() << " moved to velocity ("
+                  << velocity.x << ", " << velocity.y << ")" << std::endl;
+    } else {
+        std::cerr << "Invalid entity or missing velocity for client: " << interaction.getClientID() << std::endl;
     }
 }
 
