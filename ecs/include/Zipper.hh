@@ -20,7 +20,7 @@ class zipper_iterator
     using it_reference_t = typename iterator_t<Container>::reference;
 
 public:
-    using value_type = std::tuple<typename it_reference_t<Containers>::value()...>;
+    using value_type = std::tuple<it_reference_t<Containers>...>;
     using reference = value_type;
     using pointer = void;
     using difference_type = std::size_t;
@@ -32,13 +32,18 @@ public:
     zipper_iterator(zipper_iterator const &z);
 
     zipper_iterator operator++();
-    zipper_iterator &operator++(int) { return operator++(); }
+    zipper_iterator operator++(int)
+    {
+        zipper_iterator temp = *this;
+        ++(*this);
+        return temp;
+    }
 
     value_type operator*() { return to_value(seq_); }
     value_type operator->() { return to_value(seq_); }
 
-    friend bool operator==(zipper_iterator const &lhs, zipper_iterator const &rhs);
-    friend bool operator!=(zipper_iterator const &lhs, zipper_iterator const &rhs);
+    friend bool operator==<>(zipper_iterator const &lhs, zipper_iterator const &rhs);
+    friend bool operator!=<>(zipper_iterator const &lhs, zipper_iterator const &rhs);
 
 private:
     // extract from tuple and increment each element 💀

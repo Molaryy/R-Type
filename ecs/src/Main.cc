@@ -6,6 +6,7 @@
 */
 
 #include "SparseArray.hh"
+#include "Zipper.hh"
 
 #include <iostream> // std::cout
 #include <any> // std::any
@@ -48,6 +49,14 @@ int main()
 {
     sparse_array<std::string> array;
     array.insert_at(0, "mdr je suis une str");
-    print_any(array[0]);
+
+    zipper_iterator<sparse_array<std::string>> zipper_begin(std::make_tuple(array.begin()), array.size());
+    zipper_iterator<sparse_array<std::string>> zipper_end(std::make_tuple(array.end()), array.size());
+    std::cout << array.size() << std::endl;
+    for (auto it = zipper_begin; it != zipper_end; ++it)
+    {
+        std::cout << "mdr" << std::endl;
+        print_any(*it);
+    }
     return 0;
 }
