@@ -11,13 +11,14 @@
 #include <memory> // std::allocator
 #include <any> // std::any
 #include <algorithm> // std::find
+#include <optional> //std::optional
 
 //! Primary template any T
-template <typename T = std::any, class Allocator = std::allocator<T>>
+template <typename T, class Allocator = std::allocator<std::optional<T>>>
 class sparse_array
 {
     public:
-        using value_type = T;
+        using value_type = std::optional<T>;
         using reference_type = value_type &;
         using const_reference_type = value_type const &;
         using container_t = std::vector<value_type, Allocator>;

@@ -11,7 +11,20 @@
 #include <any> // std::any
 #include <typeinfo> // typeid
 
-void print_any(const std::any& a)
+template<typename T>
+void print_any(const std::optional<T> &a)
+{
+    if (a.has_value())
+    {
+        std::cout << a.value() << std::endl;
+    }
+    else
+    {
+        std::cout << "No value" << std::endl;
+    }
+}
+
+void print_any(const std::any &a)
 {
     if (a.type() == typeid(int))
     {
@@ -33,8 +46,8 @@ void print_any(const std::any& a)
 
 int main()
 {
-    sparse_array<int> array;
-    array.insert_at(0, 42);
+    sparse_array<std::string> array;
+    array.insert_at(0, "mdr je suis une str");
     print_any(array[0]);
     return 0;
 }
