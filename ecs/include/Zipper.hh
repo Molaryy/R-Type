@@ -42,8 +42,11 @@ public:
     value_type operator*() { return to_value(seq_); }
     value_type operator->() { return to_value(seq_); }
 
-    friend bool operator==<>(zipper_iterator const &lhs, zipper_iterator const &rhs);
-    friend bool operator!=<>(zipper_iterator const &lhs, zipper_iterator const &rhs);
+    template <class... C>
+    friend bool operator==(zipper_iterator<C...> const &lhs, zipper_iterator<C...> const &rhs);
+
+    template <class... C>
+    friend bool operator!=(zipper_iterator<C...> const &lhs, zipper_iterator<C...> const &rhs);
 
 private:
     // extract from tuple and increment each element 💀

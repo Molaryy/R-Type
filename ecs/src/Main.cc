@@ -47,16 +47,18 @@ void print_any(const std::any &a)
 
 int main()
 {
-    sparse_array<std::string> array;
-    array.insert_at(0, "mdr je suis une str");
+    sparse_array array;
+    array.insert_at(0, 42);
 
-    zipper_iterator<sparse_array<std::string>> zipper_begin(std::make_tuple(array.begin()), array.size());
-    zipper_iterator<sparse_array<std::string>> zipper_end(std::make_tuple(array.end()), array.size());
+    sparse_array<std::string> array2;
+    array2.insert_at(0, "Hello");
+
+    sparse_array<std::any> array3;
+
+    array3.insert_at(0, 42);
+
     std::cout << array.size() << std::endl;
-    for (auto it = zipper_begin; it != zipper_end; ++it)
-    {
-        std::cout << "mdr" << std::endl;
-        print_any(*it);
-    }
-    return 0;
+    std::cout << array2.size() << std::endl;
+    std::cout << array3.size() << std::endl;
+
 }

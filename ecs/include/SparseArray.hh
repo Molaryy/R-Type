@@ -14,7 +14,7 @@
 #include <optional>  //std::optional
 
 //! Primary template any T
-template <typename T, class Allocator = std::allocator<std::optional<T>>>
+template <typename T = std::any, class Allocator = std::allocator<std::optional<T>>>
 class sparse_array
 {
 public:
@@ -141,14 +141,14 @@ private:
 };
 
 //! Partial specialization for std::any
-template <class Allocator>
-class sparse_array<std::any, Allocator>
+template <>
+class sparse_array<std::any, std::allocator<std::any>>
 {
 public:
     using value_type = std::any;
     using reference_type = value_type &;
     using const_reference_type = value_type const &;
-    using container_t = std::vector<value_type, Allocator>;
+    using container_t = std::vector<value_type>;
     using size_type = typename container_t::size_type;
     using iterator = typename container_t::iterator;
     using const_iterator = typename container_t::const_iterator;
@@ -241,7 +241,8 @@ public:
      */
     size_type get_index(value_type const &value) const noexcept
     {
-        auto iter = std::find(data_.begin(), data_.end(), value);
+        auto iter = std::find_if(data_.begin(), data_.end(), [&value](value_type const &val)
+                                 { return value.type() == val.type(); });
         if (iter == data_.end())
             return data_.size();
         return static_cast<size_type>(std::distance(data_.begin(), iter));
