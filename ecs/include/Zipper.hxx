@@ -32,7 +32,7 @@ zipper_iterator<Containers...> zipper_iterator<Containers...>::operator++()
 template <class... Containers>
 bool operator==(zipper_iterator<Containers...> const &lhs, zipper_iterator<Containers...> const &rhs)
 {
-    return lhs.index_ == rhs.index_;
+    return (lhs.current_ == rhs.current_);
 }
 
 template <class... Containers>

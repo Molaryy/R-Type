@@ -12,18 +12,18 @@
 #include <any> // std::any
 #include <typeinfo> // typeid
 
-template<typename T>
-void print_any(const std::optional<T> &a)
-{
-    if (a.has_value())
-    {
-        std::cout << a.value() << std::endl;
-    }
-    else
-    {
-        std::cout << "No value" << std::endl;
-    }
-}
+// template<typename T>
+// void print_any(const std::optional<T> &a)
+// {
+    // if (a.has_value())
+    // {
+        // std::cout << a.value() << std::endl;
+    // }
+    // else
+    // {
+        // std::cout << "No value" << std::endl;
+    // }
+// }
 
 void print_any(const std::any &a)
 {
@@ -60,5 +60,13 @@ int main()
     std::cout << array.size() << std::endl;
     std::cout << array2.size() << std::endl;
     std::cout << array3.size() << std::endl;
+
+    zipper_iterator<decltype(array)> iter_begin(std::make_tuple(array.begin()), array.size());
+    zipper_iterator<decltype(array)> iter_end(std::make_tuple(array.end()), array.size());
+
+    for (auto it = iter_begin; it != iter_end; it++)
+    {
+        print_any(std::get<0>(*it));
+    }
 
 }
