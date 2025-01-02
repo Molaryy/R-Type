@@ -36,20 +36,17 @@
 
 .vscode
 
-build/_deps
-build/Cmake*
-build/cmake_install.cmake
-build/Makefile
-build/CPack*
+build/
+cmake-build-debug
 
 CMakeFiles
 cmake_install.cmake
 CMakeCache.txt
 Makefile
-r-type_server
 cpm-package-lock.cmake
 _deps/
 CPM_modules/
+
 
 r-type_server
 r-type_client

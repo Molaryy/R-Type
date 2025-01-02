@@ -19,7 +19,7 @@ class registry
         template <class Component>
         sparse_array<Component> &register_component()
         {
-            auto type = std::type_index(typeid(Component));
+            const auto type = std::type_index(typeid(Component));
             components_arrays_[type] = sparse_array<Component>();
             return std::any_cast<sparse_array<Component> &>(components_arrays_[type]);
         }
@@ -33,8 +33,8 @@ class registry
         template <class Component>
         sparse_array<Component> &get_components()
         {
-            auto type = std::type_index(typeid(Component));
-            if (components_arrays_.find(type) == components_arrays_.end()) {
+            const auto type = std::type_index(typeid(Component));
+            if (!components_arrays_.contains(type)) {
                 throw std::runtime_error("Component not registered");
             }
             return std::any_cast<sparse_array<Component> &>(components_arrays_.at(type));
@@ -49,8 +49,8 @@ class registry
         template <class Component>
         sparse_array<Component> const &get_components() const
         {
-            auto type = std::type_index(typeid(Component));
-            if (components_arrays_.find(type) == components_arrays_.end()) {
+            const auto type = std::type_index(typeid(Component));
+            if (!components_arrays_.contains(type)) {
                 throw std::runtime_error("Component not registered");
             }
             return std::any_cast<sparse_array<Component> const &>(components_arrays_.at(type));
@@ -63,7 +63,7 @@ class registry
          */
         entity_t spawn_entity()
         {
-            entity_t new_id = next_entity_id_++;
+            const entity_t new_id = next_entity_id_++;
             entities_container_[new_id] = new_id;
             return new_id;
         }
@@ -74,7 +74,7 @@ class registry
          * @param index
          * @return entity_t
          */
-        entity_t entity_from_id(std::size_t index)
+        entity_t entity_from_id(const std::size_t index)
         {
             return entities_container_[index];
         }
@@ -100,6 +100,9 @@ class registry
         template <typename Component>
         typename sparse_array<Component>::reference_type add_component(entity_t const &entity, Component &&component)
         {
+            if (!components_arrays_.contains(typeid(Component))) {
+                register_component<Component>();
+            }
             return get_components<Component>().insert_at(entity, std::forward<Component>(component));
         }
 

@@ -7,23 +7,16 @@
 
 #include <iostream>
 
-#include "Server.hpp"
 #include "Arguments.hpp"
+#include "Server.hpp"
 
-int main(int argc, char const *const *argv)
-{
-    Arguments args;
+int main(const int argc, char * const argv[]) {
+    try {
+        Arguments args;
+        args.getArguments(argc, argv);
 
-    args.getArguments(argc, argv);
-
-    try
-    {
-        asio::io_context io_context;
-        Server my_server(io_context, args.getPort(), args.getNbClients());
-        my_server.run();
-    }
-    catch (Arguments::ArgumentsException &e)
-    {
+        Server::createInstance(args.getPort(), args.getNbClients()).run();
+    } catch (Arguments::ArgumentsException &e) {
         std::cerr << e.what() << std::endl;
         return 84;
     }
