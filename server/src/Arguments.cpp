@@ -8,6 +8,7 @@
 #include "Arguments.hpp"
 
 #include <algorithm>
+#include <string>
 
 /**
  * @brief The help function when user specifies -h
@@ -44,7 +45,7 @@ std::optional<std::variant<std::size_t, std::string>> Arguments::getArgument(con
  * @param argc 
  * @param argv 
  */
-void Arguments::getArguments(int argc, char const *const *argv)
+void Arguments::getArguments([[maybe_unused]]int argc, char const *const *argv)
 {
     port_ = checkDefaultFlag(getArgument("-p", argv), port_);
     nbClients_ = checkDefaultFlag(getArgument("-c", argv), nbClients_);
