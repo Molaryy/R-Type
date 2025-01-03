@@ -9,10 +9,10 @@
 
 #include <dylib.hpp>
 
+#include "Entity.hh"
 #include "INetworkServer.hpp"
 #include "PacketHandler.hpp"
-#include "../../bootstrap/include/Entity.hh"
-#include "../../bootstrap/include/Registry.hh"
+#include "Registry.hh"
 
 class Server {
 public:
@@ -40,7 +40,7 @@ private:
 
     std::unique_ptr<Network::INetworkServer> networkLib_;
     Network::PacketHandler packetHandler_;
-    registry registry_;
+    Registry registry_;
     std::size_t maxClient_;
     std::unordered_map<uint16_t, entity_t> _players;
     bool gameStarted_ = false;

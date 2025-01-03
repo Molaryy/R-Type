@@ -19,7 +19,7 @@ class Systems
 public:
     Systems() = default;
     ~Systems() = default;
-    void MovementSystem(registry &reg, float t)
+    void MovementSystem(Registry &reg, float t)
     {
         auto &positions = reg.get_components<Position_t>();
         auto &velocities = reg.get_components<Velocity_t>();
@@ -37,7 +37,7 @@ public:
         // }
     }
 
-    void CollisionSystem(registry &reg)
+    void CollisionSystem(Registry &reg)
     {
         auto &position = reg.get_components<Position_t>();
         auto &collider = reg.get_components<Collision_t>();
@@ -67,7 +67,7 @@ public:
         // }
     }
 
-    // void RenderSystem(registry &reg, Renderer &renderer)
+    // void RenderSystem(Registry &reg, Renderer &renderer)
     // {
     //     auto &position = reg.get_components<Position_t>();
     //     auto &sprite = reg.get_components<Sprite_t>();
@@ -82,7 +82,7 @@ public:
     // }
 
     //! using raylib
-    void RenderSystem(registry &reg)
+    void RenderSystem(Registry &reg)
     {
         rtype::RayLib raylib;
 
@@ -107,7 +107,7 @@ public:
         raylib.endDrawing();
     }
 
-    // void PlayerInputSystem(registry &reg, Input &input)
+    // void PlayerInputSystem(Registry &reg, Input &input)
     // {
     // auto &controllable = reg.get_components<Controllable_t>();
     // auto &velocity = reg.get_components<Velocity_t>();
@@ -131,25 +131,4 @@ public:
     // }
     // }
     // }
-
-    void ProjectileSystem(registry &reg, float t)
-    {
-        auto &projectile = reg.get_components<Projectile_t>();
-        auto &positions = reg.get_components<Position_t>();
-
-        // for (std::size_t i = 0; i < projectile.size(); ++i)
-        // {
-        // if (positions[i].has_value() && projectile[i].has_value())
-        // {
-        // auto &position = std::any_cast<Position_t &>(positions[i]);
-        // auto &proj = std::any_cast<Projectile_t &>(projectile[i]);
-        //
-        // position.x += proj.speed * t;
-        // proj.lifetime -= t;
-        //
-        // if (proj.lifetime <= 0)
-        // reg.kill_entity(i);
-        // }
-        // }
-    }
 };

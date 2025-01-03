@@ -1,140 +1,144 @@
+/*
+** EPITECH PROJECT, 2024
+** ecs
+** File description:
+** registry.hpp
+*/
+
 #pragma once
 
-#include <unordered_map> // std::unordered_map
-#include <typeindex>     // std::type_index
-#include <any>           // std::any
-#include <stdexcept>     // std::runtime_error
+#include <any>
+#include <functional>
+#include <iostream>
+#include <ranges>
+#include <stdexcept>
+#include <typeindex>
+#include <unordered_map>
 
 #include "Entity.hh"
+#include "SparseArray.hh"
 
-class registry
-{
+
+class Registry {
 public:
-    /**
-     * @brief Construct a new registry object
-     *
-     * @tparam Component
-     * @return sparse_array<Component> &
-     */
     template <class Component>
-    sparse_array<Component> &register_component()
-    {
-        auto type = std::type_index(typeid(Component));
-        components_arrays_[type] = sparse_array<Component>();
-        return std::any_cast<sparse_array<Component> &>(components_arrays_[type]);
-    }
-
-    /**
-     * @brief Get the components object
-     *
-     * @tparam Component
-     * @return sparse_array<Component> &
-     */
-    template <class Component>
-    sparse_array<Component> &get_components()
-    {
-        auto type = std::type_index(typeid(Component));
-        if (components_arrays_.find(type) == components_arrays_.end())
-        {
-            throw std::runtime_error("Component not registered");
+    SparseArray<Component> &register_component() {
+        const std::type_index idx(typeid(Component));
+        if (!components_arrays_.contains(idx)) {
+            components_arrays_.emplace(idx, SparseArray<Component>());
         }
-        return std::any_cast<sparse_array<Component> &>(components_arrays_.at(type));
-    }
-
-    /**
-     * @brief Get the components object
-     *
-     * @tparam Component
-     * @return sparse_array<Component> const &
-     */
-    template <class Component>
-    sparse_array<Component> const &get_components() const
-    {
-        auto type = std::type_index(typeid(Component));
-        if (components_arrays_.find(type) == components_arrays_.end())
-        {
-            throw std::runtime_error("Component not registered");
+        if (!remove_functions_.contains(idx)) {
+            remove_functions_.emplace(idx, [](Registry &reg, entity_t const &ent) {
+                auto &array = reg.get_components<Component>();
+                array.erase(ent);
+            });
         }
-        return std::any_cast<sparse_array<Component> const &>(components_arrays_.at(type));
+        if (!loggers_.contains(idx)) {
+            loggers_.emplace(idx, [](Registry const &reg, entity_t const &ent) {
+                const auto &array = reg.get_components<Component>();
+                const std::optional<Component> &comp = array[ent];
+                if (comp.has_value())
+                    comp.value().log();
+                return comp.has_value();
+            });
+        }
+        return std::any_cast<SparseArray<Component> &>(components_arrays_[idx]);
     }
 
-    /**
-     * @brief Spawn a new entity
-     *
-     * @return entity_t
-     * @return entity_t
-     */
-    entity_t spawn_entity()
-    {
-        entity_t new_id = next_entity_id_++;
-        entities_container_[new_id] = new_id;
-        return new_id;
+
+    template <class Component>
+    SparseArray<Component> &get_components() {
+        const std::type_index idx(typeid(Component));
+        if (!components_arrays_.contains(idx))
+            register_component<Component>();
+        std::any &components = components_arrays_[idx];
+        return std::any_cast<SparseArray<Component> &>(components);
     }
 
-    /**
-     * @brief Get the entity from id object
-     *
-     * @param index Entity id
-     * @return entity_t
-     */
-    entity_t entity_from_id(std::size_t index)
-    {
-        return entities_container_[index];
+    template <class Component>
+    SparseArray<Component> const &get_components() const {
+        const std::type_index idx(typeid(Component));
+        if (!components_arrays_.contains(idx))
+            throw std::runtime_error("Component array not registered");
+        const std::any &components = components_arrays_.find(idx)->second;
+        return std::any_cast<const SparseArray<Component> &>(components);
     }
 
-    /**
-     * @brief Kill an entity
-     *
-     * @param id Entity id
-     * @return void
-     */
-    void kill_entity(entity_id const &id)
-    {
-        entities_container_.erase(id);
+    [[nodiscard]] entity_t spawn_entity() {
+        if (!dead_entities_.empty()) {
+            const entity_t entity = dead_entities_.back();
+            dead_entities_.pop_back();
+            return entity;
+        }
+        next_entity += 1;
+        return next_entity - 1;
     }
 
-    /**
-     * @brief Add a component to an entity
-     *
-     * @tparam Component
-     * @param entity Entity id
-     * @param component Component to add
-     * @return typename sparse_array<Component>::reference_type
-     */
+    entity_t entity_from_index(std::size_t idx);
+
+    void kill_entity(entity_t const &e);
+
     template <typename Component>
-    typename sparse_array<Component>::reference_type add_component(entity_t const &entity, Component &&component)
-    {
-        return get_components<Component>().insert_at(entity, std::forward<Component>(component));
+    typename SparseArray<Component>::reference_type add_component(entity_t const &to, Component &&c) {
+        if (!components_arrays_.contains(typeid(Component)))
+            register_component<Component>();
+        return get_components<Component>().insert_at(to, c);
     }
 
-    /**
-     * @brief Get the component object
-     *
-     * @tparam Component
-     * @param entity Entity id
-     * @return typename sparse_array<Component>::reference_type
-     */
     template <typename Component, typename... Params>
-    typename sparse_array<Component>::reference_type emplace_component(entity_t const &entity, Params &&...params)
-    {
-        return get_components<Component>().emplace_at(entity, std::forward<Params>(params)...);
+    typename SparseArray<Component>::reference_type emplace_component(entity_t const &to, Params &&... p) {
+        if (!components_arrays_.contains(typeid(Component)))
+            register_component<Component>();
+        return get_components<Component>().emplace_at(to, std::forward<Params>(p)...);
     }
 
-    /**
-     * @brief Get the component object
-     *
-     * @tparam Component
-     * @param entity Entity id
-     * @return typename sparse_array<Component>::reference_type
-     */
     template <typename Component>
-    void remove_component(entity_t const &entity)
-    {
-        get_components<Component>().erase(entity);
+    void remove_component(entity_t const &from) {
+        const std::type_index idx(typeid(Component));
+        if (!components_arrays_.contains(idx))
+            register_component<Component>();
+        if (remove_functions_.contains(idx))
+            remove_functions_[idx](*this, from);
+    }
+
+    template <typename Function>
+    void add_system(Function &&f) {
+        systems_.push_back([f = std::forward<Function>(f)](Registry &reg) {
+            f(reg);
+        });
+    }
+
+    void remove_system(const std::size_t idx) {
+        if (idx >= systems_.size())
+            return;
+        systems_.erase(systems_.begin() + static_cast<long>(idx));
+    }
+
+    void clear_systems() {
+        systems_.clear();
+    }
+
+
+    void run_systems() {
+        for (std::function<void(Registry &)> &system : systems_)
+            system(*this);
+    }
+
+
+    void log(const entity_t &entity) const {
+        for (const auto &logger : std::views::values(loggers_)) {
+            if (logger(*this, entity))
+                std::cout << ", ";
+        }
     }
 
 private:
-    entity_id next_entity_id_ = 0;
-    std::unordered_map<entity_id, entity_t> entities_container_;
     std::unordered_map<std::type_index, std::any> components_arrays_;
+
+    std::unordered_map<std::type_index, std::function<void(Registry &, entity_t const &)>> remove_functions_;
+    std::unordered_map<std::type_index, std::function<bool(const Registry &, const entity_t &)>> loggers_;
+    std::vector<std::function<void(Registry &)>> systems_;
+
+    std::vector<entity_t> dead_entities_;
+    std::size_t next_entity{0};
 };

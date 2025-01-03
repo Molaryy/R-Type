@@ -2,22 +2,21 @@
 ** EPITECH PROJECT, 2024
 ** ecs
 ** File description:
-** Zipper.hpp
+** IndexedZipper.hpp
 */
 
 #pragma once
 
 #include <algorithm>
 
-#include "ZipperIterator.hh"
+#include "IndexedZipperIterator.hh"
 
 template<class... Containers>
-class Zipper {
+class IndexedZipper {
 public :
-    using iterator = ZipperIterator<Containers...>;
+    using iterator = IndexedZipperIterator<Containers...>;
     using iterator_tuple = typename iterator::iterator_tuple;
-
-    explicit Zipper(Containers &... cs)
+    explicit IndexedZipper(Containers &... cs)
         : _begin(std::make_tuple(cs.begin()...)),
           _end(std::make_tuple(cs.end()...)),
           _size((std::min)({static_cast<std::size_t>(cs.size())...})) {
@@ -28,9 +27,9 @@ public :
     }
 
     iterator end() {
-        auto zipper_iterator = iterator(_end, _end, _size);
-        zipper_iterator._idx = _size;
-        return zipper_iterator;
+      auto zipper_iterator = iterator(_end, _end, _size);
+      zipper_iterator._idx = _size;
+      return zipper_iterator;
     }
 
 private :

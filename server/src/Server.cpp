@@ -43,17 +43,17 @@ Network::INetworkServer &Server::getNetwork() const {
 
 void Server::run() {
     std::cout << "Starting server..." << std::endl;
-    //    gameThread_ = std::thread(&Server::gameLoop, this);
     networkLib_->host(port_);
 
     initPacketHandling();
     gameLoop();
+    registry_.add_system(Systems::networkReceiver);
 }
 
 
 void Server::gameLoop() {
     while (true) {
-        Systems::networkReceiver(registry_);
+        registry_.run_systems();
     }
 }
 

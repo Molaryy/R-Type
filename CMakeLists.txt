@@ -20,7 +20,6 @@ add_subdirectory(cmake)
 add_subdirectory(network)
 add_subdirectory(server)
 # add_subdirectory(client)
-add_subdirectory(bootstrap)
 
 add_custom_target(clean_server
     COMMAND ${CMAKE_COMMAND} -E remove $<TARGET_FILE:r-type_server>
