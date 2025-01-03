@@ -1,10 +1,4 @@
-project(Network)
+cmake_minimum_required(VERSION 3.27)
 
-file(GLOB NETWORK_SOURCES
-    "src/NetworkEcs.cpp"
-)
-
-add_library(NetworkLib STATIC ${NETWORK_SOURCES})
-
-list(APPEND NETWORK_LIB_INCLUDES "includes")
-target_include_directories(NetworkLib PUBLIC ${NETWORK_LIB_INCLUDES})
+add_subdirectory(asio_network)
+add_subdirectory(packet_network)

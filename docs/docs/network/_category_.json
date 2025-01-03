@@ -1,6 +1,6 @@
 {
   "label": "Network",
-  "position": 4,
+  "position": 2,
   "link": {
     "type": "generated-index",
     "description": "An introduction of our R-Type network and how to integrate your own client!"

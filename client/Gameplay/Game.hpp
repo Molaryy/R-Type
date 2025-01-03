@@ -14,6 +14,24 @@ struct Asteroid {
     Vector2 position;
     int hitsRemaining;
     bool active;
+    float animationTimer;
+    int currentFrame;
+};
+
+struct Player {
+    bool isPlayer;
+    // Game state
+    bool gameOver;
+    int score;
+    // Player variables
+    Vector2 playerPosition;
+    float playerSpeed;
+    int playerHealth;
+    Texture2D playerSpriteSheet;
+    Rectangle playerFrameRec;
+    int currentFrame;
+    float animationTimer;
+    float animationSpeed;
 };
 
 class Game {
@@ -22,7 +40,13 @@ public:
     void run(rtype::RayLib &rl);
 
 private:
+    Texture2D backgroundTexture;
+    float backgroundPosX1;
+    float backgroundPosX2;
+    float backgroundSpeed = 100.0f;
+
     void handleInput(rtype::RayLib &rl);
+    void updateBackground();
     void updateAnimations();
     void updateExplosion();
     void updateMissiles();
@@ -73,6 +97,8 @@ private:
     std::vector<Asteroid> asteroids;
     float asteroidSpawnTimer;
     float asteroidSpawnInterval;
+    Texture2D asteroidSpriteSheet;
+    Rectangle asteroidFrameRec;
 
     // Game state
     bool gameOver;

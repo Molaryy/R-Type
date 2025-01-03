@@ -1,21 +1,25 @@
 cmake_minimum_required(VERSION 3.27.4)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
+
+if (WIN32)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR})
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR})
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR})
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR})
+else ()
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
+endif ()
 
 project(R-Type)
 
-set(CMAKE_CXX_STANDARD 23)
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
-
 include(cmake/CPM.cmake)
-set(ASIO_TAG "1.32.0")
-CPMAddPackage("gh:chriskohlhoff/asio#asio-1-32-0@${ASIO_TAG}")
 
+add_subdirectory(cmake)
 add_subdirectory(network)
 add_subdirectory(server)
-add_subdirectory(test_client)
+# add_subdirectory(client)
 add_subdirectory(bootstrap)
 
 add_custom_target(clean_server

@@ -43,23 +43,23 @@ void print_sparse_array(const sparse_array<> &entities)
     }
 }
 
-int main()
-{
-    sparse_array<> entities;
-    rtype::RayLib rl;
+// int main()
+// {
+//     sparse_array<> entities;
+//     rtype::RayLib rl;
 
-    auto factory_entities = [](sparse_array<> &entities, int id, std::any value)
-    {
-        entities.insert_at(id, value);
-    };
+//     auto factory_entities = [](sparse_array<> &entities, int id, std::any value)
+//     {
+//         entities.insert_at(id, value);
+//     };
 
-    factory_entities(entities, 0, 42);
-    print_sparse_array(entities);
-    print_any(entities[0]);
+//     factory_entities(entities, 0, 42);
+//     print_sparse_array(entities);
+//     print_any(entities[0]);
 
-    Menu menu(rl);
-    menu.run(rl);
-}
+//     Menu menu(rl);
+//     menu.run(rl);
+// }
 
 
 // int main() {
@@ -77,3 +77,11 @@ int main()
 //     }
 //     return 0;
 // }
+
+int main()
+{
+    rtype::RayLib rl;
+
+    Menu menu(rl);
+    menu.run(rl);
+}

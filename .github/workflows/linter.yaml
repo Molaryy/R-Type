@@ -23,5 +23,5 @@ jobs:
         clang-tidy \
           --fix \
           --fix-errors \
-          $(find . -name '*.cpp' ! \( -path './asio/*' -o -path './build/*' \)) \
-          -- -iquote./include
+          $(find . -name '*.cpp' ! \( -path './asio/*' -o -path './build/*' -o -path './cmake-build-debug/*' \)) \
+          -- -iquote./includes

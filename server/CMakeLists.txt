@@ -1,26 +1,36 @@
-project(server)
+cmake_minimum_required(VERSION 3.27)
 
-file(GLOB SOURCES
-    "src/Arguments.cpp"
-    "src/Game.cpp"
-    "src/Network.cpp"
-    "src/Server.cpp"
-    "main.cpp"
+project(r-type_server)
+
+set(CMAKE_CXX_STANDARD 23)
+
+add_executable(${PROJECT_NAME}
+        src/Arguments.cpp
+#        src/Game.cpp
+        src/Server.cpp
+        main.cpp
 )
 
-add_executable(r-type_server ${SOURCES})
-
-list(APPEND SERVER_EXTRA_INCLUDES "includes")
-target_include_directories(r-type_server PUBLIC ${SERVER_EXTRA_INCLUDES} ${asio_SOURCE_DIR}/asio/include)
-
-target_compile_options(r-type_server PRIVATE -Wall -Wextra -std=c++23 -g3)
-
-target_link_libraries(r-type_server PRIVATE NetworkLib)
-target_link_libraries(r-type_server PRIVATE EcsLib)
-
-link_directories(${CMAKE_CURRENT_SOURCE_DIR}/network)
-link_directories(${CMAKE_CURRENT_SOURCE_DIR}/bootstrap)
-
-add_custom_command(TARGET r-type_server POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:r-type_server> ${CMAKE_SOURCE_DIR}
+target_include_directories(${PROJECT_NAME}
+        PRIVATE includes/
+        PRIVATE ${CMAKE_SOURCE_DIR}/network/packet_network
+        PRIVATE ${CMAKE_SOURCE_DIR}/network/includes
+        PRIVATE ${CMAKE_SOURCE_DIR}/includes
 )
+
+target_link_libraries(${PROJECT_NAME}
+        PRIVATE PacketNetwork
+        PRIVATE dylib
+)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ${CMAKE_SOURCE_DIR}
+)
+
+if (WIN32)
+    target_compile_options(${PROJECT_NAME} PRIVATE /W4)
+elseif (UNIX OR APPLE)
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
+else ()
+    message(FATAL_ERROR "Only support window and unix")
+endif ()

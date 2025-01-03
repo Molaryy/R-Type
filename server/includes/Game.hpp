@@ -16,19 +16,28 @@
 #include "Components.hh"
 #include "Systems.hh"
 
+class Client;
+
 #define TICK_SPEED 30
 
 class Interaction : public AInteraction
 {
     public:
-        Interaction() : _clientID(-1), _connect(-1), _gameID(-1) {}
+
+        Interaction() : clientID_(-1), _connect(-1), gameID_(-1) {}
         ~Interaction() = default;
-        int getClientID() const { return _clientID; }
-        void setClientID(const int clientID) { _clientID = clientID; }
+        int getClientID() const { return clientID_; }
+        void setClientID(const int clientID) { clientID_ = clientID; }
         int getConnect() const { return _connect; }
         void setConnect(const int connect) { _connect = connect; }
-        int getGameID() const { return _gameID; }
-        void setGameID(const int gameID) { _gameID = gameID; }
+        int getGameID() const { return gameID_; }
+        void setGameID(const int gameID) { gameID_ = gameID; }
+        InteractionType getType() const { return type_; }
+        void setType(const InteractionType type) { type_ = type; }
+        std::pair<float, float> getMovements() const { return movement_; }
+        float getMovementX() const { return movement_.first; }
+        float getMovementY() const { return movement_.second; }
+        void setMovement(float x, float y) { movement_ = {x, y}; }
 
         /**
          * @brief deserialize the interaction from a vector of char
@@ -41,8 +50,15 @@ class Interaction : public AInteraction
                 std::memcpy(&value, &(*iter), sizeof(value));
                 iter += sizeof(value);
             };
-            extractFromData(createGame_);
-            extractFromData(_gameID);
+            extractFromData(clientID_);
+            extractFromData(type_);
+            if (type_ == CREATE_GAME || type_ == JOIN_GAME)
+            // extractFromData(createGame_);
+                extractFromData(gameID_);
+            else if (type_ == SEND_MOVEMENT) {
+                extractFromData(movement_.first);
+                extractFromData(movement_.second);
+            }
         }
 
 
@@ -58,18 +74,23 @@ class Interaction : public AInteraction
             {
                 data.insert(data.end(), reinterpret_cast<const char *>(&value), reinterpret_cast<const char *>(&value) + sizeof(value));
             };
-            appendToData(_clientID);
-            appendToData(_connect);
-            appendToData(_gameID);
-            appendToData(_movement);
-            appendToData(_quit);
-            appendToData(createGame_);
+            appendToData(clientID_);
+            appendToData(type_);
+            if (type_ == CREATE_GAME || type_ == JOIN_GAME)
+            // appendToData(createGame_);
+                appendToData(gameID_);
+            else if (type_ == SEND_MOVEMENT) {
+                appendToData(movement_.first);
+                appendToData(movement_.second);
+            }
             return data;
         }
     private:
-        int _clientID;
+        int clientID_;
         int _connect;
-        int _gameID;
+        int gameID_;
+        InteractionType type_;
+        std::pair<float, float> movement_;
 };
 
 // struct Entity {
@@ -103,6 +124,18 @@ class Game {
             return *this;
         }
         registry &getRegistry() { return reg_; }
+        void addClient(const std::shared_ptr<Client> &client) {
+            clients_.push_back(client);
+        }
+        void removeClient(const std::shared_ptr<Client> &client) {
+            clients_.erase(std::remove(clients_.begin(), clients_.end(), client), clients_.end());
+        }
+
+        const std::vector<std::shared_ptr<Client>> &getClients() const {
+            return clients_;
+        }
+        std::string serializeGameState() const;
+        void processPlayerMovement(const Interaction &interaction);
 
     private:
         int tickSpeed_ = TICK_SPEED;
@@ -115,10 +148,5 @@ class Game {
         std::vector<std::string> functionsClient_;
         registry reg_;
         Systems systems_;
+        std::vector<std::shared_ptr<Client>> clients_;
 };
-
-// std::ostream &operator<<(std::ostream &os, const entity_id &eid)
-// {
-    // os << static_cast<unsigned long long>(eid);
-    // return os;
-// }
