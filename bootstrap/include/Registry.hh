@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <unordered_map> // std::unordered_map
@@ -67,7 +68,6 @@ class registry
             entities_container_[new_id] = new_id;
             return new_id;
         }
-
         /**
          * @brief Get the entity from id object
          *

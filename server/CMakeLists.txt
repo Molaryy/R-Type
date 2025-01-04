@@ -9,6 +9,7 @@ add_executable(${PROJECT_NAME}
 #        src/Game.cpp
         src/Server.cpp
         main.cpp
+        includes/Components.hpp
 )
 
 target_include_directories(${PROJECT_NAME}
@@ -16,6 +17,7 @@ target_include_directories(${PROJECT_NAME}
         PRIVATE ${CMAKE_SOURCE_DIR}/network/packet_network
         PRIVATE ${CMAKE_SOURCE_DIR}/network/includes
         PRIVATE ${CMAKE_SOURCE_DIR}/includes
+        PRIVATE ${CMAKE_SOURCE_DIR}/ecs/include
 )
 
 target_link_libraries(${PROJECT_NAME}

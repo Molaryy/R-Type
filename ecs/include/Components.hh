@@ -8,32 +8,36 @@
 #pragma once
 
 #include <string>
+#include <iostream>
 
-typedef struct
+
+typedef struct Position_s
 {
     float x;
     float y;
+    void log() const {
+        std::cout << "Position = { " << x << ", " << y << " }";
+    }
 } Position_t;
 
-typedef struct Velocity
+typedef struct Velocity_s
 {
     float x;
     float y;
+    void log() const {
+        std::cout << "Velocity = { " << x << ", " << y << " }";
+    }
 } Velocity_t;
 
-typedef struct Drawable
-{
-    std::string path;
-    int width;
-    int height;
-} Drawable_t;
-
-typedef struct Controllable
+typedef struct Controllable_s
 {
     float speed;
+    void log() const {
+        std::cout << "Controllable = { " << speed << " }";
+    }
 } Controllable_t;
 
-typedef struct Life
+typedef struct Life_s
 {
     int current;
     int max;
@@ -58,42 +62,15 @@ typedef struct Life
     }
 } Life_t;
 
-typedef struct Bonus
-{
-    enum Type
-    {
-        HealthRegen,
-        DamageBoost,
-        SpeedBoost,
-    };
-
-    Type type;
-    int value;
-} Bonus_t;
-
-typedef struct Collision
+typedef struct Collision_s
 {
     int x;
     int y;
     int width;
     int height;
     bool is_colliding = false;
+
+    void log() const {
+        std::cout << "Controllable = { " << x << ", " << y << " }";
+    }
 } Collision_t;
-
-typedef struct Projectile
-{
-    int damage;
-    float speed;
-    bool is_friendly;
-    float lifetime;
-} Projectile_t;
-
-typedef struct Enemy
-{
-    int value;
-} Enemy_t;
-
-typedef struct SoundEffect
-{
-    std::string path;
-} SoundEffect_t;
