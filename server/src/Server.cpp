@@ -81,13 +81,13 @@ void Server::initPacketHandling() {
 
             const entity_t entity = registry_.spawn_entity();
             registry_.add_component(entity, ClientInputs());
-            registry_.add_component(entity, Position(0, 0));
-            registry_.add_component(entity, Velocity(0, 0));
-            registry_.add_component(entity, HitboxRectangle(PLAYER_SIZE, PLAYER_SIZE));
-            registry_.add_component(entity, HitboxPlan({HitboxPlan::BONUS_ALLY, HitboxPlan::ALLY_ENEMI}));
-            registry_.add_component(entity, Component::ComponentEntityType(PLAYER));
-            registry_.add_component(entity, ClockComponent(PLAYER_SHOOT_RATE));
-            registry_.add_component(entity, Health(PLAYER_HEALTH));
+//            registry_.add_component(entity, Position(0, 0));
+//            registry_.add_component(entity, Velocity(0, 0));
+//            registry_.add_component(entity, HitboxRectangle(PLAYER_SIZE, PLAYER_SIZE));
+//            registry_.add_component(entity, HitboxPlan({HitboxPlan::BONUS_ALLY, HitboxPlan::ALLY_ENEMI}));
+//            registry_.add_component(entity, Component::ComponentEntityType(PLAYER));
+//            registry_.add_component(entity, ClockComponent(PLAYER_SHOOT_RATE));
+//            registry_.add_component(entity, Health(PLAYER_HEALTH));
             players_.emplace(client, entity);
 
 
