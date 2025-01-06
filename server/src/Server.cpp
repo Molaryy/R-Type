@@ -10,7 +10,9 @@
 #include <iostream>
 #include <ranges>
 
+#include "Components.hpp"
 #include "RTypeProtocol.hpp"
+#include "Systems.hh"
 #include "Systems.hpp"
 
 Server::Server(const std::size_t port, const std::size_t maxClients)
@@ -46,8 +48,11 @@ void Server::run() {
     networkLib_->host(port_);
 
     initPacketHandling();
-    gameLoop();
+
     registry_.add_system(Systems::networkReceiver);
+    registry_.add_system(Systems::log);
+
+    gameLoop();
 }
 
 
@@ -68,24 +73,22 @@ void Server::initPacketHandling() {
                 return;
             }
 
-            if (_players.size() >= maxClient_) {
+            if (players_.size() >= maxClient_) {
                 std::cerr << "Room is full !" << std::endl;
                 // TODO send error code
                 return;
             }
 
-
             const entity_t entity = registry_.spawn_entity();
-
-            //            registry_.add_component(entity, Component::ClientInputs());
-            //            registry_.add_component(entity, ECS::Component::Position(0, 0));
-            //            registry_.add_component(entity, ECS::Component::Velocity(0, 0));
-            //            registry_.add_component(entity, ECS::Component::HitboxRectangle(PLAYER_SIZE, PLAYER_SIZE));
-            //            registry_.add_component(entity, ECS::Component::HitboxPlan({ECS::Component::HitboxPlan::BONUS_ALLY, ECS::Component::HitboxPlan::ALLY_ENEMI}));
-            //            registry_.add_component(entity, Component::EntityType(PLAYER));
-            //            registry_.add_component(entity, ECS::Component::ClockComponent(PLAYER_SHOOT_RATE));
-            //            registry_.add_component(entity, ECS::Component::Health(PLAYER_HEALTH));
-            _players.emplace(client, entity);
+            registry_.add_component(entity, ClientInputs());
+            registry_.add_component(entity, Position(0, 0));
+            registry_.add_component(entity, Velocity(0, 0));
+            registry_.add_component(entity, HitboxRectangle(PLAYER_SIZE, PLAYER_SIZE));
+            registry_.add_component(entity, HitboxPlan({HitboxPlan::BONUS_ALLY, HitboxPlan::ALLY_ENEMI}));
+            registry_.add_component(entity, Component::ComponentEntityType(PLAYER));
+            registry_.add_component(entity, ClockComponent(PLAYER_SHOOT_RATE));
+            registry_.add_component(entity, Health(PLAYER_HEALTH));
+            players_.emplace(client, entity);
 
 
             Network::Packet response(Protocol::AcceptConnection(static_cast<std::size_t>(entity)), Protocol::ACCEPT_CONNECTION);
@@ -106,7 +109,7 @@ void Server::initPacketHandling() {
             Network::Packet response(Protocol::Empty(), Protocol::START_GAME);
             networkLib_->sendAll(response.serialize());
 
-            for (const auto &pla : _players | std::views::values) {
+            for (const auto &pla : players_ | std::views::values) {
                 Network::Packet new_player_packet(
                     Protocol::SpawnEntity(
                         static_cast<std::size_t>(pla),
@@ -127,14 +130,14 @@ void Server::initPacketHandling() {
 
             auto [key_pressed] = packet.getPayload<Protocol::PacketInputsKeys>();
 
-            //ECS::SparseArray<Component::ClientInputs> &inputs = registry_.get_components<Component::ClientInputs>();
+            SparseArray<ClientInputs> &inputs = registry_.get_components<ClientInputs>();
 
 
-            //if (!_players.contains(client) || !inputs[_players.at(client)].has_value()) {
-            //    std::cerr << "Client " << client << " isn't connected" << std::endl;
-            //    return;
-            //}
-            //inputs[_players.at(client)].value().setInputs(key_pressed);
+            if (!players_.contains(client) || !inputs[players_.at(client)].has_value()) {
+                std::cerr << "Client " << client << " isn't connected" << std::endl;
+                return;
+            }
+            inputs[players_.at(client)].value().setInputs(key_pressed);
             for (int i = 0; i < Protocol::NB_INPUTS_KEYS; i++)
                 std::cout << std::boolalpha << key_pressed[i] << std::endl;
         });
