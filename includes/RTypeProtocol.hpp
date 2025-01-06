@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 #define TILE_SIZE 50
 
