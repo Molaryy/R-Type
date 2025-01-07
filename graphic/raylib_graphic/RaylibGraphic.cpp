@@ -7,6 +7,12 @@
 
 #include "RaylibGraphic.hpp"
 
+#if defined(_WIN32) || defined(_WIN64)
+#define LIB_EXPORT __declspec(dllexport)
+#else
+#define LIB_EXPORT
+#endif
+
 namespace Graphic {
     RaylibGraphic::~RaylibGraphic() {
         for (auto &pair : textures_) {
@@ -32,19 +38,19 @@ namespace Graphic {
     }
 
     void RaylibGraphic::endDrawing() {
-        ::EndDrawing();
+        EndDrawing();
     }
 
     void RaylibGraphic::clearBackground(unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
-        ::ClearBackground(Color{ r, g, b, a });
+        ClearBackground(Color(r, g, b, a));
     }
 
     void RaylibGraphic::drawRectangle(int x, int y, int width, int height, unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
-        ::DrawRectangle(x, y, width, height, Color{ r, g, b, a });
+        DrawRectangle(x, y, width, height, Color(r, g, b, a));
     }
 
     int RaylibGraphic::loadTexture(const std::string &path) {
-        Texture2D texture = ::LoadTexture(path.c_str());
+        Texture2D texture = LoadTexture(path.c_str());
         int id = nextTextureID_++;
 
         textures_[id] = texture;
@@ -55,7 +61,7 @@ namespace Graphic {
         auto it = textures_.find(textureID);
 
         if (it != textures_.end()) {
-            ::UnloadTexture(it->second);
+            UnloadTexture(it->second);
             textures_.erase(it);
         }
     }
@@ -64,22 +70,17 @@ namespace Graphic {
         auto it = textures_.find(textureID);
 
         if (it != textures_.end()) {
-            ::DrawTexture(it->second, x, y, WHITE);
+            DrawTexture(it->second, x, y, WHITE);
         }
     }
 
     void RaylibGraphic::drawText(const std::string &text, int x, int y, int fontSize, unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
-        ::DrawText(text.c_str(), x, y, fontSize, Color{ r, g, b, a});
+        DrawText(text.c_str(), x, y, fontSize, Color(r, g, b, a));
     }
 
     extern "C" {
-        #if defined(_WIN32) || defined(_WIN64)
-        __declspec(dllexport)
-        #else
-        __attribute__((visibility("default")))
-        #endif
-        IRenderer* create_graphic_instance() {
-            return new RaylibGraphic();
-        }
+    LIB_EXPORT IRenderer *create_graphic_instance() {
+        return new RaylibGraphic();
+    }
     }
 }

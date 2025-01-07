@@ -8,7 +8,6 @@
 #pragma once
 
 #include <string>
-#include <cstdint>
 
 namespace Graphic {
     class IRenderer {
@@ -36,7 +35,7 @@ namespace Graphic {
              * @return true if the window must close
              * @return false 
              */
-            virtual bool windowShouldClose() const = 0;
+            [[nodiscard]] virtual bool windowShouldClose() const = 0;
 
             /**
              * @brief begin a frame's drawing
@@ -85,7 +84,7 @@ namespace Graphic {
             /**
              * @brief free the texture
              * 
-             * @param textureId 
+             * @param textureID
              */
             virtual void unloadTexture(int textureID) = 0;
 
