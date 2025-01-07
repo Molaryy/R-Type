@@ -28,6 +28,8 @@ namespace Graphic {
             void unloadTexture(int textureID) override;
             void drawTexture(int textureID, int x, int y) override;
             void drawText(const std::string &text, int x, int y, int fontSize, unsigned char r, unsigned char g, unsigned char b, unsigned char a) override;
+            bool isPressed(KeyCode keyCode) const override;
+            std::pair<int, int> getMousePosition() override;
 
         private:
             std::unordered_map<int, Texture2D> textures_;

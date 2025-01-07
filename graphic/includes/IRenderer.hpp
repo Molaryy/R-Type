@@ -10,6 +10,15 @@
 #include <string>
 
 namespace Graphic {
+    enum class KeyCode : int {
+        Left,
+        Right,
+        Up,
+        Down,
+        MouseLeft,
+        MouseRight,
+    };
+
     class IRenderer {
         public:
             virtual ~IRenderer() = default;
@@ -111,6 +120,20 @@ namespace Graphic {
              */
             virtual void drawText(const std::string &text, int x, int y, int fontSize, unsigned char r, unsigned char g, unsigned char b, unsigned char a) = 0;
 
-            // TODO complete with what we will need for the game
+            /**
+             * @brief check if the mouse is pressed
+             * 
+             * @param button 
+             * @return true 
+             * @return false 
+             */
+            virtual bool isPressed(KeyCode keyCode) const = 0;
+
+            /**
+             * @brief Get the Mouse Position object
+             * 
+             * @return std::pair<int, int> 
+             */
+            virtual std::pair<int, int> getMousePosition() = 0;
     };
 }
