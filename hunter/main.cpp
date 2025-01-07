@@ -5,60 +5,116 @@
 ** main.cpp
 */
 
-#include <cmath>
-#include "Registry.hh"
+#include <raylib.h>
+
 #include "Components.hh"
-#include "Systems.hh"
 #include "hunter.hpp"
+#include "Zipper.hh"
 
 Hunter::Hunter(): graphicLoader_("./", "raylib_graphics") {
     try {
         auto createGraphic = graphicLoader_.get_function<Graphic::IRenderer *()>("create_graphic_instance");
         renderer_.reset(createGraphic());
-    } catch (const dylib::exception &e){
+    } catch (const dylib::exception &e) {
         throw std::runtime_error("Failed to load shared lib: " + std::string(e.what()));
     }
 }
 
-Hunter::~Hunter() {}
+Hunter::~Hunter() {
+}
 
 void Hunter::run() {
     renderer_->initWindow(800, 600, "Hunter Game POC ECS");
-    reg_.register_component<Position_t>();
-    reg_.register_component<Velocity_t>();
-    reg_.register_component<Collision_t>();
-    reg_.register_component<Life_t>();
-    reg_.register_component<DuckTag_t>();
-    reg_.register_component<Sprite_t>();
 
     for (int i = 0; i < 3; ++i) {
         entity_t e = reg_.spawn_entity();
 
-        reg_.add_component<Position_t>(e, Position_t{ (float)(50 + i * 100), (float)(100 + i * 50) });
-        reg_.add_component<Velocity_t>(e, Velocity_t{ 1.5f, 0.f });
-        reg_.add_component<Collision_t>(e, Collision_t{ (int)(50 + i * 100), (int)(100 + i * 50), 64, 64 });
-        reg_.add_component<Life_t>(e, Life_t{ 1, 1 });
-        reg_.add_component<DuckTag_t>(e, DuckTag_t{});
+        reg_.add_component<Position>(e, Position(static_cast<float>(50 + i * 100), static_cast<float>(100 + i * 50)));
+        reg_.add_component<Velocity>(e, Velocity(1.5f, 0.f));
+        reg_.add_component<Collision>(e, Collision(50 + i * 100, 100 + i * 50, 64, 64));
+        reg_.add_component<Life>(e, Life(1, 1));
+        reg_.add_component<DuckTag>(e, DuckTag());
 
-        int texID = renderer_->loadTexture("assets/duck.png");
-        reg_.add_component<Sprite_t>(e, Sprite_t{ texID, 64, 64 });
+        reg_.add_component<Sprite>(e, Sprite(renderer_->loadTexture("assets/duck.png"), 64, 64));
     }
 
-    while (!renderer_->windowShouldClose()) {
-        renderer_->beginDrawing();
-        renderer_->clearBackground(0, 120, 120, 255);
-        renderer_->endDrawing();
-    }
+    reg_.add_system(duckMovementSystem);
+    reg_.add_system(duckShootingSystem);
+    reg_.add_system(duckRendererSystem);
+    while (!renderer_->windowShouldClose())
+        reg_.run_systems();
     renderer_->closeWindow();
 }
 
+void Hunter::duckMovementSystem(Registry &r) {
+    auto &positions = r.get_components<Position>();
+    auto &velocities = r.get_components<Velocity>();
+    auto &ducks = r.get_components<DuckTag>();
+
+    for (auto &&[pos, vel, duc] : Zipper(positions, velocities, ducks)) {
+        pos.x += vel.x;
+        pos.y += vel.y;
+        if (pos.x > 800)
+            pos.x = -64.f;
+        if (pos.y > 600)
+            pos.y = -64.f;
+    }
+}
+
+void Hunter::duckShootingSystem(Registry &r) {
+    if (!IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        return;
+    auto [x, y] = GetMousePosition();
+
+    auto &ducks = r.get_components<DuckTag>();
+    auto &collisions = r.get_components<Collision>();
+    auto &lifes = r.get_components<Life>();
+
+    for (auto &&[duck, col, life] : Zipper(ducks, collisions, lifes)) {
+        if (x >= col.x && x <= col.x + col.width && y >= col.y && y <= col.y + col.height) {
+            life.current = 0;
+        }
+    }
+}
+
+void Hunter::duckRendererSystem(Registry &r) {
+    auto &positions = r.get_components<Position>();
+    auto &lifes = r.get_components<Life>();
+    auto &sprites = r.get_components<Sprite>();
+    Graphic::IRenderer &renderer = getInstance().getRenderer();
+
+    renderer.beginDrawing();
+    renderer.clearBackground(0, 120, 120, 255);
+
+    for (auto &&[pos, life, sprite] : Zipper(positions, lifes, sprites)) {
+        if (life.current <= 0)
+            continue;
+
+        renderer.drawTexture(sprite.textureID, static_cast<int>(pos.x), static_cast<int>(pos.y));
+    }
+    renderer.endDrawing();
+}
+
+Hunter &Hunter::createInstance() {
+    instance_.reset(new Hunter());
+    return *instance_;
+}
+
+Hunter &Hunter::getInstance() {
+    return *instance_;
+}
+
+Graphic::IRenderer &Hunter::getRenderer() const {
+    return *renderer_;
+}
+
+std::unique_ptr<Hunter> Hunter::instance_ = nullptr;
+
 int main() {
     try {
-        Hunter game;
-        game.run();
+        Hunter::createInstance().run();
     } catch (const std::exception &e) {
         std::cerr << "Error: " << e.what() << "\n";
         return 84;
     }
-    return 0;
 }

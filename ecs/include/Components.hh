@@ -11,33 +11,33 @@
 #include <iostream>
 
 
-typedef struct Position_s
+struct Position
 {
     float x;
     float y;
     void log() const {
         std::cout << "Position = { " << x << ", " << y << " }";
     }
-} Position_t;
+};
 
-typedef struct Velocity_s
+struct Velocity
 {
     float x;
     float y;
     void log() const {
         std::cout << "Velocity = { " << x << ", " << y << " }";
     }
-} Velocity_t;
+};
 
-typedef struct Controllable_s
+struct Controllable
 {
     float speed;
     void log() const {
         std::cout << "Controllable = { " << speed << " }";
     }
-} Controllable_t;
+};
 
-typedef struct Life_s
+struct Life
 {
     int current;
     int max;
@@ -66,7 +66,7 @@ typedef struct Life_s
     }
 } Life_t;
 
-typedef struct Collision_s
+struct Collision
 {
     int x;
     int y;
@@ -77,4 +77,4 @@ typedef struct Collision_s
     void log() const {
         std::cout << "Controllable = { " << x << ", " << y << " }";
     }
-} Collision_t;
+};
