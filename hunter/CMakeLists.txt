@@ -24,7 +24,10 @@ target_include_directories(${PROJECT_NAME}
         PRIVATE ${CMAKE_SOURCE_DIR}/graphic/raylib_graphic
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
+target_link_libraries(${PROJECT_NAME}
+        PRIVATE raylib
+        PRIVATE dylib
+)
 
 if (WIN32)
     target_compile_options(${PROJECT_NAME} PRIVATE /W4)

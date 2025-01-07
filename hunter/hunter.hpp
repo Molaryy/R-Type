@@ -9,6 +9,8 @@
 
 #include <iostream>
 #include <cstdint>
+#include <dylib.hpp>
+#include "IRenderer.hpp"
 
 struct DuckTag_t {
     void log() const {
@@ -17,11 +19,24 @@ struct DuckTag_t {
 };
 
 struct Sprite_t {
-    int textureID = -1;
-    int width = 64;
-    int height = 64;
+    int textureID;
+    int width;
+    int height;
 
     void log() const {
         std::cout << "Sprite = { tesxtureID: " << textureID << ", w: " << width << ", h: " << height << "}";
     }
+};
+
+class Hunter {
+    public:
+        Hunter();
+        ~Hunter();
+
+        void run();
+
+    private:
+        dylib graphicLoader_;
+        std::unique_ptr<Graphic::IRenderer> renderer_;
+        Registry reg_;
 };
