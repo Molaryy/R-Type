@@ -60,6 +60,10 @@ typedef struct Life_s
     {
         return current > 0;
     }
+
+    void log() const {
+        std::cout << "Life = {" << current << "/" << max << "}";
+    }
 } Life_t;
 
 typedef struct Collision_s
