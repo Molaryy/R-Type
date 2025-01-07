@@ -25,10 +25,6 @@ target_link_libraries(${PROJECT_NAME}
         PRIVATE dylib
 )
 
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ${CMAKE_SOURCE_DIR}
-)
-
 if (WIN32)
     target_compile_options(${PROJECT_NAME} PRIVATE /W4)
 elseif (UNIX OR APPLE)

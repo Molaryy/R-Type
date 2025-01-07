@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2025
-** B-YEP-400_R-Type
+** R-Type
 ** File description:
 ** RTypeProtocol.hpp
 */

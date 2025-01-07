@@ -70,8 +70,8 @@ public:
             dead_entities_.pop_back();
             return entity;
         }
-        next_entity += 1;
-        return next_entity - 1;
+        next_entity_ += 1;
+        return next_entity_ - 1;
     }
 
     entity_t entity_from_index(std::size_t idx);
@@ -132,6 +132,10 @@ public:
         }
     }
 
+    std::size_t max_entities() const {
+        return next_entity_;
+    }
+
 private:
     std::unordered_map<std::type_index, std::any> components_arrays_;
 
@@ -140,5 +144,5 @@ private:
     std::vector<std::function<void(Registry &)>> systems_;
 
     std::vector<entity_t> dead_entities_;
-    std::size_t next_entity{0};
+    std::size_t next_entity_{0};
 };

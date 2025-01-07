@@ -49,7 +49,8 @@ _deps/
 CPM_modules/
 Debug/
 Release/
-
+CPackConfig.cmake
+CPackSourceConfig.cmake
 
 r-type_server
 r-type_client
