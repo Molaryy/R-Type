@@ -42,6 +42,6 @@ private:
     Network::PacketHandler packetHandler_;
     Registry registry_;
     std::size_t maxClient_;
-    std::unordered_map<uint16_t, entity_t> _players;
+    std::unordered_map<uint16_t, entity_t> players_;
     bool gameStarted_ = false;
 };

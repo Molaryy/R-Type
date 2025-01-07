@@ -19,24 +19,24 @@ Game::Game() : playerPosition({50.0f, 300.0f}), playerSpeed(300.0f), missileSpee
 void Game::run(rtype::RayLib &rl)
 {
     rl.setTargetFPS(60);
-    playerSpriteSheet = rl.loadTexture("../assets/spaceship.gif");
+    playerSpriteSheet = rl.loadTexture("assets/spaceship.gif");
     playerFrameRec = {0.0f, 0.0f, 33, 13};
     currentFrame = 0;
     animationTimer = 0.0f;
 
-    missileSpriteSheet = rl.loadTexture("../assets/missiles.gif");
+    missileSpriteSheet = rl.loadTexture("assets/missiles.gif");
     missileFrameRec = {0.0f, 0.0f, 20, 10};
 
-    explosionSpriteSheet = rl.loadTexture("../assets/damage.gif");
+    explosionSpriteSheet = rl.loadTexture("assets/damage.gif");
     explosionFrameRec = {0.0f, 0.0f, 64, 64};
 
-    enemySpriteSheet = rl.loadTexture("../assets/enemies.gif");
+    enemySpriteSheet = rl.loadTexture("assets/enemies.gif");
     enemyFrameRec = {0.0f, 0.0f, 65, 50};
 
-    asteroidSpriteSheet = rl.loadTexture("../assets/asteroids.gif");
+    asteroidSpriteSheet = rl.loadTexture("assets/asteroids.gif");
     asteroidFrameRec = {0.0f, 0.0f, 65, 50};
 
-    backgroundTexture = rl.loadTexture("../assets/maps/space.png");
+    backgroundTexture = rl.loadTexture("assets/maps/space.png");
     backgroundPosX1 = 0.0f;
     backgroundPosX2 = backgroundTexture.width;
 

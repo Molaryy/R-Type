@@ -1,25 +1,41 @@
-project(client)
+project(r-type_client)
 
-file(GLOB SOURCES
-    "Gameplay/Game.cpp"
-    "Menu/Menu.cpp"
-    "raylib/raylib.cc"
-    "main.cpp"
+set(CMAKE_CXX_STANDARD 23)
+
+add_executable(${PROJECT_NAME}
+        "Gameplay/Game.cpp"
+        "Menu/Menu.cpp"
+        "raylib/raylib.cc"
+        "main.cpp"
 )
 
-add_executable(r-type_client ${SOURCES})
+include(../cmake/CPM.cmake)
 
-list(APPEND CLIENT_EXTRA_INCLUDES "includes")
-target_include_directories(r-type_client PUBLIC ${CLIENT_EXTRA_INCLUDES} ${asio_SOURCE_DIR}/asio/include)
-
-target_compile_options(r-type_client PRIVATE -Wall -Wextra -std=c++23 -g3)
-
-target_link_libraries(r-type_client PRIVATE NetworkLib)
-target_link_libraries(r-type_client PRIVATE EcsLib)
-
-link_directories(${CMAKE_CURRENT_SOURCE_DIR}/network)
-link_directories(${CMAKE_CURRENT_SOURCE_DIR}/bootstrap)
-
-add_custom_command(TARGET r-type_client POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:r-type_client> ${CMAKE_SOURCE_DIR}
+CPMAddPackage(
+        NAME raylib
+        GITHUB_REPOSITORY raysan5/raylib
+        GIT_TAG 5.0
+        OPTIONS "BUILD_EXAMPLES OFF" "BUILD_GAMES OFF" "BUILD_SHARED_LIBS OFF" "CMAKE_POSITION_INDEPENDENT_CODE ON" "raylib_USE_STATIC_LIBS ON"
 )
+
+target_include_directories(${PROJECT_NAME}
+        PRIVATE includes/
+        PRIVATE ${CMAKE_SOURCE_DIR}/network/packet_network
+        PRIVATE ${CMAKE_SOURCE_DIR}/network/includes
+        PRIVATE ${CMAKE_SOURCE_DIR}/includes
+        PRIVATE ${CMAKE_SOURCE_DIR}/ecs/include
+)
+
+target_link_libraries(${PROJECT_NAME}
+        PRIVATE PacketNetwork
+        PRIVATE dylib
+        PRIVATE raylib
+)
+
+if (WIN32)
+    target_compile_options(${PROJECT_NAME} PRIVATE /W4)
+elseif (UNIX OR APPLE)
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
+else ()
+    message(FATAL_ERROR "Only support window and unix")
+endif ()
