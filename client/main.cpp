@@ -31,17 +31,17 @@ void print_any(const std::any& a)
     }
 }
 
-void print_sparse_array(const sparse_array<> &entities)
-{
-    for (size_t i = 0; i < entities.size(); ++i)
-    {
-        if (entities[i].has_value())
-        {
-            std::cout << "id: " << i << " value: ";
-            print_any(entities[i]);
-        }
-    }
-}
+// void print_sparse_array(const sparse_array<> &entities)
+// {
+//     for (size_t i = 0; i < entities.size(); ++i)
+//     {
+//         if (entities[i].has_value())
+//         {
+//             std::cout << "id: " << i << " value: ";
+//             print_any(entities[i]);
+//         }
+//     }
+// }
 
 // int main()
 // {

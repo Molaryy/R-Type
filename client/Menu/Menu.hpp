@@ -16,6 +16,7 @@ std::vector<PlayerScore> loadScores(const std::string &filename);
 
 class Menu {
     private:
+
         enum MenuState {
             MAIN_MENU,
             PLAY_GAME,
@@ -23,6 +24,14 @@ class Menu {
             SETTINGS,
             CREDITS,
             EXIT
+        };
+
+        struct Lobby {
+            std::string name;
+            std::vector<std::string> players;
+            bool gameStarted;
+
+            Lobby(const std::string& lobbyName) : name(lobbyName), gameStarted(false) {}
         };
 
         struct MenuItem {
@@ -34,12 +43,17 @@ class Menu {
         std::vector<MenuItem> menuItems;
         int selectedOption;
         MenuState currentMenu;
+        std::vector<Lobby> lobbies;
 
         void playGame(rtype::RayLib &rl);
         void showLeaderboard(rtype::RayLib &rl);
+        void drawSettingsOptions(rtype::RayLib &rl, int selectedOption, int currentFPSIndex,
+        bool musicEnabled, bool soundEffectsEnabled, int currentResolutionIndex, bool colorBlindMode);
         void showSettings(rtype::RayLib &rl);
         void showCredits(rtype::RayLib &rl);
         void quitGame();
+        void showLobbies(rtype::RayLib &rl);
+        void joinLobby(rtype::RayLib &rl, int lobbyIndex);
 
     public:
         Menu(rtype::RayLib &rl);

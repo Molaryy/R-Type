@@ -97,7 +97,6 @@ void Game::handleInput(rtype::RayLib &rl)
 
     isMoving_ = false;
 
-
     if (rl.isKeyDown(KEY_RIGHT)) {
         playerPosition.x += playerSpeed * frameTime;
         isMoving_ = true;
@@ -354,8 +353,8 @@ void Game::draw(rtype::RayLib &rl)
 
     for (const auto &asteroid : asteroids) {
         if (asteroid.active) {
-            rl.drawTextureRec(asteroidSpriteSheet, asteroidFrameRec, {asteroid.position.x, asteroid.position.y}, WHITE);
-            // rl.drawRectangle(astew/x/roid.position.x, asteroid.position.y, 50, 50, RED);
+            // rl.drawTextureRec(asteroidSpriteSheet, asteroidFrameRec, {asteroid.position.x, asteroid.position.y}, WHITE);
+            rl.drawRectangle(asteroid.position.x, asteroid.position.y, 50, 50, RED);
             rl.drawText(TextFormat("%d", asteroid.hitsRemaining), asteroid.position.x + 15, asteroid.position.y + 15, 20, WHITE);
         }
     }
