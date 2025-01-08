@@ -15,11 +15,13 @@ CPMAddPackage(
 
 add_executable(${PROJECT_NAME}
         main.cpp
+        src/Hunter.cpp
         ../graphic/raylib_graphic/RaylibGraphic.cpp
 )
 
 target_include_directories(${PROJECT_NAME}
-        PRIVATE ${CMAKE_SOURCE_DIR}/ecs/include
+        PRIVATE includes
+        PRIVATE ${CMAKE_SOURCE_DIR}/ecs/includes
         PRIVATE ${CMAKE_SOURCE_DIR}/graphic/includes
         PRIVATE ${CMAKE_SOURCE_DIR}/graphic/raylib_graphic
 )

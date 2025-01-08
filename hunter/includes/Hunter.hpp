@@ -8,15 +8,12 @@
 #pragma once
 
 #include <dylib.hpp>
-#include <iostream>
 
 #include "IRenderer.hpp"
 #include "Registry.hh"
 
 struct DuckTag {
-    void log() const {
-        std::cout << "DuckTag";
-    }
+    void log() const;
 };
 
 struct Sprite {
@@ -24,9 +21,7 @@ struct Sprite {
     int width;
     int height;
 
-    void log() const {
-        std::cout << "Sprite = { tesxtureID: " << textureID << ", w: " << width << ", h: " << height << " }";
-    }
+    void log() const;
 };
 
 class Hunter {
