@@ -78,6 +78,29 @@ namespace Graphic {
         DrawText(text.c_str(), x, y, fontSize, Color(r, g, b, a));
     }
 
+    bool RaylibGraphic::isPressed(KeyCode keyCode) const {
+        switch (keyCode) {
+            case KeyCode::Left:
+                return IsKeyDown(KEY_LEFT);
+            case KeyCode::Right:
+                return IsKeyDown(KEY_RIGHT);
+            case KeyCode::Up:
+                return IsKeyDown(KEY_UP);
+            case KeyCode::Down:
+                return IsKeyDown(KEY_DOWN);
+            case KeyCode::MouseLeft:
+                return IsMouseButtonDown(MOUSE_LEFT_BUTTON);
+            case KeyCode::MouseRight:
+                return IsMouseButtonDown(MOUSE_RIGHT_BUTTON);
+        }
+    }
+
+    std::pair<int, int> RaylibGraphic::getMousePosition() {
+        Vector2 pos = ::GetMousePosition();
+
+        return { static_cast<int>(pos.x), static_cast<int>(pos.y) };
+    }
+
     extern "C" {
     LIB_EXPORT IRenderer *create_graphic_instance() {
         return new RaylibGraphic();

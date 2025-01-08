@@ -18,23 +18,23 @@ public :
     using iterator_tuple = typename iterator::iterator_tuple;
 
     explicit Zipper(Containers &... cs)
-        : _begin(std::make_tuple(cs.begin()...)),
-          _end(std::make_tuple(cs.end()...)),
-          _size((std::min)({static_cast<std::size_t>(cs.size())...})) {
+        : begin_(std::make_tuple(cs.begin()...)),
+          end_(std::make_tuple(cs.end()...)),
+          size_((std::min)({static_cast<std::size_t>(cs.size())...})) {
     }
 
     iterator begin() {
-        return iterator(_begin, _end, _size);
+        return iterator(begin_, end_, size_);
     }
 
     iterator end() {
-        auto zipper_iterator = iterator(_end, _end, _size);
-        zipper_iterator._idx = _size;
+        auto zipper_iterator = iterator(end_, end_, size_);
+        zipper_iterator.index_ = size_;
         return zipper_iterator;
     }
 
 private :
-    iterator_tuple _begin;
-    iterator_tuple _end;
-    std::size_t _size;
+    iterator_tuple begin_;
+    iterator_tuple end_;
+    std::size_t size_;
 };

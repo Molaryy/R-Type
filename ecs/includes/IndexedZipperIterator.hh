@@ -30,8 +30,8 @@ public:
     using iterator_tuple = std::tuple<iterator_t<Containers>...>;
 
     IndexedZipperIterator(iterator_tuple const &it_tuple, iterator_tuple const &end_tuple, const std::size_t max)
-        : _current(it_tuple), _end(end_tuple), _max(max), _idx(0) {
-        if (_idx < _max && !all_set(_seq))
+        : current_(it_tuple), end_(end_tuple), max_(max), index_(0) {
+        if (index_ < max_ && !all_set(_seq))
             incr_all(_seq);
     }
 
@@ -56,36 +56,36 @@ public:
     }
 
     friend bool operator==(IndexedZipperIterator const &lhs, IndexedZipperIterator const &rhs) {
-        return lhs._idx == rhs._idx;
+        return lhs.index_ == rhs.index_;
     }
 
     friend bool operator!=(IndexedZipperIterator const &lhs, IndexedZipperIterator const &rhs) {
-        return lhs._idx != rhs._idx;
+        return lhs.index_ != rhs.index_;
     }
 
 private:
     template<std::size_t... Is>
     void incr_all(std::index_sequence<Is...>) {
         do {
-            (std::get<Is>(_current)++, ...);
-            _idx++;
-        } while (_idx < _max && !all_set(_seq));
+            (std::get<Is>(current_)++, ...);
+            index_++;
+        } while (index_ < max_ && !all_set(_seq));
     }
 
     template<std::size_t... Is>
     bool all_set(std::index_sequence<Is...>) {
-        return ((std::get<Is>(_current) != std::get<Is>(_end) && (*std::get<Is>(_current)).has_value()) && ...);
+        return ((std::get<Is>(current_) != std::get<Is>(end_) && (*std::get<Is>(current_)).has_value()) && ...);
     }
 
     template<std::size_t... Is>
     value_type to_value(std::index_sequence<Is...>) {
-        return std::tie(_idx, (*std::get<Is>(_current)).value()...);
+        return std::tie(index_, (*std::get<Is>(current_)).value()...);
     }
 
-    iterator_tuple _current;
-    iterator_tuple _end;
-    std::size_t _max;
-    std::size_t _idx;
+    iterator_tuple current_;
+    iterator_tuple end_;
+    std::size_t max_;
+    std::size_t index_;
 
     static constexpr std::index_sequence_for<Containers...> _seq{};
 };

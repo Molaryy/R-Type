@@ -17,7 +17,7 @@ target_include_directories(${PROJECT_NAME}
         PRIVATE ${CMAKE_SOURCE_DIR}/network/packet_network
         PRIVATE ${CMAKE_SOURCE_DIR}/network/includes
         PRIVATE ${CMAKE_SOURCE_DIR}/includes
-        PRIVATE ${CMAKE_SOURCE_DIR}/ecs/include
+        PRIVATE ${CMAKE_SOURCE_DIR}/ecs/includes
 )
 
 target_link_libraries(${PROJECT_NAME}
