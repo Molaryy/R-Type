@@ -21,7 +21,7 @@ void Sprite::log() const {
 
 Hunter::Hunter(): graphicLoader_("./", "raylib_graphics") {
     try {
-        const auto createGraphic = graphicLoader_.get_function<Graphic::IRenderer *()>("create_graphic_instance");
+        const auto createGraphic = graphicLoader_.get_function<Graphic::IRenderer *()>("create_instance");
         renderer_.reset(createGraphic());
     } catch (const dylib::exception &e) {
         throw std::runtime_error("Failed to load shared lib: " + std::string(e.what()));

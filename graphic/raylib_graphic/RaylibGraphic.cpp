@@ -102,7 +102,7 @@ namespace Graphic {
     }
 
     extern "C" {
-    LIB_EXPORT IRenderer *create_graphic_instance() {
+    LIB_EXPORT IRenderer *create_instance() {
         return new RaylibGraphic();
     }
     }
