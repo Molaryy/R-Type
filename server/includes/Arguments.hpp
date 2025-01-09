@@ -14,7 +14,7 @@
 #include <utility>
 #include <variant>
 
-#define PORT 8081
+#define PORT 4242
 #define NB_CLIENTS 4
 
 class Arguments {
