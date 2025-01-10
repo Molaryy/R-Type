@@ -8,6 +8,7 @@
 #pragma once
 
 #include <dylib.hpp>
+#include <memory>
 
 #include "IRenderer.hpp"
 #include "Registry.hh"
