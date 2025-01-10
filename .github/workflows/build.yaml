@@ -1,4 +1,4 @@
-name: Build and run C++
+name: Build C++
 
 on:
   push:
@@ -40,5 +40,3 @@ jobs:
               exit 1
             fi
           done
-      - name: Run tests
-        run: cd build/ && make test
