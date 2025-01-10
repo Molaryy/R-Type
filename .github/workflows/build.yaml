@@ -1,44 +1,42 @@
-name: Build and run C++
+name: Build C++
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - dev
+      - main
+  pull_request:
+    branches:
+      - dev
+      - main
+    types:
+      - opened
+
+env:
+  # All binaries separated by ' '
+  EXECUTABLES: "r-type_client r-type_server"
 
 jobs:
-  build-and-run:
+  push:
+    name: Build
     runs-on: ubuntu-latest
+    container:
+      image: tchips46/r-type
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install build-essential cmake libglfw3-dev libopenal-dev libxcursor-dev libxinerama-dev libxrandr-dev libxi-dev libgl-dev libxxf86vm-dev -y
-
-    - name: Install Raylib
-      run: |
-        git clone https://github.com/raysan5/raylib.git
-        cd raylib/src
-        make PLATFORM=PLATFORM_DESKTOP
-        sudo make install
-
-    - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install build-essential cmake libglfw3-dev libopenal-dev -y
-
-    - name: Install Raylib
-      run: |
-        git clone https://github.com/raysan5/raylib.git
-        cd raylib/src
-        make PLATFORM=PLATFORM_DESKTOP
-        sudo make install
-
-    - name: Configure with CMake
-      run: cmake -S . -B build/
-
-    - name: Build project
-      run: cmake --build build/
-
-    - name: Check server binary
-      run: find r-type_server
-
-    # - name : Run client part
-    #   run: ./build/r-type_client
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+      - name: Setup
+        run: mkdir ./build/ && cd ./build/ && cmake .. -G "Unix Makefiles" -DTEST_CODE=ON
+      - name: Build
+        run: cd ./build/ && cmake --build . --config Release
+        timeout-minutes: 5
+      - name: Check if all files exist
+        run: |
+          for file in $EXECUTABLES; do
+            if test -f "$file"; then
+              echo "File $file exists"
+            else
+              echo "File $file does not exist"
+              exit 1
+            fi
+          done
