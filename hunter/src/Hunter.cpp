@@ -33,7 +33,6 @@ Hunter::~Hunter() = default;
 
 void Hunter::run() {
     renderer_->initWindow(800, 600, "Hunter Game POC ECS");
-    SetTargetFPS(30);
 
     for (int i = 0; i < 1; ++i) {
         entity_t e = reg_.spawn_entity();

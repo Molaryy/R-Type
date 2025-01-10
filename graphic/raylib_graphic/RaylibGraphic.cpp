@@ -101,9 +101,9 @@ namespace Graphic {
         events.window_size = {GetScreenWidth(), GetScreenHeight()};
         events.inputs.clear();
         if (WindowShouldClose())
-            events.inputs.push_back(CloseWindow);
+            events.inputs.push_back(Keys::CloseWindow);
 
-        for (auto const &[raylibKey, customKey] : inputMap_) {
+        for (auto const &[raylibKey, customKey] : RaylibGraphic::inputMap_) {
             if (IsKeyDown(raylibKey)) {
                 events.inputs.push_back(customKey);
             }
