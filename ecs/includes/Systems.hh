@@ -28,7 +28,7 @@ namespace Systems
         }
     }
 
-    static void limit_framerate(Registry &r, int fps)
+    static void limit_framerate([[maybe_unused]]Registry &r, const uint8_t fps)
     {
         static const auto frame_duration = std::chrono::microseconds(1 / fps);
         static auto last_frame = std::chrono::steady_clock::now();
