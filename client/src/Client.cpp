@@ -71,17 +71,17 @@ bool Client::connectToServer_(const std::string &ip, const std::size_t port) {
 
     packet_handler_.setPacketCallback(Protocol::ACCEPT_CONNECTION, [&success,
                                           this](const Network::Packet &packet) {
-                                          const auto [entity_id] = packet.getPayload<Protocol::AcceptConnection>();
+                                          const auto [entity_id] = packet.getPayload<Protocol::AcceptConnectionPacket>();
 
                                           my_server_id_ = entity_id;
                                           std::cout << "Connection established : My server id is : " << my_server_id_ << std::endl;
                                           success = true;
                                       });
 
-    Network::Packet packet(Protocol::Empty(), Protocol::CONNECT);
+    Network::Packet packet(Protocol::EmptyPacket(), Protocol::CONNECT);
     network_lib_->send(packet.serialize());
 
-    std::chrono::system_clock::time_point time_out_clock = std::chrono::system_clock::now();
+    const std::chrono::system_clock::time_point time_out_clock = std::chrono::system_clock::now();
 
     while (!success) {
         const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
@@ -115,9 +115,6 @@ void Client::setupPacketHandler_() {
     });
     packet_handler_.setPacketCallback(Protocol::SERVER_SHUTDOWN, [](Network::Packet &) {
         std::cout << "SERVER_SHUTDOWN received\n";
-    });
-    packet_handler_.setPacketCallback(Protocol::CAMERA_MOVE, [](Network::Packet &) {
-        std::cout << "CAMERA_MOVE received\n";
     });
     packet_handler_.setPacketCallback(Protocol::END_GAME, [](Network::Packet &) {
         std::cout << "END_GAME received\n";
