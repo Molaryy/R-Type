@@ -78,3 +78,24 @@ struct Collision
         std::cout << "Controllable = { " << x << ", " << y << " }";
     }
 };
+
+struct Delay
+{
+    int delay = 10;
+    int last = 0;
+
+    bool can_shoot()
+    {
+        if (last >= delay)
+        {
+            last = 0;
+            return true;
+        }
+        ++last;
+        return false;
+    }
+
+    void log() const {
+        std::cout << "Delay = { " << delay << ", " << last << " }";
+    }
+};

@@ -34,12 +34,14 @@ public:
     SparseArray &operator=(SparseArray const &) noexcept = default;
     SparseArray &operator=(SparseArray &&) noexcept = default;
 
-    reference_type operator[](size_type index) noexcept {
+    reference_type operator[](size_type index) noexcept
+    {
         if (index >= size())
             resize(index + 1);
         return data_[index];
     }
-    const_reference_type operator[](size_type index) const noexcept {
+    const_reference_type operator[](size_type index) const noexcept
+    {
         return data_[index];
     }
 
@@ -53,7 +55,8 @@ public:
 
     size_type size() const noexcept { return data_.size(); }
 
-    void resize(size_type new_size) {
+    void resize(size_type new_size)
+    {
         data_.resize(new_size, std::nullopt);
     }
 
@@ -133,5 +136,5 @@ public:
 private:
     container_t data_;
 
-    value_type _null = std::nullopt;
+    value_type null_ = std::nullopt;
 };
