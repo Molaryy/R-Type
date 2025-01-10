@@ -11,21 +11,23 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    container:
+      image: tchips46/r-type
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Install clang-tidy
-      run: sudo apt-get update && sudo apt-get install -y clang-tidy
+      - name: Setup
+        run: mkdir ./build/ && cd ./build/ && cmake .. -G "Unix Makefiles" -DTEST_CODE=ON
+      - name: Build
+        run: cd ./build/ && cmake --build . --config Release && cmake --install .
+        timeout-minutes: 5
 
-    - name: Configure with CMake
-      run: cmake -S . -B build/
-
-    - name: Run clang-tidy linter
-      run: |
-        clang-tidy \
-          --fix \
-          --fix-errors \
-          $(find . -name '*.cpp' ! \( -path './asio/*' -o -path './build/*' -o -path './cmake-build-debug/*' \)) \
-          -- -iquote./includes
+      - name: Run clang-tidy linter
+        run: |
+          clang-tidy \
+            --fix \
+            --fix-errors \
+            $(find . -name '*.cpp' ! \( -path './asio/*' -o -path './build/*' -o -path './cmake-build-debug/*' \)) \
+            -- -iquote./includes
