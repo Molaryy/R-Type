@@ -8,7 +8,6 @@
 #include <iostream>
 #include <string>
 #include "ArgHandler.hpp"
-
 #include <optional>
 
 ArgHandler::ArgHandler(const std::size_t max_args) : max_args_(max_args) {

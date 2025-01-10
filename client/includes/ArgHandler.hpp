@@ -8,6 +8,7 @@
 #ifndef ARGHANDLER_HPP_
 #define ARGHANDLER_HPP_
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <vector>
