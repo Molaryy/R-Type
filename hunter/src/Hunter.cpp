@@ -20,7 +20,7 @@ void Sprite::log() const {
 
 Hunter::Hunter(): graphicLoader_("./", "raylib_graphics") {
     try {
-        const auto createGraphic = graphicLoader_.get_function<Graphic::IRenderer *()>("create_graphic_instance");
+        const auto createGraphic = graphicLoader_.get_function<Graphic::IRenderer *()>("create_instance");
         renderer_.reset(createGraphic());
     } catch (const dylib::exception &e) {
         throw std::runtime_error("Failed to load shared lib: " + std::string(e.what()));
@@ -32,7 +32,6 @@ Hunter::~Hunter() {
 
 void Hunter::run() {
     renderer_->initWindow(800, 600, "Hunter Game POC ECS");
-    SetTargetFPS(30);
 
     for (int i = 0; i < 1; ++i) {
         entity_t e = reg_.spawn_entity();
