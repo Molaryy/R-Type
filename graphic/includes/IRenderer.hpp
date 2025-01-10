@@ -220,5 +220,62 @@ namespace Graphic {
              * @return event_t 
              */
             virtual event_t getEvents() = 0;
+
+            /**
+             * @brief load sounds
+             * 
+             * @param path 
+             * @return int 
+             */
+            virtual int loadSound(const std::string &path) = 0;
+
+            /**
+             * @brief unload sounds
+             * 
+             * @param soundID 
+             */
+            virtual void unloadSound(int soundID) = 0;
+
+            /**
+             * @brief play sounds
+             * 
+             * @param soundID 
+             */
+            virtual void playSound(int soundID) = 0;
+
+            /**
+             * @brief load musics
+             * 
+             * @param path 
+             * @return int 
+             */
+            virtual int loadMusic(const std::string &path) = 0;
+
+            /**
+             * @brief unload musics
+             * 
+             * @param musicID 
+             */
+            virtual void unloadMusic(int musicID) = 0;
+
+            /**
+             * @brief play musics
+             * 
+             * @param musicID 
+             */
+            virtual void playMusic(int musicID) = 0;
+
+            /**
+             * @brief stop musics
+             * 
+             * @param musicID 
+             */
+            virtual void stopMusic(int musicID) = 0;
+
+            /**
+             * @brief update musics
+             * 
+             */
+            virtual void updateMusic() = 0;
     };
 }

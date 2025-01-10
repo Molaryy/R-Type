@@ -19,10 +19,25 @@ namespace Graphic {
             UnloadTexture(pair.second);
         }
         textures_.clear();
+
+        for (auto &pair : sounds_) {
+            UnloadSound(pair.second);
+        }
+        sounds_.clear();
+
+        for (auto &pair : musics_) {
+            UnloadMusicStream(pair.second);
+        }
+        musics_.clear();
+
+        if (IsAudioDeviceReady()) {
+            CloseAudioDevice();
+        }
     }
 
     void RaylibGraphic::initWindow(int width, int height, const std::string &title) {
         ::InitWindow(width, height, title.c_str());
+        ::InitAudioDevice();
     }
 
     void RaylibGraphic::closeWindow() {
@@ -101,6 +116,70 @@ namespace Graphic {
             events.inputs.push_back(Keys::RightClick);
         }
         return events;
+    }
+
+    int RaylibGraphic::loadSound(const std::string &path) {
+        Sound sound = LoadSound(path.c_str());
+        int id = nextSoundID_++;
+
+        sounds_[id] = sound;
+        return id;
+    }
+
+    void RaylibGraphic::unloadSound(int soundID) {
+        auto it = sounds_.find(soundID);
+
+        if (it != sounds_.end()) {
+            UnloadSound(it->second);
+            sounds_.erase(it);
+        }
+    }
+
+    void RaylibGraphic::playSound(int soundID) {
+        auto it = sounds_.find(soundID);
+
+        if (it != sounds_.end()) {
+            PlaySound(it->second);
+        }
+    }
+
+    int RaylibGraphic::loadMusic(const std::string &path) {
+        Music music = LoadMusicStream(path.c_str());
+        int id = nextMusicID_++;
+
+        musics_[id] = music;
+        return id;
+    }
+
+    void RaylibGraphic::unloadMusic(int musicID) {
+        auto it = musics_.find(musicID);
+
+        if (it != musics_.end()) {
+            UnloadMusicStream(it->second);
+            musics_.erase(it);
+        }
+    }
+
+    void RaylibGraphic::playMusic(int musicID) {
+        auto it = musics_.find(musicID);
+
+        if (it != musics_.end()) {
+            PlayMusicStream(it->second);
+        }
+    }
+
+    void RaylibGraphic::stopMusic(int musicID) {
+        auto it = musics_.find(musicID);
+
+        if (it != musics_.end()) {
+            StopMusicStream(it->second);
+        }
+    }
+
+    void RaylibGraphic::updateMusic() {
+        for (auto &pair : musics_) {
+            UpdateMusicStream(pair.second);
+        }
     }
 
     extern "C" {
