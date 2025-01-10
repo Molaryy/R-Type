@@ -66,13 +66,14 @@ namespace Graphic {
         }
     }
 
-    void RaylibGraphic::drawTexture(int textureID, int x, int y) {
+    void RaylibGraphic::drawTexture(int textureID, int x, int y, int width, int height, int frame) {
         auto it = textures_.find(textureID);
 
         if (it != textures_.end()) {
-            // Rectangle srcRec = { 0.0f, static_cast<float>(frame * height), static_cast<float>(width), static_cast<float>(height) };
-            // Vector2 pos = { static_cast<float>(x), static_cast<float>(y) };
-            DrawTexture(it->second, x, y, WHITE);
+            Rectangle srcRec = { 0.0f, static_cast<float>(frame * height), static_cast<float>(width), static_cast<float>(height) };
+            Vector2 pos = { static_cast<float>(x), static_cast<float>(y) };
+
+            DrawTextureRec(it->second, srcRec, pos, WHITE);
         }
     }
 
