@@ -30,10 +30,24 @@ namespace Graphic {
             void drawTexture(int textureID, int x, int y, int width, int height, int frame = 0) override;
             void drawText(const std::string &text, int x, int y, int fontSize, unsigned char r, unsigned char g, unsigned char b, unsigned char a) override;
             event_t getEvents() override;
+            int loadSound(const std::string &path) override;
+            void unloadSound(int soundID) override;
+            void playSound(int soundID) override;
+            int loadMusic(const std::string &path) override;
+            void unloadMusic(int musicID) override;
+            void playMusic(int musicID) override;
+            void stopMusic(int musicID) override;
+            void updateMusic() override;
 
         private:
             std::unordered_map<int, Texture2D> textures_;
             int nextTextureID_ = 0;
+
+            std::unordered_map<int, Sound> sounds_;
+            int nextSoundID_ = 0;
+
+            std::unordered_map<int, Music> musics_;
+            int nextMusicID_ = 0;
 
             inline static const std::map<int, Keys> inputMap_ = {
                 {KEY_NULL, Unknown},
