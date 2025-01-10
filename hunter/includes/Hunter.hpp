@@ -8,6 +8,7 @@
 #pragma once
 
 #include <dylib.hpp>
+#include <memory>
 
 #include "IRenderer.hpp"
 #include "Registry.hh"
@@ -20,6 +21,9 @@ struct Sprite {
     int textureID;
     int width;
     int height;
+    int currentFrame;
+    float frameTimer;
+    float frameDuration;
 
     void log() const;
 };
@@ -34,6 +38,7 @@ public:
     static void duckMovementSystem(Registry &r);
     static void duckShootingSystem(Registry &r);
     static void duckRendererSystem(Registry &r);
+    // static void duckAnimationSystem(Registry &r);
 
     static Hunter &createInstance();
     [[nodiscard]] static Hunter &getInstance();

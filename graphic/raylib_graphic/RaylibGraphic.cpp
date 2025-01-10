@@ -19,10 +19,25 @@ namespace Graphic {
             UnloadTexture(pair.second);
         }
         textures_.clear();
+
+        for (auto &pair : sounds_) {
+            UnloadSound(pair.second);
+        }
+        sounds_.clear();
+
+        for (auto &pair : musics_) {
+            UnloadMusicStream(pair.second);
+        }
+        musics_.clear();
+
+        if (IsAudioDeviceReady()) {
+            CloseAudioDevice();
+        }
     }
 
     void RaylibGraphic::initWindow(int width, int height, const std::string &title) {
         ::InitWindow(width, height, title.c_str());
+        ::InitAudioDevice();
     }
 
     void RaylibGraphic::closeWindow() {
@@ -66,11 +81,14 @@ namespace Graphic {
         }
     }
 
-    void RaylibGraphic::drawTexture(int textureID, int x, int y) {
+    void RaylibGraphic::drawTexture(int textureID, int x, int y, int width, int height, int frame) {
         auto it = textures_.find(textureID);
 
         if (it != textures_.end()) {
-            DrawTexture(it->second, x, y, WHITE);
+            Rectangle srcRec = { 0.0f, static_cast<float>(frame * height), static_cast<float>(width), static_cast<float>(height) };
+            Vector2 pos = { static_cast<float>(x), static_cast<float>(y) };
+
+            DrawTextureRec(it->second, srcRec, pos, WHITE);
         }
     }
 
@@ -78,27 +96,90 @@ namespace Graphic {
         DrawText(text.c_str(), x, y, fontSize, Color(r, g, b, a));
     }
 
-    bool RaylibGraphic::isPressed(KeyCode keyCode) const {
-        switch (keyCode) {
-            case KeyCode::Left:
-                return IsKeyDown(KEY_LEFT);
-            case KeyCode::Right:
-                return IsKeyDown(KEY_RIGHT);
-            case KeyCode::Up:
-                return IsKeyDown(KEY_UP);
-            case KeyCode::Down:
-                return IsKeyDown(KEY_DOWN);
-            case KeyCode::MouseLeft:
-                return IsMouseButtonDown(MOUSE_LEFT_BUTTON);
-            case KeyCode::MouseRight:
-                return IsMouseButtonDown(MOUSE_RIGHT_BUTTON);
+    event_t RaylibGraphic::getEvents() {
+        event_t events;
+
+        events.mouse_pos = { GetMouseX(), GetMouseY() };
+        events.window_size = { GetScreenWidth(), GetScreenHeight() };
+        if (WindowShouldClose())
+            events.inputs.push_back(Keys::CloseWindow);
+
+        for (auto const &[raylibKey, customKey] : RaylibGraphic::inputMap_) {
+            if (IsKeyDown(raylibKey)) {
+                events.inputs.push_back(customKey);
+            }
+        }
+        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+            events.inputs.push_back(Keys::LeftClick);
+        }
+        if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
+            events.inputs.push_back(Keys::RightClick);
+        }
+        return events;
+    }
+
+    int RaylibGraphic::loadSound(const std::string &path) {
+        Sound sound = LoadSound(path.c_str());
+        int id = nextSoundID_++;
+
+        sounds_[id] = sound;
+        return id;
+    }
+
+    void RaylibGraphic::unloadSound(int soundID) {
+        auto it = sounds_.find(soundID);
+
+        if (it != sounds_.end()) {
+            UnloadSound(it->second);
+            sounds_.erase(it);
         }
     }
 
-    std::pair<int, int> RaylibGraphic::getMousePosition() {
-        Vector2 pos = ::GetMousePosition();
+    void RaylibGraphic::playSound(int soundID) {
+        auto it = sounds_.find(soundID);
 
-        return { static_cast<int>(pos.x), static_cast<int>(pos.y) };
+        if (it != sounds_.end()) {
+            PlaySound(it->second);
+        }
+    }
+
+    int RaylibGraphic::loadMusic(const std::string &path) {
+        Music music = LoadMusicStream(path.c_str());
+        int id = nextMusicID_++;
+
+        musics_[id] = music;
+        return id;
+    }
+
+    void RaylibGraphic::unloadMusic(int musicID) {
+        auto it = musics_.find(musicID);
+
+        if (it != musics_.end()) {
+            UnloadMusicStream(it->second);
+            musics_.erase(it);
+        }
+    }
+
+    void RaylibGraphic::playMusic(int musicID) {
+        auto it = musics_.find(musicID);
+
+        if (it != musics_.end()) {
+            PlayMusicStream(it->second);
+        }
+    }
+
+    void RaylibGraphic::stopMusic(int musicID) {
+        auto it = musics_.find(musicID);
+
+        if (it != musics_.end()) {
+            StopMusicStream(it->second);
+        }
+    }
+
+    void RaylibGraphic::updateMusic() {
+        for (auto &pair : musics_) {
+            UpdateMusicStream(pair.second);
+        }
     }
 
     extern "C" {
