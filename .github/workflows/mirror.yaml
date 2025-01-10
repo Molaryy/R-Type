@@ -2,7 +2,11 @@ name: r-type-mirror
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
+  pull_request:
+    types:
+      - opened
+    branches: [ main, dev ]
 
 env:
   MIRROR_URL: git@github.com:EpitechPromo2027/B-CPP-500-PAR-5-2-rtype-nicolas.gillard.git
