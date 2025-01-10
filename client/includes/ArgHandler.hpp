@@ -21,7 +21,7 @@ public:
     static bool check_help(int ac, const std::string_view &exec_name, const std::string_view &first_arg);
     void verif_arg(int ac, const std::vector<std::string_view> &av);
 
-    std::string ip{"127.0.0.1"};
+    std::string ip{"0.0.0.0"};
     std::size_t port {4242};
 private:
     static std::optional<std::string> getArgument_(const std::string &arg, const std::vector<std::string_view> &av);
