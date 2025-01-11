@@ -132,7 +132,7 @@ void Client::run() {
 
     renderer_->initWindow(1920, 1080, "rtype");
 
-    Network::Packet jPacket(Protocol::JoinLobbyPacket(0), Protocol::JOIN_LOBBY_BY_ID);
+    Network::Packet jPacket(Protocol::EmptyPacket(), Protocol::JOIN_RANDOM_LOBBY);
     network_lib_->send(jPacket.serialize());
 
     while (!renderer_->windowShouldClose()) {
