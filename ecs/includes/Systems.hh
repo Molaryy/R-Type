@@ -15,10 +15,10 @@
 
 namespace Systems {
     [[maybe_unused]] static void position_velocity(Registry &r) {
-        auto &positions = r.get_components<Position>();
-        auto &velocitys = r.get_components<Velocity>();
+        SparseArray<Position> &positions = r.get_components<Position>();
+        const SparseArray<Velocity> &velocitys = r.get_components<Velocity>();
 
-        for (auto &&[pos, vel] : Zipper(positions, velocitys)) {
+        for (const auto &&[pos, vel] : Zipper(positions, velocitys)) {
             pos.x += vel.x;
             pos.y += vel.y;
         }

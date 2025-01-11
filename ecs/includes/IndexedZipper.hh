@@ -11,11 +11,12 @@
 
 #include "IndexedZipperIterator.hh"
 
-template<class... Containers>
+template <class... Containers>
 class IndexedZipper {
 public :
     using iterator = IndexedZipperIterator<Containers...>;
     using iterator_tuple = typename iterator::iterator_tuple;
+
     explicit IndexedZipper(Containers &... cs)
         : begin_(std::make_tuple(cs.begin()...)),
           end_(std::make_tuple(cs.end()...)),
