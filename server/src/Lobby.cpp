@@ -148,7 +148,7 @@ void Lobby::run() {
         }
     });
     registry_.add_system(Systems::position_velocity);
-    registry_.add_system(Systems::log);
+//    registry_.add_system(Systems::log);
     registry_.add_system([](Registry &r) {
         Systems::limit_framerate(r, SERVER_TPS);
     });

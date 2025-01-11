@@ -103,6 +103,7 @@ namespace Protocol {
     };
 
     struct EmptyPacket {
+        uint8_t empty = 0; // In c++, empty structures size is 1 byte, and this is the best way to ensure that the empty struct is null-initialized
     };
 
     struct Vector2i {
