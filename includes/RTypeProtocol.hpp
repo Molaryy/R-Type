@@ -74,6 +74,7 @@ namespace Protocol {
         INPUT_KEYS, // PacketInputsKeysPacket, all inputs from clients
         ASK_LOBBY_LIST, // EmptyPacket, Ask for number of lobby
         ASK_LOBBY_DATA, // AskLobbyDataPacket, Ask for data of a lobby id
+        JOIN_LOBBY_BY_ID, // AskLobbyDataPacket, Ask to join a lobby by id
         DISCONNECT, // EmptyPacket, Disconnection
     };
 
@@ -87,6 +88,7 @@ namespace Protocol {
         END_GAME, // EmptyPacket, Game is over
         LOBBY_LIST, // LobbyListPacket, Send number of lobbys
         LOBBY_DATA, // LobbyDataPacket, Send data about lobby id
+        START_GAME, // EmptyPacket, Start game
         SERVER_SHUTDOWN,
     };
 
@@ -133,6 +135,10 @@ namespace Protocol {
 
     struct LobbyListPacket {
         std::size_t number_of_lobbys; // Number of lobbys
+    };
+
+    struct JoinLobbyById {
+        std::size_t lobby_id; // Lobby id to join
     };
 
     struct LobbyDataPacket {
