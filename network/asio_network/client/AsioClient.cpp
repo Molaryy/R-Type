@@ -24,9 +24,12 @@ namespace Network {
     }
 
     void AsioClient::connect(const std::string &ip, const uint16_t port) {
-        _server_endpoint = asio::ip::udp::endpoint(asio::ip::make_address_v4(ip), port);
-        _socket.open(asio::ip::udp::v4());
-
+        try {
+            _server_endpoint = asio::ip::udp::endpoint(asio::ip::make_address_v4(ip), port);
+            _socket.open(asio::ip::udp::v4());
+        } catch (const std::exception &e) {
+            std::cerr << ip << e.what() << std::endl;
+        }
         std::thread([this]() {
             _asyncReceive();
         }).detach();

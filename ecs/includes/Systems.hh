@@ -12,8 +12,6 @@
 
 #include <thread>
 
-#define DEFAULT_FPS 33333 // 30 fps
-
 namespace Systems
 {
 	static void log(const Registry &r)
