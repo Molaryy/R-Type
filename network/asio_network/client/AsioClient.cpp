@@ -30,7 +30,7 @@ namespace Network {
         } catch (const std::exception &e) {
             std::cerr << ip << e.what() << std::endl;
         }
-        std::thread([this]() {
+        std::thread([this] {
             _asyncReceive();
         }).detach();
     }

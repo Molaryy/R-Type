@@ -75,9 +75,12 @@ namespace Protocol {
 
         ASK_LOBBY_LIST, // EmptyPacket, Ask for number of lobby
         ASK_LOBBY_DATA, // AskLobbyDataPacket, Ask for data of a lobby id
-        JOIN_LOBBY_BY_ID, // JoinLobbyPacket, Ask to join a lobby by id
 
-        CLIENT_ASK_START_GAME, // EmptyPacket, Ask for game start, will start game for the actual lobby
+        JOIN_LOBBY_BY_ID, // JoinLobbyPacket, Ask to join a lobby by id -> Server will respond with ACCEPT_LOBBY_JOIN if success
+        JOIN_NEW_LOBBY, // EmptyPacket, Ask to join a newly created lobby -> Server will respond with ACCEPT_LOBBY_JOIN
+        JOIN_RANDOM_LOBBY, // EmptyPacket, Join a random open lobby, or create a new one if all are closed -> Server will respond with ACCEPT_LOBBY_JOIN
+
+        ASK_START_GAME, // EmptyPacket, Ask for game start, will start game for the actual lobby
 
         INPUT_KEYS, // PacketInputsKeysPacket, all inputs from clients
     };
@@ -87,7 +90,7 @@ namespace Protocol {
 
         LOBBY_LIST, // LobbyListPacket, Send number of lobbys
         LOBBY_DATA, // LobbyDataPacket, Send data about lobby id
-        ACCEPT_LOBBY_JOIN, //AcceptLobbyJoinPacket, response to JOIN_LOBBY_BY_ID
+        ACCEPT_LOBBY_JOIN, //AcceptLobbyJoinPacket, server send this after receiving JOIN_LOBBY_BY_ID, JOIN_NEW_LOBBY, JOIN_LOBBY_RANDOM
         START_GAME, // Game is starting, server will start sending game state
         END_GAME, // EmptyPacket, Game is over
 
@@ -145,6 +148,7 @@ namespace Protocol {
     };
 
     struct AcceptLobbyJoinPacket {
+        std::size_t lobby_id; // ID of to joined lobby
         std::size_t entity_id; // Server id of the new joined client
     };
 

@@ -8,6 +8,8 @@
 #pragma once
 
 #include <cstddef>
+#include <queue>
+#include <thread>
 
 #include "INetworkServer.hpp"
 #include "Registry.hh"
@@ -37,4 +39,9 @@ private:
     std::size_t maxClient_;
     std::unordered_map<uint16_t, entity_t> players_;
     Protocol::LobbyState state_;
+
+    std::queue<std::function<void()>> networkTasks_;
+
+    std::thread thread_;
+    std::mutex networkMutex_;
 };

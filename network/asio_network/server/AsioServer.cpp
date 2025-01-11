@@ -39,7 +39,7 @@ namespace Network {
         std::vector<std::pair<uint16_t, std::vector<uint8_t>>> packets;
 
         int i = -1;
-        for (auto &[endpoint, data] : _clients) {
+        for (auto &data : _clients | std::views::values) {
             std::lock_guard lock(_mutex);
             i++;
             auto it_end = std::ranges::search(data, _packet_end);
