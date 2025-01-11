@@ -88,7 +88,6 @@ namespace Protocol {
         END_GAME, // EmptyPacket, Game is over
         LOBBY_LIST, // LobbyListPacket, Send number of lobbys
         LOBBY_DATA, // LobbyDataPacket, Send data about lobby id
-        START_GAME, // EmptyPacket, Start game
         SERVER_SHUTDOWN,
     };
 
