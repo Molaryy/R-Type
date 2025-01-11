@@ -15,15 +15,13 @@ class Zipper;
 
 template <class... Containers>
 class ZipperIterator {
+public:
     friend Zipper<Containers...>;
 
     template <class Container>
-    using iterator_t = typename Container::iterator;
-
+    using iterator_t = decltype(std::declval<Container>().begin());
     template <class Container>
     using it_reference_t = typename iterator_t<Container>::reference;
-
-public:
     using value_type = std::tuple<decltype(std::declval<it_reference_t<Containers>>().value()) &...>;
     using reference = value_type;
     using pointer = void;
