@@ -28,4 +28,14 @@ add_custom_target(clean_server
     COMMENT "Removing server executable"
 )
 
+if(CMAKE_BUILD_TYPE MATCHES "Debug")
+    set(
+            CMAKE_C_FLAGS
+            "${CMAKE_C_FLAGS} -Werror -fsanitize=undefined -fsanitize=address"
+    )
+    target_link_options(asan-demo
+            BEFORE PUBLIC -fsanitize=undefined PUBLIC -fsanitize=address
+    )
+endif()
+
 add_dependencies(clean_server r-type_server)
