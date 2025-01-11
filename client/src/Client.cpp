@@ -93,6 +93,11 @@ bool Client::connectToServer_(const std::string &ip, const std::size_t port) {
         Network::Packet deserialized_packet(oldest_packet);
         packet_handler_(deserialized_packet);
     }
+
+    Network::Packet jPacket(Protocol::JoinLobbyById(
+        0
+    ), Protocol::JOIN_LOBBY_BY_ID);
+    network_lib_->send(jPacket.serialize());
     return true;
 }
 
