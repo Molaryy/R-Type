@@ -144,6 +144,15 @@ void Server::initPacketHandling() {
             for (int i = 0; i < Protocol::NB_INPUTS_KEYS; i++)
                 std::cout << std::boolalpha << key_pressed[i] << std::endl;
         });
+
+    packetHandler_.setPacketCallback(
+        Protocol::JOIN_LOBBY_BY_ID,
+        [this]([[maybe_unused]] const Network::Packet &packet, const uint16_t client) {
+            Protocol::JoinLobbyById payload = packet.getPayload<Protocol::JoinLobbyById>();
+
+            std::cout << "Client: " << client << " : Try joining lobby: " << payload.lobby_id << std::endl;
+        }
+    );
 }
 
 std::unique_ptr<Server> Server::instance_ = nullptr;
