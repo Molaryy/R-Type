@@ -95,8 +95,10 @@ bool Client::connectToServer_(const std::string &ip, const std::size_t port) {
     return true;
 }
 
-void Client::setupPacketHandler_() {
-    packet_handler_.setPacketCallback(Protocol::START_GAME, [](Network::Packet &) {
+void Client::setupPacketHandler_()
+{
+    packet_handler_.setPacketCallback(Protocol::START_GAME, [](Network::Packet &)
+    {
         std::cout << "START_GAME received\n";
     });
     packet_handler_.setPacketCallback(Protocol::POSITION_VELOCITY, [](Network::Packet &) {
