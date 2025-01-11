@@ -7,18 +7,26 @@
 
 #pragma once
 
-#include "Registry.hh"
-#include "Components.hh"
-#include "Zipper.hh"
 
 #include <thread>
 
-namespace Systems
-{
-	static void log(const Registry &r)
-    {
-        for (entity_t i = 0; i < r.max_entities(); ++i)
-        {
+#include "Components.hh"
+#include "Registry.hh"
+#include "Zipper.hh"
+
+namespace Systems {
+    static void position_velocity(Registry &r) {
+        auto &positions = r.get_components<Position>();
+        auto &velocitys = r.get_components<Velocity>();
+
+        for (auto &&[pos, vel] : Zipper(positions, velocitys)) {
+            pos.x += vel.x;
+            pos.y += vel.y;
+        }
+    }
+
+    static void log(const Registry &r) {
+        for (entity_t i = 0; i < r.max_entities(); ++i) {
             std::cout << "Entity " << i << ": ";
             r.log(i);
             std::cout << std::endl;

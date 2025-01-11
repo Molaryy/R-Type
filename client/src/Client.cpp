@@ -4,21 +4,20 @@
 ** File description:
 ** Client
 */
+#include "Client.hpp"
 
-#include "Scenes.hpp"
 #include <chrono>
 #include <iostream>
 #include <memory>
-#include <Systems.hh>
 #include <thread>
 
 #include "Packet.hpp"
 #include "PacketHandler.hpp"
 #include "Registry.hh"
-#include "Systems.hpp"
-#include "Components.hpp"
 #include "RTypeProtocol.hpp"
-#include "Main.hpp"
+#include "Scenes.hpp"
+#include "Systems.hh"
+#include "Systems.hpp"
 
 Client::~Client() = default;
 
@@ -134,16 +133,16 @@ void Client::run() {
     setupSystems_();
 
     renderer_->initWindow(800, 600, "rtype");
-    
+
     createMenuScene(registry_);
 
     renderer_->loadTexture("assets/spaceship.gif");
-    
+
 
     while (!renderer_->windowShouldClose()) {
         renderer_->beginDrawing();
         renderer_->clearBackground(0, 0, 0, 0);
-    
+
         registry_.run_systems();
 
         renderer_->endDrawing();
