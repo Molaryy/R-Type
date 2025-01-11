@@ -65,7 +65,7 @@ Registry &Client::getRegistry() {
 }
 
 bool Client::connectToServer_(const std::string &ip, const std::size_t port) {
-    network_lib_->connect(ip, port);
+    network_lib_->connect(ip, static_cast<uint16_t>(port));
     bool success = false;
 
     packet_handler_.setPacketCallback(Protocol::ACCEPT_CONNECTION, [&success,
