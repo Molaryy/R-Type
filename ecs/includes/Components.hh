@@ -42,21 +42,21 @@ struct Life
     int current;
     int max;
 
-    void takeDamage(int damage)
+    void takeDamage(const int damage)
     {
         current -= damage;
         if (current < 0)
             current = 0;
     }
 
-    void heal(int heal)
+    void heal(const int heal)
     {
         current += heal;
         if (current > max)
             current = max;
     }
 
-    bool is_alive() const
+    [[nodiscard]] bool is_alive() const
     {
         return current > 0;
     }

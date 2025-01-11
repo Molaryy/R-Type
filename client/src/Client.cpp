@@ -24,6 +24,7 @@ Client::~Client() = default;
 Client::Client(const std::string &ip, const std::size_t port)
     : graph_loader_("./", "raylib_graphics"),
       network_loader_("./", "asio_client") {
+    std::cout << ip << port << std::endl;
     try {
         auto *create_graph_lib = graph_loader_.get_function<Graphic::IRenderer *()>("create_instance");
         auto *create_network_lib = network_loader_.get_function<Network::INetworkClient *()>("create_instance");
@@ -67,14 +68,13 @@ bool Client::connectToServer_(const std::string &ip, const std::size_t port) {
     network_lib_->connect(ip, static_cast<uint16_t>(port));
     bool success = false;
 
-    packet_handler_.setPacketCallback(Protocol::ACCEPT_CONNECTION, [&success,
-                                          this](const Network::Packet &packet) {
-                                          const auto [entity_id] = packet.getPayload<Protocol::AcceptConnectionPacket>();
-
-                                          my_server_id_ = entity_id;
-                                          std::cout << "Connection established : My server id is : " << my_server_id_ << std::endl;
-                                          success = true;
-                                      });
+    packet_handler_.setPacketCallback(
+        Protocol::ACCEPT_CONNECTION,
+        [&success, this]([[maybe_unused]] const Network::Packet &packet) {
+            std::cout << "Connection established with server" << std::endl;
+            success = true;
+        }
+    );
 
     Network::Packet packet(Protocol::EmptyPacket(), Protocol::CONNECT);
     network_lib_->send(packet.serialize());
@@ -92,18 +92,11 @@ bool Client::connectToServer_(const std::string &ip, const std::size_t port) {
         Network::Packet deserialized_packet(oldest_packet);
         packet_handler_(deserialized_packet);
     }
-
-    Network::Packet jPacket(Protocol::JoinLobbyById(
-        0
-    ), Protocol::JOIN_LOBBY_BY_ID);
-    network_lib_->send(jPacket.serialize());
     return true;
 }
 
-void Client::setupPacketHandler_()
-{
-    packet_handler_.setPacketCallback(Protocol::START_GAME, [](Network::Packet &)
-    {
+void Client::setupPacketHandler_() {
+    packet_handler_.setPacketCallback(Protocol::START_GAME, [](Network::Packet &) {
         std::cout << "START_GAME received\n";
     });
     packet_handler_.setPacketCallback(Protocol::POSITION_VELOCITY, [](Network::Packet &) {
@@ -145,6 +138,9 @@ void Client::run() {
 
     renderer_->loadTexture("assets/spaceship.gif");
 
+
+    Network::Packet jPacket(Protocol::JoinLobbyPacket(0), Protocol::JOIN_LOBBY_BY_ID);
+    network_lib_->send(jPacket.serialize());
 
     while (!renderer_->windowShouldClose()) {
         renderer_->beginDrawing();

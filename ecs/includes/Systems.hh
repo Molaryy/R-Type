@@ -15,7 +15,7 @@
 #include "Zipper.hh"
 
 namespace Systems {
-    static void position_velocity(Registry &r) {
+    [[maybe_unused]] static void position_velocity(Registry &r) {
         auto &positions = r.get_components<Position>();
         auto &velocitys = r.get_components<Velocity>();
 
@@ -25,7 +25,7 @@ namespace Systems {
         }
     }
 
-    static void log(const Registry &r) {
+    [[maybe_unused]] static void log(const Registry &r) {
         for (entity_t i = 0; i < r.max_entities(); ++i) {
             std::cout << "Entity " << i << ": ";
             r.log(i);
@@ -35,8 +35,7 @@ namespace Systems {
         }
     }
 
-    static void limit_framerate([[maybe_unused]]Registry &r, const uint8_t fps)
-    {
+    [[maybe_unused]] static void limit_framerate([[maybe_unused]] Registry &r, const uint8_t fps) {
         static const auto frame_duration = std::chrono::microseconds(1 / fps);
         static auto last_frame = std::chrono::steady_clock::now();
         const auto current_frame = std::chrono::steady_clock::now();
