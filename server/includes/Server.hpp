@@ -8,9 +8,10 @@
 #pragma once
 
 #include <dylib.hpp>
+#include <vector>
 
-#include "Entity.hh"
 #include "INetworkServer.hpp"
+#include "Lobby.hpp"
 #include "PacketHandler.hpp"
 #include "Registry.hh"
 
@@ -25,23 +26,22 @@ public:
     [[nodiscard]] Network::PacketHandler &getPacketHandler();
     [[nodiscard]] Network::INetworkServer &getNetwork() const;
 
-
     void run();
     void gameLoop();
 
 private:
     Server(std::size_t port, std::size_t maxClients);
 
-    void initPacketHandling();
+    void initPacketHandling_();
 
     dylib networkLoader_;
     std::size_t port_;
+    std::size_t maxClient_;
     static std::unique_ptr<Server> instance_;
 
     std::unique_ptr<Network::INetworkServer> networkLib_;
     Network::PacketHandler packetHandler_;
-    Registry registry_;
-    std::size_t maxClient_;
-    std::unordered_map<uint16_t, entity_t> players_;
-    bool gameStarted_ = false;
+    std::vector<Lobby> lobbies_;
+
+    bool serverRunning_;
 };

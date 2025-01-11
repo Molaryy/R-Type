@@ -6,10 +6,10 @@ set(CMAKE_CXX_STANDARD 23)
 
 add_executable(${PROJECT_NAME}
         src/Arguments.cpp
-#        src/Game.cpp
         src/Server.cpp
         main.cpp
         includes/Components.hpp
+        src/Lobby.cpp
 )
 
 target_include_directories(${PROJECT_NAME}

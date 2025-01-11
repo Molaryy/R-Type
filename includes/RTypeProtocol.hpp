@@ -65,30 +65,38 @@ namespace Protocol {
     enum LobbyState : uint8_t {
         OPEN, // Lobby is open and waiting to start, you can connect
         FULL, // Lobby is full and waiting to start, you can't connect
-        IN_GAME,  // Lobby is in game, you can't connect
+        IN_GAME, // Lobby is in game, you can't connect
+        CLOSE, // Lobby is closed, you can't connect
     };
 
     enum CommandIdClient : uint16_t {
         CONNECT, // EmptyPacket, Client send this packet at startup
-        CLIENT_ASK_START_GAME, // EmptyPacket, Ask for game start, will start game for the actual lobby
-        INPUT_KEYS, // PacketInputsKeysPacket, all inputs from clients
+        DISCONNECT, // EmptyPacket, Disconnection
+
         ASK_LOBBY_LIST, // EmptyPacket, Ask for number of lobby
         ASK_LOBBY_DATA, // AskLobbyDataPacket, Ask for data of a lobby id
-        JOIN_LOBBY_BY_ID, // AskLobbyDataPacket, Ask to join a lobby by id
-        DISCONNECT, // EmptyPacket, Disconnection
+        JOIN_LOBBY_BY_ID, // JoinLobbyPacket, Ask to join a lobby by id
+
+        CLIENT_ASK_START_GAME, // EmptyPacket, Ask for game start, will start game for the actual lobby
+
+        INPUT_KEYS, // PacketInputsKeysPacket, all inputs from clients
     };
 
     enum CommandIdServer : uint16_t {
-        ACCEPT_CONNECTION, // AcceptConnectionPacket, response to Client CONNECT
+        ACCEPT_CONNECTION, // EmptyPacket, response to Client CONNECT, server acceptinig this client
+
+        LOBBY_LIST, // LobbyListPacket, Send number of lobbys
+        LOBBY_DATA, // LobbyDataPacket, Send data about lobby id
+        ACCEPT_LOBBY_JOIN, //AcceptLobbyJoinPacket, response to JOIN_LOBBY_BY_ID
         START_GAME, // Game is starting, server will start sending game state
-        POSITION_VELOCITY, // EntityPositionVelocityPacket, state of a new entity on screen
+        END_GAME, // EmptyPacket, Game is over
+
         SPAWN, // SpawnEntityPacket, data about a new entity to be displayed
         HIT, // HitPacket, entity got hit
         KILL, // DeadPacket, entity is dead because 0 helth or out of screen
-        END_GAME, // EmptyPacket, Game is over
-        LOBBY_LIST, // LobbyListPacket, Send number of lobbys
-        LOBBY_DATA, // LobbyDataPacket, Send data about lobby id
-        SERVER_SHUTDOWN,
+        POSITION_VELOCITY, // EntityPositionVelocityPacket, state of a new entity on screen
+
+        SERVER_SHUTDOWN, // EmptyPacket, server death
     };
 
     struct EmptyPacket {
@@ -97,10 +105,6 @@ namespace Protocol {
     struct Vector2i {
         int x;
         int y;
-    };
-
-    struct AcceptConnectionPacket {
-        std::size_t entity_id; // Your server id for the incoming game
     };
 
     struct SpawnEntityPacket {
@@ -136,8 +140,12 @@ namespace Protocol {
         std::size_t number_of_lobbys; // Number of lobbys
     };
 
-    struct JoinLobbyById {
+    struct JoinLobbyPacket {
         std::size_t lobby_id; // Lobby id to join
+    };
+
+    struct AcceptLobbyJoinPacket {
+        std::size_t entity_id; // Server id of the new joined client
     };
 
     struct LobbyDataPacket {
