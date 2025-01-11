@@ -41,6 +41,6 @@ void ArgHandler::verif_arg(const int ac, const std::vector<std::string_view> &av
 std::optional<std::string> ArgHandler::getArgument_(const std::string &arg, const std::vector<std::string_view> &av) {
     auto it = std::ranges::find(av, arg);
     if (it != av.end())
-        it++;
+        ++it;
     return it == av.end() ? std::nullopt : std::optional(std::string(*it));
 }
