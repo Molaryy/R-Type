@@ -49,9 +49,11 @@ void Server::run() {
 
     initPacketHandling();
 
+    registry_.add_system([](Registry &r) {
+        Systems::limit_framerate(r, 30);
+    });
     registry_.add_system(Systems::networkReceiver);
     registry_.add_system(Systems::log);
-
     gameLoop();
 }
 
@@ -81,13 +83,13 @@ void Server::initPacketHandling() {
 
             const entity_t entity = registry_.spawn_entity();
             registry_.add_component(entity, ClientInputs());
-//            registry_.add_component(entity, Position(0, 0));
-//            registry_.add_component(entity, Velocity(0, 0));
-//            registry_.add_component(entity, HitboxRectangle(PLAYER_SIZE, PLAYER_SIZE));
-//            registry_.add_component(entity, HitboxPlan({HitboxPlan::BONUS_ALLY, HitboxPlan::ALLY_ENEMI}));
-//            registry_.add_component(entity, Component::ComponentEntityType(PLAYER));
-//            registry_.add_component(entity, ClockComponent(PLAYER_SHOOT_RATE));
-//            registry_.add_component(entity, Health(PLAYER_HEALTH));
+            registry_.add_component(entity, Position(0, 0));
+            registry_.add_component(entity, Velocity(0, 0));
+            // registry_.add_component(entity, HitboxRectangle(PLAYER_SIZE, PLAYER_SIZE));
+            // registry_.add_component(entity, HitboxPlan({HitboxPlan::BONUS_ALLY, HitboxPlan::ALLY_ENEMI}));
+            registry_.add_component(entity, ComponentEntityType(Protocol::PLAYER));
+            registry_.add_component(entity, Delay(PLAYER_SHOOT_RATE, 0));
+            registry_.add_component(entity, Life(PLAYER_HEALTH, PLAYER_HEALTH));
             players_.emplace(client, entity);
 
 

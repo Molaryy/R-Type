@@ -7,13 +7,10 @@
 
 #pragma once
 
-#include <vector>    // std::vector
-#include <memory>    // std::allocator
-#include <any>       // std::any
 #include <algorithm> // std::find
 #include <optional>  //std::optional
+#include <vector>    // std::vector
 
-//! Primary template any T
 template <typename Component>
 class SparseArray
 {

@@ -17,6 +17,7 @@
 #include "PacketHandler.hpp"
 #include "Registry.hh"
 #include "RTypeProtocol.hpp"
+#include "Systems.hpp"
 
 Client::~Client() = default;
 
@@ -122,6 +123,7 @@ void Client::setupPacketHandler_() {
 }
 
 void Client::setupSystems_() {
+    registry_.add_system(Systems::networkReceiver);
     registry_.add_system(Systems::log);
 }
 

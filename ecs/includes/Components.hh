@@ -64,7 +64,7 @@ struct Life
     void log() const {
         std::cout << "Life = {" << current << "/" << max << "}";
     }
-} Life_t;
+};
 
 struct Collision
 {
