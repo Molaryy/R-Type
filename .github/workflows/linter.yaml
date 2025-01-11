@@ -1,12 +1,15 @@
 name: Linter C++
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
     types:
       - opened
-    branches: [ main, dev ]
+    branches-ignore:
+      - 'ga-ignore-**'
+  push:
+    branches-ignore:
+      - 'ga-ignore-**'
+
 
 jobs:
   lint:

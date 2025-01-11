@@ -1,12 +1,15 @@
 name: Build C++
 
 on:
-  push:
-    branches: [ main, dev ]
   pull_request:
     types:
       - opened
-    branches: [ main, dev ]
+    branches-ignore:
+      - 'ga-ignore-**'
+  push:
+    branches-ignore:
+      - 'ga-ignore-**'
+
 
 env:
   # All binaries separated by ' '

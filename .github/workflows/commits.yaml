@@ -1,12 +1,15 @@
 name: Check Conventional Commits
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
     types:
       - opened
-    branches: [ main, dev ]
+    branches-ignore:
+      - 'ga-ignore-**'
+  push:
+    branches-ignore:
+      - 'ga-ignore-**'
+
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.head_ref || github.sha }}

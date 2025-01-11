@@ -16,6 +16,8 @@
 #include "Packet.hpp"
 #include "PacketHandler.hpp"
 #include "Registry.hh"
+#include "Systems.hpp"
+#include "Components.hpp"
 #include "RTypeProtocol.hpp"
 
 Client::~Client() = default;
@@ -37,7 +39,6 @@ Client::Client(const std::string &ip, const std::size_t port)
     setupPacketHandler_();
 }
 
-
 Client &Client::createInstance(const std::string &ip, const std::size_t port) {
     instance_.reset(new Client(ip, port));
     return *instance_;
@@ -51,7 +52,6 @@ Graphic::IRenderer &Client::getRenderer() const {
     return *renderer_;
 }
 
-
 Network::INetworkClient &Client::getNetworkLib() const {
     return *network_lib_;
 }
@@ -63,7 +63,6 @@ Network::PacketHandler &Client::getPacketHandler() {
 Registry &Client::getRegistry() {
     return registry_;
 }
-
 
 bool Client::connectToServer_(const std::string &ip, const std::size_t port) {
     network_lib_->connect(ip, port);
@@ -122,6 +121,8 @@ void Client::setupPacketHandler_() {
 }
 
 void Client::setupSystems_() {
+    registry_.add_system(Systems::networkReceiver);
+    registry_.add_system(Systems::drawAllTexts);
     registry_.add_system(Systems::log);
 }
 
@@ -132,10 +133,18 @@ void Client::run() {
 
     renderer_->initWindow(1920, 1080, "rtype");
 
+    entity_t e = registry_.spawn_entity();
+
+    registry_.add_component(e, Components::RenderText("R-TYPE", 50, 50, 40));
+    registry_.add_component(e, Components::ColorText(255, 255, 255, 255));
+
+
     while (!renderer_->windowShouldClose()) {
         renderer_->beginDrawing();
         renderer_->clearBackground(0, 0, 0, 0);
+    
         registry_.run_systems();
+
         renderer_->endDrawing();
     }
     renderer_->closeWindow();

@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2025
+** R-TYPE
+** File description:
+** Menu
+*/
+
 #include "Menu.hpp"
 #include <fstream>
 #include <sstream>
