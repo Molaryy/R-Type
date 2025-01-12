@@ -14,8 +14,8 @@ jobs:
       fail-fast: false
       matrix:
         build_type: [Release]
-        cpp_compiler: [cl]
-        c_compiler: [cl]
+        cpp_compiler: [cl, clang, gcc]
+        c_compiler: [cl, clang, gcc]
 
     steps:
       - name: Checkout the repository
