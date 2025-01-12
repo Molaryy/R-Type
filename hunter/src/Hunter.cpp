@@ -39,7 +39,8 @@ void Hunter::run() {
 
         reg_.add_component<Position>(e, Position(static_cast<float>(0 + i * 100), static_cast<float>(100 + i * 50)));
         reg_.add_component<Velocity>(e, Velocity(0.009f, 0.f));
-        reg_.add_component<Collision>(e, Collision(32, 16));
+        reg_.add_component<Collision>(e, Collision(32, 16, [](Registry &, entity_t, entity_t) {
+        }));
         reg_.add_component<Life>(e, Life(1, 1));
         reg_.add_component<DuckTag>(e, DuckTag());
 
@@ -89,8 +90,8 @@ void Hunter::duckShootingSystem(Registry &r) {
     auto &positions = r.get_components<Position>();
 
     for (auto &&[duck, col, life, pos] : Zipper(ducks, collisions, lifes, positions)) {
-        if (mouseX >= static_cast<int>(pos.x) && mouseX <= static_cast<int>(pos.x) + col.width && mouseY >= static_cast<int>(pos.y)
-            && mouseY <= static_cast<int>(pos.y) + col.height) {
+        if (mouseX >= static_cast<int>(pos.x) && mouseX <= static_cast<int>(pos.x + col.width) && mouseY >= static_cast<int>(pos.y)
+            && mouseY <= static_cast<int>(pos.y + col.height)) {
             life.current = 0;
         }
     }

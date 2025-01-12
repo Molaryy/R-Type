@@ -8,9 +8,11 @@
 #pragma once
 
 
+#include <queue>
 #include <thread>
 
 #include "Components.hh"
+#include "IndexedZipper.hh"
 #include "Registry.hh"
 #include "Zipper.hh"
 
@@ -46,33 +48,38 @@ namespace Systems {
         last_frame = std::chrono::steady_clock::now();
     }
 
-    static void generic_collide(Registry &r)
-    {
+    [[maybe_unused]] static void generic_collide(Registry &r) {
+        std::queue<std::function<void(Registry &)>> collisionCallbacks;
         auto &positions = r.get_components<Position>();
         auto &collisions = r.get_components<Collision>();
-        auto &relations = r.get_components<Relation>();
 
-        Zipper zipper(positions, collisions, relations);
+        IndexedZipper zipper(positions, collisions);
 
-        for (auto it1 = zipper.begin(); it1 != zipper.end(); ++it1)
-        {
-            for (auto it2 = std::next(it1); it2 != zipper.end(); ++it2)
-            {
-                auto &&[pos1, col1, rel1] = *it1;
-                auto &&[pos2, col2, rel2] = *it2;
+        for (auto it1 = zipper.begin(); it1 != zipper.end(); ++it1) {
+            for (auto it2 = std::next(it1); it2 != zipper.end(); ++it2) {
+                auto &&[e1, pos1, col1] = *it1;
+                auto &&[e2, pos2, col2] = *it2;
 
-                if (rel1.is_ally != rel2.is_ally)
-                {
-                    if (pos1.x < pos2.x + col2.width &&
-                        pos1.x + col1.width > pos2.x &&
-                        pos1.y < pos2.y + col2.height &&
-                        pos1.y + col1.height > pos2.y)
-                    {
-                        col1.is_colliding = true;
-                        col2.is_colliding = true;
-                    }
+                if (pos1.x < pos2.x + col2.width &&
+                    pos1.x + col1.width > pos2.x &&
+                    pos1.y < pos2.y + col2.height &&
+                    pos1.y + col1.height > pos2.y) {
+                    col1.is_colliding = true;
+                    col2.is_colliding = true;
+
+                    collisionCallbacks.emplace([&col1, e1, e2](Registry &registry) {
+                        col1.collisionTask(registry, e1, e2);
+                    });
+                    collisionCallbacks.emplace([&col2, e2, e1](Registry &registry) {
+                        col2.collisionTask(registry, e2, e1);
+                    });
                 }
             }
+        }
+        while (!collisionCallbacks.empty()) {
+            std::function<void(Registry &)> function = collisionCallbacks.front();
+            function(r);
+            collisionCallbacks.pop();
         }
     }
 }

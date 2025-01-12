@@ -48,7 +48,7 @@ void Lobby::addPlayer(const uint16_t client) {
     {
         std::unique_lock lock(networkMutex_);
 
-        networkTasks_.push([client, this] {
+        networkTasks_.emplace([client, this] {
             if (players_.contains(client)) {
                 std::cerr << "Player " << client << " is already connected" << std::endl;
                 // TODO send error code
@@ -88,7 +88,7 @@ void Lobby::startGame() {
     {
         std::unique_lock lock(networkMutex_);
 
-        networkTasks_.push([this] {
+        networkTasks_.emplace([this] {
             if (state_ == Protocol::IN_GAME) {
                 std::cout << "Lobby already started" << std::endl;
                 // TODO send error code
@@ -123,7 +123,7 @@ void Lobby::setInputKeys(bool key_pressed[Protocol::NB_INPUTS_KEYS], const uint1
     {
         std::unique_lock lock(networkMutex_);
 
-        networkTasks_.push([key_pressed, client, this] {
+        networkTasks_.emplace([key_pressed, client, this] {
             SparseArray<ClientInputs> &inputs = registry_.get_components<ClientInputs>();
 
             if (!players_.contains(client) || !inputs[players_.at(client)].has_value()) {
@@ -148,7 +148,7 @@ void Lobby::run() {
         }
     });
     registry_.add_system(Systems::position_velocity);
-//    registry_.add_system(Systems::log);
+    //    registry_.add_system(Systems::log);
     registry_.add_system([](Registry &r) {
         Systems::limit_framerate(r, SERVER_TPS);
     });

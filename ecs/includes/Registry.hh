@@ -14,8 +14,6 @@
 #include <stdexcept>
 #include <typeindex>
 #include <unordered_map>
-#include <chrono>
-
 
 #include "Entity.hh"
 #include "SparseArray.hh"

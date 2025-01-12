@@ -66,19 +66,15 @@ struct Life
     }
 };
 
-struct Relation
-{
-    bool is_ally;
-    void log() const {
-        std::cout << "Relation = { " << is_ally << " }";
-    }
-};
-
 struct Collision
 {
-    int width;
-    int height;
+    float width;
+    float height;
+
+    std::function<void(Registry &r, entity_t me, entity_t other)> collisionTask;
+
     bool is_colliding = false;
+
 
     void log() const {
         std::cout << "Collision = { " << width << ", " << height << ", " << is_colliding << " }";
@@ -90,7 +86,7 @@ struct Delay
     int delay = 10;
     int last = 0;
 
-    bool can_shoot()
+    bool check_activation()
     {
         if (last >= delay)
         {
