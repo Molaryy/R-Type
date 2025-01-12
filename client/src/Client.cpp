@@ -5,8 +5,7 @@
 ** Client
 */
 
-#include "Client.hpp"
-
+#include "Scenes.hpp"
 #include <chrono>
 #include <iostream>
 #include <memory>
@@ -144,9 +143,7 @@ void leaderBoardCallback(Registry &r) {
     std::cout << "leader callback" <<  std::endl;
 }
 
-void settingsCallback(Registry &r) {
-    std::cout << "settings callback" <<  std::endl;
-}
+
 
 void creditsCallback(Registry &r) {
     std::cout << "credits callback" <<  std::endl;
