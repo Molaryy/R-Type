@@ -9,7 +9,7 @@
 
 #include "Registry.hh"
 #include "Components.hh"
-#include "IndexedZipper.hh"
+#include "Zipper.hh"
 
 #include <thread>
 
@@ -47,26 +47,21 @@ namespace Systems
         auto &collisions = r.get_components<Collision>();
         auto &relations = r.get_components<Relation>();
 
-        IndexedZipper zipper(positions, collisions, relations);
+        Zipper zipper(positions, collisions, relations);
 
         for (auto it1 = zipper.begin(); it1 != zipper.end(); ++it1)
         {
             for (auto it2 = std::next(it1); it2 != zipper.end(); ++it2)
             {
-                const auto &pos1 = std::get<1>(*it1); //start to 1 because first is the entity id.
-                auto &col1 = std::get<2>(*it1);
-                const auto &rel1 = std::get<3>(*it1);
-
-                const auto &pos2 = std::get<1>(*it2);
-                auto &col2 = std::get<2>(*it2);
-                const auto &rel2 = std::get<3>(*it2);
+                auto &&[pos1, col1, rel1] = *it1;
+                auto &&[pos2, col2, rel2] = *it2;
 
                 if (rel1.is_ally != rel2.is_ally)
                 {
-                    if (col1.x < pos2.x + 1 &&
-                        col1.x + 1 > pos2.x &&
-                        col1.y < pos2.y + 1 &&
-                        col1.y + 1 > pos2.y)
+                    if (pos1.x < pos2.x + col2.width &&
+                        pos1.x + col1.width > pos2.x &&
+                        pos1.y < pos2.y + col2.height &&
+                        pos1.y + col1.height > pos2.y)
                     {
                         col1.is_colliding = true;
                         col2.is_colliding = true;
