@@ -29,13 +29,8 @@ add_custom_target(clean_server
 )
 
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
-    set(
-            CMAKE_C_FLAGS
-            "${CMAKE_C_FLAGS} -Werror -fsanitize=undefined -fsanitize=address"
-    )
-    target_link_options(asan-demo
-            BEFORE PUBLIC -fsanitize=undefined PUBLIC -fsanitize=address
-    )
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=undefined -fsanitize=address")
+    add_link_options("-fsanitize=undefined -fsanitize=address")
 endif()
 
 add_dependencies(clean_server r-type_server)
