@@ -9,7 +9,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-
+#include <algorithm>
 /**
  * @brief Construct a new Menu:: Menu object
  * 

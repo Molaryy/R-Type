@@ -168,7 +168,10 @@ void Client::run() {
         entity_t button = registry_.spawn_entity();
         Color grey = {200, 200, 200, 255};
         Color darkBlue = {20, 82, 172, 255};
+<<<<<<< HEAD
         
+=======
+>>>>>>> e85530e1beb53adc06d81f788ca9fb9d68f4eb0c
 
         registry_.add_component(button, Components::RenderText(titles[i], 100, 150 + i * 50, 20));
         registry_.add_component(button, Components::ColorText(grey));
