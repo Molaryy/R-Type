@@ -66,6 +66,14 @@ struct Life
     }
 } Life_t;
 
+struct Relation
+{
+    bool is_ally;
+    void log() const {
+        std::cout << "Relation = { " << is_ally << " }";
+    }
+};
+
 struct Collision
 {
     int x;
