@@ -39,7 +39,7 @@
 #define BOSS_HEALTH 10
 #define BOSS_SHOOT_RATE 20
 
-#define SERVER_TPS 30.0
+#define SERVER_TPS 30
 
 namespace Protocol {
     enum InputKey : uint8_t {

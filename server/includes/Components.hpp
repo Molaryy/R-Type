@@ -50,16 +50,16 @@ class ClientInputs {
 public:
     ClientInputs() = default;
 
-    explicit ClientInputs(const bool input_keys[Protocol::NB_INPUTS_KEYS]) {
-        setInputs(input_keys);
+    explicit ClientInputs(const bool new_input_keys[Protocol::NB_INPUTS_KEYS]) {
+        setInputs(new_input_keys);
     }
 
-    void setInputs(const bool input_keys[Protocol::NB_INPUTS_KEYS]) {
-        this->input_keys.clear();
+    void setInputs(const bool new_input_keys[Protocol::NB_INPUTS_KEYS]) {
+        input_keys.clear();
         for (int8_t i = 0; i < Protocol::NB_INPUTS_KEYS; i++) {
-            if (!input_keys[i])
+            if (!new_input_keys[i])
                 continue;
-            this->input_keys.push_back(static_cast<Protocol::InputKey>(i));
+            input_keys.push_back(static_cast<Protocol::InputKey>(i));
         }
     }
 

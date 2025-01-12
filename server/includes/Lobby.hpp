@@ -8,6 +8,7 @@
 #pragma once
 
 #include <cstddef>
+#include <mutex>
 #include <queue>
 #include <thread>
 
