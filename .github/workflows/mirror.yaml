@@ -1,12 +1,14 @@
 name: r-type-mirror
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
     types:
       - opened
-    branches: [ main, dev ]
+    branches-ignore:
+      - 'ga-ignore-**'
+  push:
+    branches-ignore:
+      - 'ga-ignore-**'
 
 env:
   MIRROR_URL: git@github.com:EpitechPromo2027/B-CPP-500-PAR-5-2-rtype-nicolas.gillard.git
@@ -24,3 +26,4 @@ jobs:
         with:
           target_repo_url: ${{ env.MIRROR_URL }}
           ssh_private_key: ${{ secrets.GIT_SSH_PRIVATE_KEY }}
+    if: github.event.repository.name != 'B-CPP-500-PAR-5-2-rtype-nicolas.gillard'

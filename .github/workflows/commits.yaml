@@ -1,12 +1,14 @@
 name: Check Conventional Commits
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
     types:
       - opened
-    branches: [ main, dev ]
+    branches-ignore:
+      - 'ga-ignore-**'
+  push:
+    branches-ignore:
+      - 'ga-ignore-**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.head_ref || github.sha }}
@@ -19,3 +21,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: webiny/action-conventional-commits@v1.2.0
+    if: github.event.repository.name != 'B-CPP-500-PAR-5-2-rtype-nicolas.gillard'
