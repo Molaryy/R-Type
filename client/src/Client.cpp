@@ -131,53 +131,59 @@ void Client::setupSystems_() {
 
 std::unique_ptr<Client> Client::instance_ = nullptr;
 
-void newGameCallback() {
-    std::cout << "newGameCallback" <<  std::endl;
+void newGameCallback(Registry &r)
+{
+    r.clear_enities();
+    entity_t e = r.spawn_entity();
+
+    r.add_component(e, Components::RenderText("Player", 50, 50, 40));
+    r.add_component(e, Components::ColorText({255, 255, 255, 255}));
 }
 
-void leaderBoardCallback() {
+void leaderBoardCallback(Registry &r) {
     std::cout << "leader callback" <<  std::endl;
 }
 
-void settingsCallback() {
+void settingsCallback(Registry &r) {
     std::cout << "settings callback" <<  std::endl;
 }
 
-void creditsCallback() {
+void creditsCallback(Registry &r) {
     std::cout << "credits callback" <<  std::endl;
 }
 
-void exitCallback() {
+void exitCallback(Registry &r) {
     std::cout << "exit callback" <<  std::endl;
+}
+
+void createMenuScene(Registry &registry) {
+    entity_t e = registry.spawn_entity();
+    Color white = {255, 255, 255, 255};
+
+    registry.add_component(e, Components::RenderText("R-TYPE", 50, 50, 40));
+    registry.add_component(e, Components::ColorText(white));
+    std::vector<std::string> titles = {"New Game", "Leaderboard", "Settings", "Credits", "Exit"};
+    std::vector<std::function<void(Registry &r)>> callbacks = {newGameCallback, leaderBoardCallback, settingsCallback, creditsCallback, exitCallback};
+
+    for (std::size_t i = 0; i < 5; i++)
+    {
+        entity_t button = registry.spawn_entity();
+        Color grey = {200, 200, 200, 255};
+        Color darkBlue = {20, 82, 172, 255};
+    
+        registry.add_component(button, Components::RenderText(titles[i], 100, 150 + i * 50, 20));
+        registry.add_component(button, Components::ColorText(grey));
+        registry.add_component(button, Components::ClickableText(callbacks[i]));
+        registry.add_component(button, Components::ColorOverText(darkBlue, grey, false));
+    }
 }
 
 void Client::run() {
     setupSystems_();
 
     renderer_->initWindow(800, 600, "rtype");
-    entity_t e = registry_.spawn_entity();
-    Color white = {255, 255, 255, 255};
-
-    registry_.add_component(e, Components::RenderText("R-TYPE", 50, 50, 40));
-    registry_.add_component(e, Components::ColorText(white));
-    std::vector<std::string> titles = {"New Game", "Leaderboard", "Settings", "Credits", "Exit"};
-    std::vector<void (*)()> callbacks = {newGameCallback, leaderBoardCallback, settingsCallback, creditsCallback, exitCallback};
-
-    for (std::size_t i = 0; i < 5; i++)
-    {
-        entity_t button = registry_.spawn_entity();
-        Color grey = {200, 200, 200, 255};
-        Color darkBlue = {20, 82, 172, 255};
-<<<<<<< HEAD
-        
-=======
->>>>>>> e85530e1beb53adc06d81f788ca9fb9d68f4eb0c
-
-        registry_.add_component(button, Components::RenderText(titles[i], 100, 150 + i * 50, 20));
-        registry_.add_component(button, Components::ColorText(grey));
-        registry_.add_component(button, Components::ClickableText(callbacks[i]));
-        registry_.add_component(button, Components::ColorOverText(darkBlue, grey, false));
-    }
+    
+    createMenuScene(registry_);
 
     while (!renderer_->windowShouldClose()) {
         renderer_->beginDrawing();

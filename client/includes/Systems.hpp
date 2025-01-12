@@ -62,18 +62,22 @@ namespace Systems {
         Graphic::event_t events = renderer.getEvents();
         bool leftClicked = std::find(events.inputs.begin(), events.inputs.end(), Graphic::Keys::LeftClick) != events.inputs.end();
         std::pair<int, int> mousePos = events.mouse_pos;
-        
+        std::function<void(Registry &r)> secureCallback;
 
         for (auto &&[clickable, text, colorsOverText] : Zipper(clickables, texts, colorsOverText)) {
             if (mousePos.first >= text.x && mousePos.first <= text.x + text.text.size() * text.fontSize &&
                 mousePos.second >= text.y && mousePos.second <= text.y + text.fontSize) {
                 if (leftClicked) {
-                    clickable.callback();
+                    secureCallback = clickable.callback;
+                    break;
                 }
                 colorsOverText.isOver = true;
             } else {
                 colorsOverText.isOver = false;
             }
+        }
+        if (secureCallback) {
+            secureCallback(r);
         }
     }
 }

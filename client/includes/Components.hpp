@@ -45,7 +45,7 @@ namespace Components {
 
     struct ClickableText
     {
-        void (*callback)();
+        std::function<void(Registry &r)> callback;
         void log() const {
             std::cout << "Button = { clicked }" << std::endl;
         }
