@@ -64,18 +64,24 @@ struct Life
     void log() const {
         std::cout << "Life = {" << current << "/" << max << "}";
     }
-} Life_t;
+};
+
+struct Relation
+{
+    bool is_ally;
+    void log() const {
+        std::cout << "Relation = { " << is_ally << " }";
+    }
+};
 
 struct Collision
 {
-    int x;
-    int y;
     int width;
     int height;
     bool is_colliding = false;
 
     void log() const {
-        std::cout << "Controllable = { " << x << ", " << y << " }";
+        std::cout << "Collision = { " << width << ", " << height << ", " << is_colliding << " }";
     }
 };
 
