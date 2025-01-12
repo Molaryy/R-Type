@@ -9,6 +9,7 @@
 
 #include <string>
 #include <iostream>
+#include "Main.hpp"
 
 namespace Components {
     struct RenderText
@@ -17,37 +18,50 @@ namespace Components {
         int x;
         int y;
         int fontSize;
-//        unsigned char r;
-//        unsigned char g;
-//        unsigned char b;
-//        unsigned char a;
-//
+
         void log() const {
             std::cout << "RenderText = { " 
                 "text = " << text << ", " << 
                 "x = " << x << ", " << 
                 "y = " << y << ", " << 
                "fontSize = " << fontSize << "} ";
- //               "r = " << r << ", " << 
- //               "g = " << g << ", " << 
- //               "b = " << b << ", " << 
- //               "a = " << a << ", " << 
         }
     };
 
     struct ColorText
     {
-        unsigned char r;
-        unsigned char g;
-        unsigned char b;
-        unsigned char a;
+       Color color;
 
         void log() const {
             std::cout << "ColorText = { " 
-                "r = " << (unsigned int)r << ", " << 
-                "g = " << (unsigned int)g << ", " << 
-                "b = " << (unsigned int)b << ", " << 
-                "a = " << (unsigned int)a << ", " << 
+                "r = " << (unsigned int)color.r << ", " << 
+                "g = " << (unsigned int)color.g << ", " << 
+                "b = " << (unsigned int)color.b << ", " << 
+                "a = " << (unsigned int)color.a << ", " << 
+                "}";
+        }
+    };
+
+
+    struct ClickableText
+    {
+        void (*callback)();
+        void log() const {
+            std::cout << "Button = { clicked }" << std::endl;
+        }
+    };
+
+    struct ColorOverText
+    {
+        Color newColor;
+        Color defaultColor;
+        bool isOver;
+        void log() const {
+            std::cout << "ColorOverText = { " 
+                "r = " << (unsigned int)newColor.r << ", " << 
+                "g = " << (unsigned int)newColor.g << ", " << 
+                "b = " << (unsigned int)newColor.b << ", " << 
+                "a = " << (unsigned int)newColor.a << ", " << 
                 "}";
         }
     };

@@ -19,6 +19,7 @@
 #include "Systems.hpp"
 #include "Components.hpp"
 #include "RTypeProtocol.hpp"
+#include "Main.hpp"
 
 Client::~Client() = default;
 
@@ -123,21 +124,57 @@ void Client::setupPacketHandler_() {
 void Client::setupSystems_() {
     registry_.add_system(Systems::networkReceiver);
     registry_.add_system(Systems::drawAllTexts);
-    registry_.add_system(Systems::log);
+    registry_.add_system(Systems::drawOverText);
+    registry_.add_system(Systems::handleMouse);
+    //registry_.add_system(Systems::log);
 }
 
 std::unique_ptr<Client> Client::instance_ = nullptr;
 
+void newGameCallback() {
+    std::cout << "newGameCallback" <<  std::endl;
+}
+
+void leaderBoardCallback() {
+    std::cout << "leader callback" <<  std::endl;
+}
+
+void settingsCallback() {
+    std::cout << "settings callback" <<  std::endl;
+}
+
+void creditsCallback() {
+    std::cout << "credits callback" <<  std::endl;
+}
+
+void exitCallback() {
+    std::cout << "exit callback" <<  std::endl;
+}
+
 void Client::run() {
     setupSystems_();
 
-    renderer_->initWindow(1920, 1080, "rtype");
-
+    renderer_->initWindow(800, 600, "rtype");
     entity_t e = registry_.spawn_entity();
+    Color white = {255, 255, 255, 255};
 
     registry_.add_component(e, Components::RenderText("R-TYPE", 50, 50, 40));
-    registry_.add_component(e, Components::ColorText(255, 255, 255, 255));
+    registry_.add_component(e, Components::ColorText(white));
+    std::vector<std::string> titles = {"New Game", "Leaderboard", "Settings", "Credits", "Exit"};
+    std::vector<void (*)()> callbacks = {newGameCallback, leaderBoardCallback, settingsCallback, creditsCallback, exitCallback};
 
+    for (std::size_t i = 0; i < 5; i++)
+    {
+        entity_t button = registry_.spawn_entity();
+        Color grey = {200, 200, 200, 255};
+        Color darkBlue = {20, 82, 172, 255};
+        
+
+        registry_.add_component(button, Components::RenderText(titles[i], 100, 150 + i * 50, 20));
+        registry_.add_component(button, Components::ColorText(grey));
+        registry_.add_component(button, Components::ClickableText(callbacks[i]));
+        registry_.add_component(button, Components::ColorOverText(darkBlue, grey, false));
+    }
 
     while (!renderer_->windowShouldClose()) {
         renderer_->beginDrawing();
