@@ -1,6 +1,6 @@
 // test
 
-name: Build C++ Project on Windows
+name: Build on Windows
 
 on:
   push:
