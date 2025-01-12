@@ -9,6 +9,7 @@
 
 #include "Registry.hh"
 #include "Components.hh"
+#include "Zipper.hh"
 
 #include <thread>
 
@@ -38,5 +39,35 @@ namespace Systems
         if (elapsed_time < frame_duration)
             std::this_thread::sleep_for(frame_duration - elapsed_time);
         last_frame = std::chrono::steady_clock::now();
+    }
+
+    static void generic_collide(Registry &r)
+    {
+        auto &positions = r.get_components<Position>();
+        auto &collisions = r.get_components<Collision>();
+        auto &relations = r.get_components<Relation>();
+
+        Zipper zipper(positions, collisions, relations);
+
+        for (auto it1 = zipper.begin(); it1 != zipper.end(); ++it1)
+        {
+            for (auto it2 = std::next(it1); it2 != zipper.end(); ++it2)
+            {
+                auto &&[pos1, col1, rel1] = *it1;
+                auto &&[pos2, col2, rel2] = *it2;
+
+                if (rel1.is_ally != rel2.is_ally)
+                {
+                    if (pos1.x < pos2.x + col2.width &&
+                        pos1.x + col1.width > pos2.x &&
+                        pos1.y < pos2.y + col2.height &&
+                        pos1.y + col1.height > pos2.y)
+                    {
+                        col1.is_colliding = true;
+                        col2.is_colliding = true;
+                    }
+                }
+            }
+        }
     }
 }
