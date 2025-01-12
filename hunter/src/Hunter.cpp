@@ -64,8 +64,8 @@ void Hunter::duckMovementSystem(Registry &r) {
     for (auto &&[pos, vel, col, duc] : Zipper(positions, velocities, collisions, ducks)) {
         pos.x += vel.x;
         pos.y += vel.y;
-        col.x = pos.x;
-        col.y = pos.y;
+        col.x = static_cast<int>(pos.x);
+        col.y = static_cast<int>(pos.y);
 
         if (pos.x > 800)
             pos.x = -64.f;
@@ -77,7 +77,7 @@ void Hunter::duckMovementSystem(Registry &r) {
 void Hunter::duckShootingSystem(Registry &r) {
     Graphic::IRenderer &renderer = getInstance().getRenderer();
     Graphic::event_t events = renderer.getEvents();
-    bool leftClicked = std::find(events.inputs.begin(), events.inputs.end(), Graphic::Keys::LeftClick) != events.inputs.end();
+    const bool leftClicked = std::ranges::find(events.inputs, Graphic::Keys::LeftClick) != events.inputs.end();
 
     if (!leftClicked)
         return;

@@ -54,7 +54,7 @@ void Server::run() {
 
     initPacketHandling_();
 
-    networkLib_->host(port_);
+    networkLib_->host(static_cast<uint16_t>(port_));
 
     std::cout << "Server is hosting on port " << port_ << std::endl;
 
@@ -103,7 +103,7 @@ void Server::initPacketHandling_() {
             if (it != lobbies_.end()) {
                 const std::unique_ptr<Lobby> &lobby = *it;
                 lobbyDataPacket.lobby_state = lobby->getState();
-                lobbyDataPacket.nb_players = lobby->getNbPLayers();
+                lobbyDataPacket.nb_players = static_cast<uint8_t>(lobby->getNbPLayers());
             }
 
             Network::Packet lobbyData(lobbyDataPacket, Protocol::CommandIdServer::LOBBY_DATA);
