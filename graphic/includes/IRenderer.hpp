@@ -206,8 +206,11 @@ namespace Graphic {
              * @param textureID 
              * @param x pos x
              * @param y pos y
+             * @param width
+             * @param height
+             * @param frame
              */
-            virtual void drawTexture(int textureID, int x, int y, int width, int height, int frame = 0) = 0;
+            virtual void drawTexture(int textureID, int x, int y, int width, int height, int frame) = 0;
 
             /**
              * @brief draw text
