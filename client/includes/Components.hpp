@@ -72,6 +72,8 @@ namespace Components {
         int y;
         std::size_t width;
         std::size_t height;
+
+        Entity(int x, int y, std::size_t width, std::size_t height) : x(x), y(y), width(width), height(height) {}
         void log() const {
             std::cout << "Entity = { x = " << x << ", y = " << y << ", width = " << width << ", height = " << height << " }";
         }
@@ -81,6 +83,8 @@ namespace Components {
         std::size_t health;
         std::string name;
         std::size_t score;
+
+        Player(std::size_t health, std::string name, std::size_t score) : health(health), name(name), score(score) {}
         void log() const {
             std::cout << "Player = { health = " << health << ", name = " << name << ", score = " << score << " }";
         }
@@ -113,6 +117,8 @@ namespace Components {
     */
     struct Movable {
         int speed;
+
+        Movable(int speed) : speed(speed) {}
         void log() const {
             std::cout << "Movable = { speed = " << speed << " }";
         }
@@ -123,6 +129,8 @@ namespace Components {
     */
     struct Drawable {
         int textureID;
+
+        Drawable(int textureID) : textureID(textureID) {}
         void log() const {
             std::cout << "Drawable = { textureID = " << textureID << " }";
         }

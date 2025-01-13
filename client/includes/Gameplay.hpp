@@ -18,7 +18,8 @@ struct Color {
 };
 
 // Textures IDs
-enum Textures {
+enum Textures
+{
     PLAYER_ID,
     ENNEMY_ID,
     BULLET_ID,

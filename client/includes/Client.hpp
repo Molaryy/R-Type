@@ -16,7 +16,8 @@
 #include "PacketHandler.hpp"
 #include "Registry.hh"
 
-class Client {
+class Client
+{
 public:
     Client(const Client &ref) = delete;
     void operator=(const Client &ref) = delete;
