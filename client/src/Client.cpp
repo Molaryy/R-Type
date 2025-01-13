@@ -125,6 +125,8 @@ void Client::setupSystems_() {
     registry_.add_system(Systems::drawAllTexts);
     registry_.add_system(Systems::drawOverText);
     registry_.add_system(Systems::handleMouse);
+    registry_.add_system(Systems::drawEntities);
+    registry_.add_system(Systems::moveEntities);
     if (debug_)
         registry_.add_system(Systems::log);
 }

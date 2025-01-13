@@ -80,13 +80,36 @@ namespace Systems {
         }
     }
 
-    inline void DrawEntities(Registry &r) {
+    inline void drawEntities(Registry &r) {
         auto &entities = r.get_components<Components::Entity>();
         auto &drawables = r.get_components<Components::Drawable>();
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
 
         for (auto &&[entity, drawable] : Zipper(entities, drawables)) {
             renderer.drawTexture(drawable.textureID, entity.x, entity.y, static_cast<int>(entity.width), static_cast<int>(entity.height), 0);
+        }
+    }
+
+    inline void moveEntities(Registry &r) {
+        auto &entities = r.get_components<Components::Entity>();
+        auto &movables = r.get_components<Components::Movable>();
+        Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
+        Graphic::event_t events = renderer.getEvents();
+
+
+        for (auto &&[entity, movable] : Zipper(entities, movables)) {
+            if (std::find(events.inputs.begin(), events.inputs.end(), Graphic::W) != events.inputs.end()) {
+                entity.y -= movable.speed;
+            }
+            if (std::find(events.inputs.begin(), events.inputs.end(), Graphic::S) != events.inputs.end()) {
+                entity.y += movable.speed;
+            }
+            if (std::find(events.inputs.begin(), events.inputs.end(), Graphic::Keys::A) != events.inputs.end()) {
+                entity.x -= movable.speed;
+            }
+            if (std::find(events.inputs.begin(), events.inputs.end(), Graphic::Keys::D) != events.inputs.end()) {
+                entity.x += movable.speed;
+            }
         }
     }
 }
