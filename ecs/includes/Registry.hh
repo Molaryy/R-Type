@@ -134,12 +134,11 @@ public:
         systems_.clear();
     }
 
-
     void run_systems() {
-        for (std::function<void(Registry &)> &system : systems_)
+        std::vector<std::function<void(Registry &)>> systems_copy = systems_;
+        for (std::function<void(Registry &)> &system : systems_copy)
             system(*this);
     }
-
 
     void log(const entity_t &entity) const {
         for (const auto &logger : std::views::values(loggers_)) {
