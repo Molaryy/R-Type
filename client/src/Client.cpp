@@ -4,6 +4,7 @@
 ** File description:
 ** Client
 */
+
 #include "Client.hpp"
 
 #include <chrono>
@@ -11,8 +12,6 @@
 #include <memory>
 #include <thread>
 
-#include "Systems.hh"
-#include "Scenes.hpp"
 #include "Packet.hpp"
 #include "PacketHandler.hpp"
 #include "Registry.hh"

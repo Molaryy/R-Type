@@ -20,7 +20,6 @@ class Client
 {
 public:
     Client(const Client &ref) = delete;
-    Client::~Client() = default;
     void operator=(const Client &ref) = delete;
 
     ~Client();
