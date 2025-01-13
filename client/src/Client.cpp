@@ -5,8 +5,7 @@
 ** Client
 */
 
-#include "Client.hpp"
-
+#include "Scenes.hpp"
 #include <chrono>
 #include <iostream>
 #include <memory>
@@ -16,7 +15,10 @@
 #include "Packet.hpp"
 #include "PacketHandler.hpp"
 #include "Registry.hh"
+#include "Systems.hpp"
+#include "Components.hpp"
 #include "RTypeProtocol.hpp"
+#include "Main.hpp"
 
 Client::~Client() = default;
 
@@ -37,7 +39,6 @@ Client::Client(const std::string &ip, const std::size_t port)
     setupPacketHandler_();
 }
 
-
 Client &Client::createInstance(const std::string &ip, const std::size_t port) {
     instance_.reset(new Client(ip, port));
     return *instance_;
@@ -51,7 +52,6 @@ Graphic::IRenderer &Client::getRenderer() const {
     return *renderer_;
 }
 
-
 Network::INetworkClient &Client::getNetworkLib() const {
     return *network_lib_;
 }
@@ -63,7 +63,6 @@ Network::PacketHandler &Client::getPacketHandler() {
 Registry &Client::getRegistry() {
     return registry_;
 }
-
 
 bool Client::connectToServer_(const std::string &ip, const std::size_t port) {
     network_lib_->connect(ip, port);
@@ -122,7 +121,11 @@ void Client::setupPacketHandler_() {
 }
 
 void Client::setupSystems_() {
-    registry_.add_system(Systems::log);
+    registry_.add_system(Systems::networkReceiver);
+    registry_.add_system(Systems::drawAllTexts);
+    registry_.add_system(Systems::drawOverText);
+    registry_.add_system(Systems::handleMouse);
+    //registry_.add_system(Systems::log);
 }
 
 std::unique_ptr<Client> Client::instance_ = nullptr;
@@ -130,12 +133,19 @@ std::unique_ptr<Client> Client::instance_ = nullptr;
 void Client::run() {
     setupSystems_();
 
-    renderer_->initWindow(1920, 1080, "rtype");
+    renderer_->initWindow(800, 600, "rtype");
+    
+    createMenuScene(registry_);
+
+    renderer_->loadTexture("assets/spaceship.gif");
+    
 
     while (!renderer_->windowShouldClose()) {
         renderer_->beginDrawing();
         renderer_->clearBackground(0, 0, 0, 0);
+    
         registry_.run_systems();
+
         renderer_->endDrawing();
     }
     renderer_->closeWindow();

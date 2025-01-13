@@ -50,7 +50,7 @@ void Server::run() {
     initPacketHandling();
 
     registry_.add_system(Systems::networkReceiver);
-    registry_.add_system(Systems::log);
+    //registry_.add_system(Systems::log);
 
     gameLoop();
 }

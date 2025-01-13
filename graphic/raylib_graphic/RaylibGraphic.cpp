@@ -6,6 +6,7 @@
 */
 
 #include "RaylibGraphic.hpp"
+#include <iostream>
 
 #if defined(_WIN32) || defined(_WIN64)
 #define LIB_EXPORT __declspec(dllexport)
@@ -101,6 +102,7 @@ namespace Graphic {
 
         events.mouse_pos = { GetMouseX(), GetMouseY() };
         events.window_size = { GetScreenWidth(), GetScreenHeight() };
+        events.inputs.clear();
         if (WindowShouldClose())
             events.inputs.push_back(Keys::CloseWindow);
 
@@ -109,10 +111,10 @@ namespace Graphic {
                 events.inputs.push_back(customKey);
             }
         }
-        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             events.inputs.push_back(Keys::LeftClick);
         }
-        if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
+        if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
             events.inputs.push_back(Keys::RightClick);
         }
         return events;
