@@ -107,15 +107,6 @@ namespace Graphic {
         _NbInputs, // Number of inputs
     };
 
-    enum Scenes : int8_t {
-        MAIN_MENU,
-        GAME,
-        LEADER_BOARD,
-        SETTINGS,
-        CREDITS,
-        EXIT,
-    };
-
     struct event_t {
         std::vector<Keys> inputs;
         std::pair<int, int> mouse_pos;

@@ -9,7 +9,7 @@
 // #include "../../server/includes/Game.hpp"
 #include <iostream>
 #include "Menu/Menu.hpp"
-//#include "SparseArray.hh"
+#include "SparseArray.hh"
 
 // int main()
 // {

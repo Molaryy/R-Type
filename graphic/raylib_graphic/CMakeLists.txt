@@ -14,10 +14,6 @@ target_include_directories(${PROJECT_NAME}
         PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../includes"
 )
 
-target_include_directories(${PROJECT_NAME}
-        PRIVATE "${CMAKE_SOURCE_DIR}/includes"
-)
- 
 CPMAddPackage(
         NAME raylib
         GITHUB_REPOSITORY raysan5/raylib

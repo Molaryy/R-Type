@@ -1,5 +1,5 @@
 project(r-type_client)
-cmake_minimum_required(VERSION 3.31)
+
 set(CMAKE_CXX_STANDARD 23)
 
 add_executable(${PROJECT_NAME}
@@ -20,9 +20,15 @@ CPMAddPackage(
 
 target_include_directories(${PROJECT_NAME}
         PRIVATE includes/
+        PRIVATE ${CMAKE_SOURCE_DIR}/network/packet_network
+        PRIVATE ${CMAKE_SOURCE_DIR}/network/includes
+        PRIVATE ${CMAKE_SOURCE_DIR}/includes
+        PRIVATE ${CMAKE_SOURCE_DIR}/ecs/includes
 )
 
 target_link_libraries(${PROJECT_NAME}
+        PRIVATE packet_network
+        PRIVATE dylib
         PRIVATE raylib
 )
 
