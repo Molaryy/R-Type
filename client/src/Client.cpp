@@ -130,57 +130,15 @@ void Client::setupSystems_() {
 
 std::unique_ptr<Client> Client::instance_ = nullptr;
 
-void newGameCallback(Registry &r)
-{
-    r.clear_enities();
-    entity_t e = r.spawn_entity();
-
-    r.add_component(e, Components::RenderText("Player", 50, 50, 40));
-    r.add_component(e, Components::ColorText({255, 255, 255, 255}));
-}
-
-void leaderBoardCallback(Registry &r) {
-    std::cout << "leader callback" <<  std::endl;
-}
-
-
-
-void creditsCallback(Registry &r) {
-    std::cout << "credits callback" <<  std::endl;
-}
-
-void exitCallback(Registry &r) {
-    std::cout << "exit callback" <<  std::endl;
-}
-
-void createMenuScene(Registry &registry) {
-    entity_t e = registry.spawn_entity();
-    Color white = {255, 255, 255, 255};
-
-    registry.add_component(e, Components::RenderText("R-TYPE", 50, 50, 40));
-    registry.add_component(e, Components::ColorText(white));
-    std::vector<std::string> titles = {"New Game", "Leaderboard", "Settings", "Credits", "Exit"};
-    std::vector<std::function<void(Registry &r)>> callbacks = {newGameCallback, leaderBoardCallback, settingsCallback, creditsCallback, exitCallback};
-
-    for (std::size_t i = 0; i < 5; i++)
-    {
-        entity_t button = registry.spawn_entity();
-        Color grey = {200, 200, 200, 255};
-        Color darkBlue = {20, 82, 172, 255};
-    
-        registry.add_component(button, Components::RenderText(titles[i], 100, 150 + i * 50, 20));
-        registry.add_component(button, Components::ColorText(grey));
-        registry.add_component(button, Components::ClickableText(callbacks[i]));
-        registry.add_component(button, Components::ColorOverText(darkBlue, grey, false));
-    }
-}
-
 void Client::run() {
     setupSystems_();
 
     renderer_->initWindow(800, 600, "rtype");
     
     createMenuScene(registry_);
+
+    renderer_->loadTexture("assets/spaceship.gif");
+    
 
     while (!renderer_->windowShouldClose()) {
         renderer_->beginDrawing();

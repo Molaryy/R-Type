@@ -15,6 +15,7 @@
 #include "Components.hpp"
 #include "Components.hh"
 #include "Main.hpp"
+#include "Gameplay.hpp"
 
 namespace Systems {
     inline void networkReceiver([[maybe_unused]] Registry &r) {
@@ -65,7 +66,7 @@ namespace Systems {
         std::function<void(Registry &r)> secureCallback;
 
         for (auto &&[clickable, text, colorsOverText] : Zipper(clickables, texts, colorsOverText)) {
-            if (mousePos.first >= text.x && mousePos.first <= text.x + text.text.size() * text.fontSize &&
+            if (mousePos.first >= text.x && mousePos.first <= text.x + (int)text.text.size() * text.fontSize &&
                 mousePos.second >= text.y && mousePos.second <= text.y + text.fontSize) {
                 if (leftClicked) {
                     secureCallback = clickable.callback;
@@ -78,6 +79,16 @@ namespace Systems {
         }
         if (secureCallback) {
             secureCallback(r);
+        }
+    }
+
+    inline void DrawEntities(Registry &r) {
+        auto &entities = r.get_components<Components::Entity>();
+        auto &drawables = r.get_components<Components::Drawable>();
+        Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
+
+        for (auto &&[entity, drawable] : Zipper(entities, drawables)) {
+            renderer.drawTexture(drawable.textureID, entity.x, entity.y, entity.width, entity.height);
         }
     }
 }
