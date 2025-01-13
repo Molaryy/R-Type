@@ -34,9 +34,9 @@ Client::Client(const std::string &ip, const std::size_t port)
     } catch (const dylib::exception &e) {
         throw std::runtime_error("Failed to load dyn lib : " + std::string(e.what()));
     }
-    connectToServer_(ip, port);
-
     setupPacketHandler_();
+
+    connectToServer_(ip, port);
 }
 
 Client &Client::createInstance(const std::string &ip, const std::size_t port) {
@@ -71,7 +71,7 @@ bool Client::connectToServer_(const std::string &ip, const std::size_t port) {
     packet_handler_.setPacketCallback(
         Protocol::ACCEPT_CONNECTION,
         [&success, this]([[maybe_unused]] const Network::Packet &packet) {
-            std::cout << "Connection established with server" << std::endl;
+            std::cout << "Connection established with server" << success << std::endl;
             success = true;
         }
     );
@@ -142,6 +142,7 @@ void Client::run() {
     Network::Packet jPacket(Protocol::EmptyPacket(), Protocol::JOIN_RANDOM_LOBBY);
     network_lib_->send(jPacket.serialize());
 
+    renderer_->initWindow(1920, 1080, "rtype");
     while (!renderer_->windowShouldClose()) {
         renderer_->beginDrawing();
         renderer_->clearBackground(0, 0, 0, 0);

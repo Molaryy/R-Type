@@ -18,11 +18,12 @@
 namespace Systems {
     [[maybe_unused]] static void handleClientInputs(Registry &r) {
         SparseArray<ClientInputs> &inputs = r.get_components<ClientInputs>();
-        const SparseArray<Position> &positions = r.get_components<Position>();
+        SparseArray<Position> &positions = r.get_components<Position>();
         SparseArray<Velocity> &velocities = r.get_components<Velocity>();
         SparseArray<Delay> &clocks = r.get_components<Delay>();
+        std::queue<std::function<void()>> callbacks;
 
-        for (const auto &&[entity, input, velocity, position, clock] : IndexedZipper(inputs, velocities, positions, clocks)) {
+        for (auto &&[entity, input, velocity, position, clock] : IndexedZipper(inputs, velocities, positions, clocks)) {
             velocity.x = 0;
             velocity.y = 0;
             if (input.input_keys.empty())
@@ -35,9 +36,14 @@ namespace Systems {
                 velocity.x -= PLAYER_SPEED;
             else if (std::ranges::find(input.input_keys, Protocol::MOVE_RIGHT) != input.input_keys.end())
                 velocity.x += PLAYER_SPEED;
-            if (std::ranges::find(input.input_keys, Protocol::SHOOT) != input.input_keys.end() && clock.check_activation()) {
-                Shoot::create(r, position);
-            }
+            if (std::ranges::find(input.input_keys, Protocol::SHOOT) != input.input_keys.end() && clock.check_activation())
+                callbacks.emplace([&] {
+                    Shoot::create(r, position);
+                });
+        }
+        while (!callbacks.empty()) {
+            callbacks.front()();
+            callbacks.pop();
         }
     }
 

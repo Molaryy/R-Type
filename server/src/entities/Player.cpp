@@ -34,8 +34,9 @@ entity_t Player::create(Registry &r) {
     r.add_component(entity, ClientInputs());
     r.add_component(entity, Position(0, 0));
     r.add_component(entity, Velocity(0, 0));
-    r.add_component(entity, Delay(PLAYER_SHOOT_RATE, 0));
+    r.add_component(entity, Delay(PLAYER_SHOOT_RATE, PLAYER_SHOOT_RATE));
     r.add_component(entity, Life(PLAYER_HEALTH, PLAYER_HEALTH));
+    r.add_component(entity, ComponentEntityType(Protocol::PLAYER));
     r.add_component(entity, Collision(PLAYER_SIZE, PLAYER_SIZE, collision));
 
     return entity;

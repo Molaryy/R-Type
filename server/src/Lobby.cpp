@@ -22,7 +22,7 @@ Lobby::Lobby(const std::size_t maxClient)
       state_(Protocol::OPEN) {
     static std::size_t next_lobby = 0;
     lobbyId_ = next_lobby++;
-    thread_ = std::thread(&Lobby::run, this);
+    thread_ = std::thread(&Lobby::run_, this);
 }
 
 Lobby::~Lobby() = default;
@@ -74,7 +74,7 @@ void Lobby::addPlayer(const uint16_t client) {
             const entity_t entity = Player::create(registry_);
             players_.emplace(client, entity);
 
-            Network::Packet response(Protocol::AcceptLobbyJoinPacket(lobbyId_, entity), Protocol::ACCEPT_CONNECTION);
+            Network::Packet response(Protocol::AcceptLobbyJoinPacket(lobbyId_, entity), Protocol::ACCEPT_LOBBY_JOIN);
             networkLib_.send(client, response.serialize());
         });
     }
@@ -110,12 +110,26 @@ void Lobby::startGame() {
                 );
                 networkLib_.sendAll(new_player_packet.serialize());
             }
+            registry_.clear_systems();
+
+            registry_.add_system([this]([[maybe_unused]] const Registry &r) {
+                executeNetworkSystem_(r, *this);
+            });
+            registry_.add_system(Systems::handleClientInputs);
+            registry_.add_system(Systems::position_velocity);
+            registry_.add_system(Systems::levelHandler);
+            registry_.add_system(Systems::generic_collide);
+            registry_.add_system(Systems::sendGameState);
+            registry_.add_system([](Registry &r) {
+                Systems::limit_framerate(r, SERVER_TPS);
+            });
+
             state_ = Protocol::IN_GAME;
         });
     }
 }
 
-void Lobby::setInputKeys(bool key_pressed[Protocol::NB_INPUTS_KEYS], const uint16_t client) {
+void Lobby::setInputKeys(std::vector<Protocol::InputKey> key_pressed, const uint16_t client) {
     {
         std::unique_lock lock(networkMutex_);
 
@@ -131,23 +145,22 @@ void Lobby::setInputKeys(bool key_pressed[Protocol::NB_INPUTS_KEYS], const uint1
     }
 }
 
-void Lobby::run() {
-    registry_.add_system([this]([[maybe_unused]] const Registry &r) {
-        {
-            std::unique_lock lock(networkMutex_);
+void Lobby::executeNetworkSystem_([[maybe_unused]] const Registry &r, Lobby &lobby) {
+    {
+        std::unique_lock lock(lobby.networkMutex_);
 
-            while (!networkTasks_.empty()) {
-                std::function<void()> function = networkTasks_.front();
-                function();
-                networkTasks_.pop();
-            }
+        while (!lobby.networkTasks_.empty()) {
+            std::function<void()> function = lobby.networkTasks_.front();
+            function();
+            lobby.networkTasks_.pop();
         }
+    }
+}
+
+void Lobby::run_() {
+    registry_.add_system([this]([[maybe_unused]] const Registry &r) {
+        executeNetworkSystem_(r, *this);
     });
-    registry_.add_system(Systems::handleClientInputs);
-    registry_.add_system(Systems::position_velocity);
-    registry_.add_system(Systems::levelHandler);
-    registry_.add_system(Systems::generic_collide);
-    registry_.add_system(Systems::sendGameState);
     //    registry_.add_system(Systems::log);
     registry_.add_system([](Registry &r) {
         Systems::limit_framerate(r, SERVER_TPS);

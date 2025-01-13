@@ -86,7 +86,7 @@ public:
             remove_function(*this, e);
     }
 
-    void clear_enities() {
+    void clear_entities() {
         next_entity_ = 0;
         remove_functions_.clear();
         dead_entities_.clear();

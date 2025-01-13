@@ -182,7 +182,13 @@ void Server::initPacketHandling_() {
                 return;
             }
             auto [key_pressed] = packet.getPayload<Protocol::InputsKeysPacket>();
-            it->get()->setInputKeys(key_pressed, client);
+            std::vector<Protocol::InputKey> input_keys;
+            for (int8_t i = 0; i < Protocol::NB_INPUTS_KEYS; i++) {
+                if (!key_pressed[i])
+                    continue;
+                input_keys.push_back(static_cast<Protocol::InputKey>(i));
+            }
+            it->get()->setInputKeys(input_keys, client);
         });
 }
 

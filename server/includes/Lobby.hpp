@@ -28,11 +28,13 @@ public:
 
     void addPlayer(uint16_t client);
     void startGame();
-    void setInputKeys(bool key_pressed[Protocol::NB_INPUTS_KEYS], uint16_t client);
+    void setInputKeys(std::vector<Protocol::InputKey> key_pressed, uint16_t client);
 
-    void run();
 
 private:
+    void run_();
+    static void executeNetworkSystem_(const Registry &r, Lobby &lobby);
+
     Network::INetworkServer &networkLib_;
 
     std::size_t lobbyId_;

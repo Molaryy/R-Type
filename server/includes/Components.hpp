@@ -59,17 +59,13 @@ class ClientInputs {
 public:
     ClientInputs() = default;
 
-    explicit ClientInputs(const bool new_input_keys[Protocol::NB_INPUTS_KEYS]) {
-        setInputs(new_input_keys);
+    explicit ClientInputs(const std::vector<Protocol::InputKey> &key_pressed) {
+        setInputs(key_pressed);
     }
 
-    void setInputs(const bool new_input_keys[Protocol::NB_INPUTS_KEYS]) {
+    void setInputs(const std::vector<Protocol::InputKey> &key_pressed) {
         input_keys.clear();
-        for (int8_t i = 0; i < Protocol::NB_INPUTS_KEYS; i++) {
-            if (!new_input_keys[i])
-                continue;
-            input_keys.push_back(static_cast<Protocol::InputKey>(i));
-        }
+        input_keys = key_pressed;
     }
 
     void log() const {

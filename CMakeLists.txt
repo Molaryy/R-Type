@@ -12,6 +12,11 @@ else ()
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif ()
 
+if(CMAKE_BUILD_TYPE MATCHES "Debug")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined -fsanitize=address -g3")
+    add_link_options(-fsanitize=undefined -fsanitize=address -g3)
+endif()
+
 project(R-Type)
 
 include(cmake/CPM.cmake)
@@ -28,9 +33,5 @@ add_custom_target(clean_server
     COMMENT "Removing server executable"
 )
 
-if(CMAKE_BUILD_TYPE MATCHES "Debug")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=undefined -fsanitize=address")
-    add_link_options("-fsanitize=undefined -fsanitize=address")
-endif()
 
 add_dependencies(clean_server r-type_server)
