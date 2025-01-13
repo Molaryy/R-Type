@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include <iostream>
-
 #include "ArgHandler.hpp"
 #include "Client.hpp"
 

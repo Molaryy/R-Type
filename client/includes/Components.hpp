@@ -12,7 +12,8 @@
 
 #include "Gameplay.hpp"
 
-namespace Components {
+namespace Components
+{
     struct RenderText
     {
         std::string text;
@@ -20,18 +21,17 @@ namespace Components {
         int y;
         int fontSize;
 
-        void log() const {
-            std::cout << "RenderText = { "
-                "text = " << text << ", " <<
-                "x = " << x << ", " <<
-                "y = " << y << ", " <<
-               "fontSize = " << fontSize << "} ";
+        void log() const
+        {
+            std::cout << "RenderText = { " "text = " << text << ", " <<
+            "x = " << x << ", " << "y = " << y << ", " <<
+            "fontSize = " << fontSize << "} ";
         }
     };
 
     struct ColorText
     {
-       Color color;
+        Color color;
 
         void log() const {
             std::cout << "ColorText = { "
@@ -43,11 +43,11 @@ namespace Components {
         }
     };
 
-
     struct ClickableText
     {
         std::function<void(Registry &r)> callback;
-        void log() const {
+        void log() const
+        {
             std::cout << "Button = { clicked }" << std::endl;
         }
     };
@@ -67,41 +67,53 @@ namespace Components {
         }
     };
 
-    struct Entity {
+    struct Entity
+    {
         int x;
         int y;
         std::size_t width;
         std::size_t height;
 
-        Entity(int x, int y, std::size_t width, std::size_t height) : x(x), y(y), width(width), height(height) {}
-        void log() const {
-            std::cout << "Entity = { x = " << x << ", y = " << y << ", width = " << width << ", height = " << height << " }";
+        Entity(int x, int y, std::size_t width, std::size_t height)
+            : x(x), y(y), width(width), height(height) {}
+        void log() const
+        {
+            std::cout << "Entity = { x = " <<
+            x << ", y = " << y <<
+            ", width = " << width << ", height = " << height << " }";
         }
     };
 
-    struct Player {
+    struct Player
+    {
         std::size_t health;
         std::string name;
         std::size_t score;
 
-        Player(std::size_t health, std::string name, std::size_t score) : health(health), name(name), score(score) {}
-        void log() const {
-            std::cout << "Player = { health = " << health << ", name = " << name << ", score = " << score << " }";
+        Player(std::size_t health, std::string name, std::size_t score)
+            : health(health), name(name), score(score) {}
+        void log() const
+        {
+            std::cout << "Player = { health = " << health <<
+            ", name = " << name << ", score = " << score << " }";
         }
     };
 
-
-    struct Bullet {
+    struct Bullet
+    {
         int speed;
         int damagePower;
-        void log() const {
+        void log() const
+        {
             std::cout << "Bullet = { x = " << speed << ", y = " << damagePower << " }";
         }
     };
 
-    struct Ennemy {
+    struct Ennemy
+    {
         std::size_t health;
-        void log() const {
+        void log() const
+        {
             std::cout << "Ennemy = { health = " << health << " }";
         }
     };
@@ -115,11 +127,13 @@ namespace Components {
     ** TODO: Add a way to handle multiple entities with Movable component, for example A, W, S, D keys to move the 1 and >, <, ^, v keys to move the other entity
     ** r: I dont think this is mandatory and compatible with the left time
     */
-    struct Movable {
+    struct Movable
+    {
         int speed;
 
         Movable(int speed) : speed(speed) {}
-        void log() const {
+        void log() const
+        {
             std::cout << "Movable = { speed = " << speed << " }";
         }
     };
@@ -127,11 +141,13 @@ namespace Components {
     /*
     ** Drawable allows to entities to be drawn on the screen
     */
-    struct Drawable {
+    struct Drawable
+    {
         int textureID;
 
         Drawable(int textureID) : textureID(textureID) {}
-        void log() const {
+        void log() const
+        {
             std::cout << "Drawable = { textureID = " << textureID << " }";
         }
     };
