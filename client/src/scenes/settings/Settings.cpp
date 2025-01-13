@@ -48,13 +48,13 @@ void settingsCallback(Registry &r)
         },
         [] {
             const std::vector<std::pair<int, int>> resolutions = {
-                {800, 600}, {1280, 720}, {1920, 1080}
-            };
+                {800, 600}, {1280, 720}, {1920, 1080}};
             currentResolutionIndex = (currentResolutionIndex + 1) % resolutions.size();
             auto [x, y] = resolutions[currentResolutionIndex];
             std::cout << "Resolution set to: " << x << "x" << y << std::endl;
         },
-        []() {
+        []()
+        {
             colorBlindMode = !colorBlindMode;
             std::cout << "Colorblind Mode " << (colorBlindMode ? "enabled" : "disabled") << std::endl;
         },
