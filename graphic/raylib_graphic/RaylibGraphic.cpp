@@ -182,6 +182,14 @@ namespace Graphic {
         }
     }
 
+    float RaylibGraphic::getFrameTime() {
+        return ::GetFrameTime();
+    }
+
+    void RaylibGraphic::setTargetFps(size_t fps) {
+        ::SetTargetFPS(fps);
+    }
+
     extern "C" {
         LIB_EXPORT IRenderer *create_instance() {
             return new RaylibGraphic();

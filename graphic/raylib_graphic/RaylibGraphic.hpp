@@ -38,6 +38,8 @@ namespace Graphic {
             void playMusic(int musicID) override;
             void stopMusic(int musicID) override;
             void updateMusic() override;
+            float getFrameTime() override;
+            void setTargetFps(size_t fps) override;
 
         private:
             std::unordered_map<int, Texture2D> textures_;

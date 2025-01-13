@@ -277,5 +277,17 @@ namespace Graphic {
              * 
              */
             virtual void updateMusic() = 0;
+
+            /**
+             * @brief Get the Frame Time object
+             * 
+             */
+            virtual float getFrameTime() = 0;
+
+            /**
+             * @brief Set the Target Fps object
+             * 
+             */
+            virtual void setTargetFps(size_t fps) = 0;
     };
 }
