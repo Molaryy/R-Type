@@ -23,19 +23,18 @@ public:
 
     explicit ComponentEntityType(const Protocol::EntityType type)
         : type(type) {
-        side = _type_sides.at(type);
+        side = typeSides_.at(type);
     }
 
     void log() const {
-        std::cout << "EntityType = { " << static_cast<int>(type) << " }";
+        std::cout << "EntityType = { " << typeName_.at(type) << " }";
     }
 
     Protocol::EntityType type;
-
     Side side;
 
 private:
-    std::unordered_map<Protocol::EntityType, Side> _type_sides{
+    std::unordered_map<Protocol::EntityType, Side> typeSides_{
         {Protocol::PLAYER, Ally},
         {Protocol::PLAYER_SHOOT, Ally},
         {Protocol::ENEMY_FLY, Ennemy},
@@ -43,6 +42,16 @@ private:
         {Protocol::ENEMY_SHOOT, Ennemy},
         {Protocol::BOSS_HEART, Ennemy},
         {Protocol::WALL, Neutral},
+    };
+
+    std::unordered_map<Protocol::EntityType, std::string> typeName_{
+        {Protocol::PLAYER, "Player"},
+        {Protocol::PLAYER_SHOOT, "Player Shoot"},
+        {Protocol::ENEMY_FLY, "Enemy Fly"},
+        {Protocol::ENEMY_TURRET, "Enemy Turret"},
+        {Protocol::ENEMY_SHOOT, "Enemy Shoot"},
+        {Protocol::BOSS_HEART, "Boss Heart"},
+        {Protocol::WALL, "Wall"},
     };
 };
 

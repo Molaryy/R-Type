@@ -8,12 +8,13 @@
 #include "Lobby.hpp"
 
 #include <mutex>
-#include <Systems.hh>
 
-#include "Components.hh"
 #include "Components.hpp"
 #include "Packet.hpp"
 #include "Server.hpp"
+#include "Systems.hh"
+#include "Systems.hpp"
+#include "entities/Player.hpp"
 
 Lobby::Lobby(const std::size_t maxClient)
     : networkLib_(Server::getInstance().getNetwork()),
@@ -70,12 +71,7 @@ void Lobby::addPlayer(const uint16_t client) {
                 return;
             }
 
-            const entity_t entity = registry_.spawn_entity();
-            registry_.add_component(entity, ClientInputs());
-            registry_.add_component(entity, Position(0, 0));
-            registry_.add_component(entity, Velocity(0, 0));
-            registry_.add_component(entity, Delay(PLAYER_SHOOT_RATE, 0));
-            registry_.add_component(entity, Life(PLAYER_HEALTH, PLAYER_HEALTH));
+            const entity_t entity = Player::create(registry_);
             players_.emplace(client, entity);
 
             Network::Packet response(Protocol::AcceptLobbyJoinPacket(lobbyId_, entity), Protocol::ACCEPT_CONNECTION);
@@ -106,10 +102,10 @@ void Lobby::startGame() {
             for (const auto &pla : players_ | std::views::values) {
                 Network::Packet new_player_packet(
                     Protocol::SpawnEntityPacket(
-                        static_cast<std::size_t>(pla),
+                        pla,
                         Protocol::PLAYER,
-                        Protocol::Vector2i(0, 0),
-                        Protocol::Vector2i(0, 0)),
+                        Protocol::Vector2f(0, 0),
+                        Protocol::Vector2f(0, 0)),
                     Protocol::SPAWN
                 );
                 networkLib_.sendAll(new_player_packet.serialize());
@@ -147,7 +143,11 @@ void Lobby::run() {
             }
         }
     });
+    registry_.add_system(Systems::handleClientInputs);
     registry_.add_system(Systems::position_velocity);
+    registry_.add_system(Systems::levelHandler);
+    registry_.add_system(Systems::generic_collide);
+    registry_.add_system(Systems::sendGameState);
     //    registry_.add_system(Systems::log);
     registry_.add_system([](Registry &r) {
         Systems::limit_framerate(r, SERVER_TPS);

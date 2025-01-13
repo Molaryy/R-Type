@@ -14,7 +14,7 @@
 
 #define PLAYER_SPEED 4
 #define PLAYER_SIZE 30
-#define PLAYER_HEALTH 1
+#define PLAYER_HEALTH 100
 
 #define PLAYER_SHOOT_RATE 15
 #define PLAYER_SHOOT_SPEED 5
@@ -106,29 +106,27 @@ namespace Protocol {
         uint8_t empty = 0; // In c++, empty structures size is 1 byte, and this is the best way to ensure that the empty struct is null-initialized
     };
 
-    struct Vector2i {
-        int x;
-        int y;
+    struct Vector2f {
+        float x;
+        float y;
     };
 
     struct SpawnEntityPacket {
         std::size_t entity_id; // Server id for entity
         EntityType type; // Type of entity
-        Vector2i position; // Position at creation
-        Vector2i velocity; // Velocity at creation
+        Vector2f position; // Position at creation
+        Vector2f velocity; // Velocity at creation
     };
 
     struct EntityPositionVelocityPacket {
         std::size_t entity_id; // Server id of entity
-        Vector2i position; // New position
-        Vector2i velocity; // New velocity
+        Vector2f position; // New position
+        Vector2f velocity; // New velocity
     };
 
     struct HitPacket {
-        std::size_t entity_id1; // Server id of first collided entity
-        std::size_t entity_id2; // Server id of second collided entity
-        int health_entity1; // New health of first entity
-        int health_entity2; // New health of second entity
+        std::size_t entity_id; // Server id of hitted entity
+        int new_health; // New health of hitted entity
     };
 
     struct DeadPacket {

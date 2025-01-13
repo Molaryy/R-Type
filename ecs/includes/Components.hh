@@ -7,57 +7,54 @@
 
 #pragma once
 
-#include <string>
+#include <functional>
 #include <iostream>
 
+#include "Registry.hh"
 
-struct Position
-{
+struct Position {
     float x;
     float y;
+
     void log() const {
         std::cout << "Position = { " << x << ", " << y << " }";
     }
 };
 
-struct Velocity
-{
+struct Velocity {
     float x;
     float y;
+
     void log() const {
         std::cout << "Velocity = { " << x << ", " << y << " }";
     }
 };
 
-struct Controllable
-{
+struct Controllable {
     float speed;
+
     void log() const {
         std::cout << "Controllable = { " << speed << " }";
     }
 };
 
-struct Life
-{
+struct Life {
     int current;
     int max;
 
-    void takeDamage(const int damage)
-    {
+    void takeDamage(const int damage) {
         current -= damage;
         if (current < 0)
             current = 0;
     }
 
-    void heal(const int heal)
-    {
+    void heal(const int heal) {
         current += heal;
         if (current > max)
             current = max;
     }
 
-    [[nodiscard]] bool is_alive() const
-    {
+    [[nodiscard]] bool is_alive() const {
         return current > 0;
     }
 
@@ -66,8 +63,7 @@ struct Life
     }
 };
 
-struct Collision
-{
+struct Collision {
     float width;
     float height;
 
@@ -81,15 +77,12 @@ struct Collision
     }
 };
 
-struct Delay
-{
+struct Delay {
     int delay = 10;
     int last = 0;
 
-    bool check_activation()
-    {
-        if (last >= delay)
-        {
+    bool check_activation() {
+        if (last >= delay) {
             last = 0;
             return true;
         }

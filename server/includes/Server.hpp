@@ -13,7 +13,6 @@
 #include "INetworkServer.hpp"
 #include "Lobby.hpp"
 #include "PacketHandler.hpp"
-#include "Registry.hh"
 
 class Server {
 public:
