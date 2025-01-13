@@ -30,7 +30,8 @@ public:
     using iterator_tuple = std::tuple<iterator_t<Containers>...>;
 
     ZipperIterator(iterator_tuple const &it_tuple, iterator_tuple const &end_tuple, const std::size_t max)
-        : current_(it_tuple), end_(end_tuple), max_(max), index_(0) {
+        : current_(it_tuple), end_(end_tuple), max_(max) {
+        index_ = end_tuple == it_tuple ? max : 0;
         if (index_ < max_ && !all_set(seq_))
             incr_all(seq_);
     }
@@ -67,6 +68,8 @@ public:
 private:
     template <std::size_t... Is>
     void incr_all(std::index_sequence<Is...>) {
+        if (index_ >= max_)
+            return;
         do {
             (..., std::get<Is>(current_)++);
             index_++;
