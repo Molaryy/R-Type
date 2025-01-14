@@ -58,8 +58,12 @@ void settingsCallback(Registry &r)
             colorBlindMode = !colorBlindMode;
             std::cout << "Colorblind Mode " << (colorBlindMode ? "enabled" : "disabled") << std::endl;
         },
+        []()
+        {
+            // TODO back to menu
+            std::cout << "Back to menu" << std::endl;
+        },
     };
-    // TODO back to menu
 
     for (std::size_t i = 0; i < settingsOptions.size(); ++i) {
         entity_t optionEntity = r.spawn_entity();

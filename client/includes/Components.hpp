@@ -67,6 +67,10 @@ namespace Components
         }
     };
 
+    struct ScrollableText
+    {
+    };
+
     struct Entity
     {
         int x;
