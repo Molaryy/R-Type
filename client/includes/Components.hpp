@@ -11,6 +11,7 @@
 #include <string>
 
 #include "Gameplay.hpp"
+#include "RTypeProtocol.hpp"
 
 namespace Components
 {
@@ -71,75 +72,14 @@ namespace Components
     {
     };
 
-    struct Entity
+    struct ServerId
     {
-        int x;
-        int y;
-        std::size_t width;
-        std::size_t height;
-
-        Entity(int x, int y, std::size_t width, std::size_t height)
-            : x(x), y(y), width(width), height(height) {}
-        void log() const
-        {
-            std::cout << "Entity = { x = " <<
-            x << ", y = " << y <<
-            ", width = " << width << ", height = " << height << " }";
-        }
+        std::size_t id;
     };
 
-    struct Player
+    struct EntityType
     {
-        std::size_t health;
-        std::string name;
-        std::size_t score;
-
-        Player(std::size_t health, std::string name, std::size_t score)
-            : health(health), name(name), score(score) {}
-        void log() const
-        {
-            std::cout << "Player = { health = " << health <<
-            ", name = " << name << ", score = " << score << " }";
-        }
-    };
-
-    struct Bullet
-    {
-        int speed;
-        int damagePower;
-        void log() const
-        {
-            std::cout << "Bullet = { x = " << speed << ", y = " << damagePower << " }";
-        }
-    };
-
-    struct Ennemy
-    {
-        std::size_t health;
-        void log() const
-        {
-            std::cout << "Ennemy = { health = " << health << " }";
-        }
-    };
-
-    // Game generic components
-
-    /*
-    ** Movable allows to entities to be moved by the player
-    ** of all the entities in the game, only one can have Movable component, because
-    ** only one entity can be moved at a time.
-    ** TODO: Add a way to handle multiple entities with Movable component, for example A, W, S, D keys to move the 1 and >, <, ^, v keys to move the other entity
-    ** r: I dont think this is mandatory and compatible with the left time
-    */
-    struct Movable
-    {
-        int speed;
-
-        Movable(int speed) : speed(speed) {}
-        void log() const
-        {
-            std::cout << "Movable = { speed = " << speed << " }";
-        }
+        Protocol::EntityType type;
     };
 
     /*

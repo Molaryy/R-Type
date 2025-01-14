@@ -12,6 +12,7 @@
 #include <memory>
 #include <thread>
 
+#include "Components.hh"
 #include "Packet.hpp"
 #include "PacketHandler.hpp"
 #include "Registry.hh"
@@ -114,9 +115,28 @@ void Client::setupPacketHandler_()
     {
         std::cout << "POSITION_VELOCITY received\n";
     });
-    packet_handler_.setPacketCallback(Protocol::SPAWN, [](Network::Packet &)
+    packet_handler_.setPacketCallback(Protocol::SPAWN, [this](const Network::Packet &packet)
     {
         std::cout << "SPAWN received\n";
+        Protocol::SpawnEntityPacket spawn_packet = packet.getPayload<Protocol::SpawnEntityPacket>();
+        entity_t e = registry_.spawn_entity();
+
+        registry_.add_component(e, Position(spawn_packet.position.x, spawn_packet.position.y));
+        registry_.add_component(e, Components::ServerId(spawn_packet.entity_id));
+        registry_.add_component(e, Components::EntityType(spawn_packet.type));
+        registry_.add_component(e, Velocity(spawn_packet.velocity.x, spawn_packet.velocity.y));
+        switch (spawn_packet.type)
+        {
+            case Protocol::EntityType::PLAYER:
+                registry_.add_component(e, Components::Drawable(Textures::PLAYER_ID));
+                break;
+            case Protocol::EntityType::PLAYER_BULLET:
+                registry_.add_component(e, Components::Drawable(Textures::BULLET_ID));
+                break;
+            case Protocol::EntityType::ENEMY_FLY:
+                registry_.add_component(e, Components::Drawable(Textures::ENNEMY_ID));
+                break;
+        }
     });
     packet_handler_.setPacketCallback(Protocol::HIT, [](Network::Packet &)
     {
@@ -159,9 +179,12 @@ void Client::run()
     createMenuScene(registry_);
 
     renderer_->loadTexture("assets/spaceship.gif");
+    renderer_->loadTexture("assets/enemies.gif");
+    renderer_->loadTexture("assets/missiles.gif");
 
     Network::Packet jPacket(Protocol::EmptyPacket(), Protocol::JOIN_RANDOM_LOBBY);
     network_lib_->send(jPacket.serialize());
+
 
     while (!renderer_->windowShouldClose()) {
         renderer_->beginDrawing();

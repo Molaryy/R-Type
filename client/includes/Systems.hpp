@@ -7,8 +7,11 @@
 
 #pragma once
 
+#include <ranges>
+
 #include "Client.hpp"
 #include "Components.hpp"
+#include "Components.hh"
 #include "INetworkClient.hpp"
 #include "Main.hpp"
 #include "PacketHandler.hpp"
@@ -96,12 +99,12 @@ namespace Systems
 
     inline void drawEntities(Registry &r)
     {
-        auto &entities = r.get_components<Components::Entity>();
+        auto &Position = r.get_components<Position>();
         auto &drawables = r.get_components<Components::Drawable>();
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
 
-        for (auto &&[entity, drawable] : Zipper(entities, drawables)) {
-            renderer.drawTexture(drawable.textureID, entity.x, entity.y, static_cast<int>(entity.width), static_cast<int>(entity.height), 0);
+        for (auto &&[drawable, position] : Zipper(drawables, positions)) {
+            renderer.drawTexture(drawable.textureID, position.x, position.y, static_cast<int>(position.width), static_cast<int>(position.height), 0);
         }
     }
 
@@ -114,25 +117,15 @@ namespace Systems
         Protocol::InputsKeysPacket inputs;
 
         if (std::ranges::find(events.inputs, Graphic::Keys::UpArrow) != events.inputs.end())
-        {
             inputs.input_keys[Protocol::InputKey::MOVE_UP] = true;
-        }
         if (std::ranges::find(events.inputs, Graphic::Keys::DownArrow) != events.inputs.end())
-        {
             inputs.input_keys[Protocol::InputKey::MOVE_DOWN] = true;
-        }
         if (std::ranges::find(events.inputs, Graphic::Keys::LeftArrow) != events.inputs.end())
-        {
             inputs.input_keys[Protocol::InputKey::MOVE_LEFT] = true;
-        }
         if (std::ranges::find(events.inputs, Graphic::Keys::RightArrow) != events.inputs.end())
-        {
             inputs.input_keys[Protocol::InputKey::MOVE_RIGHT] = true;
-        }
         if (std::ranges::find(events.inputs, Graphic::Keys::Space) != events.inputs.end())
-        {
             inputs.input_keys[Protocol::InputKey::SHOOT] = true;
-        }
 
         Network::Packet packet(inputs, Protocol::INPUT_KEYS);
         Client::getInstance().getNetworkLib().send(packet.serialize());

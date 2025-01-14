@@ -5,8 +5,7 @@
 ** ArgHandler
 */
 
-#ifndef ARGHANDLER_HPP_
-#define ARGHANDLER_HPP_
+#pragma once
 
 #include <optional>
 #include <string>
@@ -32,5 +31,3 @@ private:
 
     std::size_t max_args_ = 0;
 };
-
-#endif /* !ARGHANDLER_HPP_ */

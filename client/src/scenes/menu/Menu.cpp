@@ -117,7 +117,7 @@ void createMenuScene(Registry &r)
 
     registry.add_component(e, Components::RenderText("R-TYPE", 50, 50, 40));
     registry.add_component(e, Components::ColorText(white));
-    const std::vector<std::string> titles = {"New Game", "Leaderboard", "Settings", "Credits", "Exit"};
+    const std::vector<std::string> titles = {"Play", "Leaderboard", "Settings", "Credits", "Exit"};
     const std::vector<std::function<void(Registry &r)>> callbacks = {newGameCallback, leaderBoardCallback, settingsCallback, creditsCallback, exitCallback};
 
     for (std::size_t i = 0; i < NB_MENU_BUTTONS; i++) {

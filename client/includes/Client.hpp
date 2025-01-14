@@ -5,8 +5,7 @@
 ** Client
 */
 
-#ifndef CLIENT_HPP_
-#define CLIENT_HPP_
+#pragma once
 
 #include <dylib.hpp>
 #include <memory>
@@ -55,5 +54,3 @@ private:
     static std::unique_ptr<Client> instance_;
     std::size_t my_server_id_{};
 };
-
-#endif /* !CLIENT_HPP_ */

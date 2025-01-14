@@ -53,10 +53,10 @@ namespace Protocol {
 
     enum EntityType : uint8_t {
         PLAYER,
-        PLAYER_SHOOT,
+        PLAYER_BULLET,
         ENEMY_FLY,
         ENEMY_TURRET,
-        ENEMY_SHOOT,
+        ENEMY_BULLET,
         BOSS_HEART,
         BOSS,
         WALL,
