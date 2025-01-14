@@ -13,6 +13,7 @@
 #include "Main.hpp"
 #include "PacketHandler.hpp"
 #include "Gameplay.hpp"
+#include "RTypeProtocol.hpp"
 
 namespace Systems
 {
@@ -110,25 +111,30 @@ namespace Systems
         auto &movables = r.get_components<Components::Movable>();
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
         Graphic::event_t events = renderer.getEvents();
+        Protocol::InputsKeysPacket inputs;
 
-        for (auto &&[entity, movable] : Zipper(entities, movables))
+        if (std::ranges::find(events.inputs, Graphic::Keys::UpArrow) != events.inputs.end())
         {
-            if (std::find(events.inputs.begin(), events.inputs.end(), Graphic::W) != events.inputs.end())
-            {
-                entity.y -= movable.speed;
-            }
-            if (std::find(events.inputs.begin(), events.inputs.end(), Graphic::S) != events.inputs.end())
-            {
-                entity.y += movable.speed;
-            }
-            if (std::find(events.inputs.begin(), events.inputs.end(), Graphic::Keys::A) != events.inputs.end())
-            {
-                entity.x -= movable.speed;
-            }
-            if (std::find(events.inputs.begin(), events.inputs.end(), Graphic::Keys::D) != events.inputs.end())
-            {
-                entity.x += movable.speed;
-            }
+            inputs.input_keys[Protocol::InputKey::MOVE_UP] = true;
         }
+        if (std::ranges::find(events.inputs, Graphic::Keys::DownArrow) != events.inputs.end())
+        {
+            inputs.input_keys[Protocol::InputKey::MOVE_DOWN] = true;
+        }
+        if (std::ranges::find(events.inputs, Graphic::Keys::LeftArrow) != events.inputs.end())
+        {
+            inputs.input_keys[Protocol::InputKey::MOVE_LEFT] = true;
+        }
+        if (std::ranges::find(events.inputs, Graphic::Keys::RightArrow) != events.inputs.end())
+        {
+            inputs.input_keys[Protocol::InputKey::MOVE_RIGHT] = true;
+        }
+        if (std::ranges::find(events.inputs, Graphic::Keys::Space) != events.inputs.end())
+        {
+            inputs.input_keys[Protocol::InputKey::SHOOT] = true;
+        }
+
+        Network::Packet packet(inputs, Protocol::INPUT_KEYS);
+        Client::getInstance().getNetworkLib().send(packet.serialize());
     }
 }
