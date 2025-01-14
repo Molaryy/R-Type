@@ -15,12 +15,13 @@ ArgHandler::ArgHandler(const std::size_t max_args) : max_args_(max_args) {
 }
 
 void ArgHandler::display_help(const std::string_view &exec_name) {
-    std::cout << "USAGE: " << exec_name << "[OPTIONS]"  << std::endl;;
+    std::cout << "USAGE: " << exec_name << " [OPTIONS]" << std::endl;
     std::cout << "OPTIONS:" << std::endl;
     std::cout << "\t-h|--help\t\t\tDisplay this help message" << std::endl;
     std::cout << "\t-p PORT\t\t\tSpecifies server port (default " << PORT << ")" << std::endl;
-    std::cout << "\t-i IP\t\t\tSpecifies server ip (default " << IP_ADDRESS << ")" << std::endl;
     std::cout << "\t-d\t\t\tDebug mode (log entities components every frame)" << std::endl;
+    std::cout << "\t-l\t\t\tSpecifies max lobby authorized (don't put more than your thread number) (default " << MAX_LOBBY << " )" << std::endl;
+    std::cout << "\t-c\t\t\tSpecifies max clients connected (don't put more than your thread number) (default " << MAX_CLIENTS << " )" << std::endl;
 }
 
 bool ArgHandler::check_help(const int ac, const std::string_view &exec_name, const std::string_view &first_arg) {
@@ -28,7 +29,6 @@ bool ArgHandler::check_help(const int ac, const std::string_view &exec_name, con
         display_help(exec_name);
         return true;
     }
-
     return false;
 }
 
@@ -38,11 +38,15 @@ void ArgHandler::verif_arg(const int ac, const std::vector<std::string_view> &av
 
     const std::optional<std::string> my_port = getArgument_("-p", av);
     if (my_port.has_value())
-        this->port = std::stoi(my_port.value());
+        port = std::stoi(my_port.value());
 
-    const std::optional<std::string> my_ip = getArgument_("-i", av);
-    if (my_ip.has_value())
-        this->ip = my_ip.value();
+    const std::optional<std::string> my_max_client = getArgument_("-c", av);
+    if (my_max_client.has_value())
+        max_client = std::stoi(my_max_client.value());
+
+    const std::optional<std::string> my_max_lobby = getArgument_("-l", av);
+    if (my_max_lobby.has_value())
+        max_lobby = std::stoi(my_max_lobby.value());
 
     if (std::ranges::find(av, "-d") != av.end())
         debug = true;

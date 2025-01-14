@@ -21,9 +21,10 @@
 
 Client::~Client() = default;
 
-Client::Client(const std::string &ip, const std::size_t port)
+Client::Client(const std::string &ip, const std::size_t port, const bool debug)
     : graph_loader_("./", "raylib_graphics"),
-      network_loader_("./", "asio_client") {
+      network_loader_("./", "asio_client"),
+      debug_(debug) {
     std::cout << ip << port << std::endl;
     try {
         auto *create_graph_lib = graph_loader_.get_function<Graphic::IRenderer *()>("create_instance");
@@ -39,8 +40,8 @@ Client::Client(const std::string &ip, const std::size_t port)
     connectToServer_(ip, port);
 }
 
-Client &Client::createInstance(const std::string &ip, const std::size_t port) {
-    instance_.reset(new Client(ip, port));
+Client &Client::createInstance(const std::string &ip, const std::size_t port, const bool debug) {
+    instance_.reset(new Client(ip, port, debug));
     return *instance_;
 }
 
@@ -124,7 +125,8 @@ void Client::setupSystems_() {
     registry_.add_system(Systems::drawAllTexts);
     registry_.add_system(Systems::drawOverText);
     registry_.add_system(Systems::handleMouse);
-    //registry_.add_system(Systems::log);
+    if (debug_)
+        registry_.add_system(Systems::log);
 }
 
 std::unique_ptr<Client> Client::instance_ = nullptr;
@@ -138,11 +140,9 @@ void Client::run() {
 
     renderer_->loadTexture("assets/spaceship.gif");
 
-
     Network::Packet jPacket(Protocol::EmptyPacket(), Protocol::JOIN_RANDOM_LOBBY);
     network_lib_->send(jPacket.serialize());
 
-    renderer_->initWindow(1920, 1080, "rtype");
     while (!renderer_->windowShouldClose()) {
         renderer_->beginDrawing();
         renderer_->clearBackground(0, 0, 0, 0);

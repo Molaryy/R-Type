@@ -18,21 +18,6 @@
 
 namespace Graphic {
     RaylibGraphic::~RaylibGraphic() {
-        for (const Texture &texture : textures_ | std::views::values) {
-            UnloadTexture(texture);
-        }
-        textures_.clear();
-
-        for (const Sound &sound : sounds_ | std::views::values) {
-            UnloadSound(sound);
-        }
-        sounds_.clear();
-
-        for (const Music &music : musics_ | std::views::values) {
-            UnloadMusicStream(music);
-        }
-        musics_.clear();
-
         if (IsAudioDeviceReady())
             CloseAudioDevice();
     }

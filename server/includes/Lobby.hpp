@@ -18,7 +18,7 @@
 
 class Lobby {
 public:
-    explicit Lobby(std::size_t maxClient);
+    Lobby(std::size_t maxClient, bool debug);
     ~Lobby();
 
     [[nodiscard]] std::size_t getId() const;
@@ -40,6 +40,7 @@ private:
     std::size_t lobbyId_;
     Registry registry_;
     std::size_t maxClient_;
+    bool debug_;
     std::unordered_map<uint16_t, entity_t> players_;
     Protocol::LobbyState state_;
 

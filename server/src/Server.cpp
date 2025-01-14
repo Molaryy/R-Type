@@ -14,10 +14,12 @@
 #include "RTypeProtocol.hpp"
 #include "Systems.hh"
 
-Server::Server(const std::size_t port, const std::size_t maxClients)
+Server::Server(const std::size_t port, const std::size_t max_lobby, const std::size_t max_client, const bool debug)
     : networkLoader_("./", "asio_server"),
       port_(port),
-      maxClient_(maxClients),
+      maxClient_(max_client), nbClient_(0),
+      debug_(debug),
+      maxLobby_(max_lobby),
       serverRunning_(true) {
     try {
         auto *create_network_lib = networkLoader_.get_function<Network::INetworkServer *()>("create_instance");
@@ -32,8 +34,8 @@ Server::~Server() {
     networkLib_->close();
 }
 
-Server &Server::createInstance(const std::size_t port, const std::size_t maxClients) {
-    instance_.reset(new Server(port, maxClients));
+Server &Server::createInstance(const std::size_t port, const std::size_t max_lobby, const std::size_t max_client, const bool debug) {
+    instance_.reset(new Server(port, max_lobby, max_client, debug));
     return *instance_;
 }
 
@@ -60,7 +62,6 @@ void Server::run() {
 
     gameLoop_();
 }
-
 
 void Server::networkReceiver_() {
     std::vector<std::pair<uint16_t, std::vector<uint8_t>>> all_oldest_packet = networkLib_->getAllOldestPacket();
@@ -130,7 +131,7 @@ void Server::initPacketHandling_() {
         [this]([[maybe_unused]] const Network::Packet &packet, const uint16_t client) {
             std::cout << "Client: " << client << " : Join a newly created lobby" << std::endl;
 
-            lobbies_.push_back(std::make_unique<Lobby>(maxClient_));
+            lobbies_.push_back(std::make_unique<Lobby>(maxClient_, debug_));
             lobbies_.back().get()->addPlayer(client);
         });
     packetHandler_.setPacketCallback(
@@ -144,7 +145,7 @@ void Server::initPacketHandling_() {
                 lobby->addPlayer(client);
                 return;
             }
-            lobbies_.push_back(std::make_unique<Lobby>(maxClient_));
+            lobbies_.push_back(std::make_unique<Lobby>(maxClient_, debug_));
             lobbies_.back().get()->addPlayer(client);
         });
     packetHandler_.setPacketCallback(

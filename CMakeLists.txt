@@ -12,7 +12,7 @@ else ()
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif ()
 
-if(CMAKE_BUILD_TYPE MATCHES "Debug")
+if(DEBUG_ASAN)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined -fsanitize=address -g3")
     add_link_options(-fsanitize=undefined -fsanitize=address -g3)
 endif()

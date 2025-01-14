@@ -17,7 +17,7 @@ struct Position {
     float y;
 
     void log() const {
-        std::cout << "Position = { " << x << ", " << y << " }";
+        std::cout << "Position = { x = " << x << ", y =" << y << " }";
     }
 };
 
@@ -26,7 +26,7 @@ struct Velocity {
     float y;
 
     void log() const {
-        std::cout << "Velocity = { " << x << ", " << y << " }";
+        std::cout << "Velocity = { x = " << x << ", y = " << y << " }";
     }
 };
 
@@ -34,7 +34,7 @@ struct Controllable {
     float speed;
 
     void log() const {
-        std::cout << "Controllable = { " << speed << " }";
+        std::cout << "Controllable = { speed = " << speed << " }";
     }
 };
 
@@ -59,7 +59,7 @@ struct Life {
     }
 
     void log() const {
-        std::cout << "Life = {" << current << "/" << max << "}";
+        std::cout << "Life = { " << current << " / " << max << " }";
     }
 };
 
@@ -73,7 +73,7 @@ struct Collision {
 
 
     void log() const {
-        std::cout << "Collision = { " << width << ", " << height << ", " << is_colliding << " }";
+        std::cout << "Collision = { width = " << width << ", height = " << height << ", is_colliding = " << std::boolalpha << is_colliding << " }";
     }
 };
 
@@ -91,6 +91,6 @@ struct Delay {
     }
 
     void log() const {
-        std::cout << "Delay = { " << delay << ", " << last << " }";
+        std::cout << "Delay = { " << last << " / " << delay << " frames }";
     }
 };

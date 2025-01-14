@@ -5,8 +5,8 @@ project(r-type_server)
 set(CMAKE_CXX_STANDARD 23)
 
 add_executable(${PROJECT_NAME}
-        main.cpp
-        src/Arguments.cpp
+        src/Main.cpp
+        src/ArgHandler.cpp
         src/Server.cpp
         src/Lobby.cpp
         src/entities/Player.cpp

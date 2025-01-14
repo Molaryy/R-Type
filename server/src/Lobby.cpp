@@ -16,9 +16,10 @@
 #include "Systems.hpp"
 #include "entities/Player.hpp"
 
-Lobby::Lobby(const std::size_t maxClient)
+Lobby::Lobby(const std::size_t maxClient, const bool debug)
     : networkLib_(Server::getInstance().getNetwork()),
       maxClient_(maxClient),
+      debug_(debug),
       state_(Protocol::OPEN) {
     static std::size_t next_lobby = 0;
     lobbyId_ = next_lobby++;
@@ -120,6 +121,8 @@ void Lobby::startGame() {
             registry_.add_system(Systems::levelHandler);
             registry_.add_system(Systems::generic_collide);
             registry_.add_system(Systems::sendGameState);
+            if (debug_)
+                registry_.add_system(Systems::log);
             registry_.add_system([](Registry &r) {
                 Systems::limit_framerate(r, SERVER_TPS);
             });
@@ -161,7 +164,8 @@ void Lobby::run_() {
     registry_.add_system([this]([[maybe_unused]] const Registry &r) {
         executeNetworkSystem_(r, *this);
     });
-    //    registry_.add_system(Systems::log);
+    if (debug_)
+        registry_.add_system(Systems::log);
     registry_.add_system([](Registry &r) {
         Systems::limit_framerate(r, SERVER_TPS);
     });
