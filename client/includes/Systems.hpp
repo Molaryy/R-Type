@@ -56,14 +56,14 @@ namespace Systems {
     inline void handleMouse(Registry &r) {
         auto &texts = r.get_components<Components::RenderText>();
         auto &clickables = r.get_components<Components::ClickableText>();
-        auto &colorsOverText = r.get_components<Components::ColorOverText>();
+        auto &colorsOverTexts = r.get_components<Components::ColorOverText>();
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
         Graphic::event_t events = renderer.getEvents();
         const bool leftClicked = std::ranges::find(events.inputs, Graphic::Keys::LeftClick) != events.inputs.end();
         auto [mouse_x, mouse_y] = events.mouse_pos;
         std::function<void(Registry &r)> secureCallback;
 
-        for (auto &&[clickable, text, colorsOverText] : Zipper(clickables, texts, colorsOverText)) {
+        for (auto &&[clickable, text, colorsOverText] : Zipper(clickables, texts, colorsOverTexts)) {
             if (mouse_x >= text.x && mouse_x <= text.x + static_cast<int>(text.text.size()) * text.fontSize &&
                 mouse_y >= text.y && mouse_y <= text.y + text.fontSize) {
                 if (leftClicked) {
