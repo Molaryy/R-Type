@@ -140,11 +140,9 @@ void Client::run() {
 
     renderer_->loadTexture("assets/spaceship.gif");
 
-
     Network::Packet jPacket(Protocol::EmptyPacket(), Protocol::JOIN_RANDOM_LOBBY);
     network_lib_->send(jPacket.serialize());
 
-    renderer_->initWindow(1920, 1080, "rtype");
     while (!renderer_->windowShouldClose()) {
         renderer_->beginDrawing();
         renderer_->clearBackground(0, 0, 0, 0);

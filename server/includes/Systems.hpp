@@ -37,15 +37,16 @@ namespace Systems {
                 velocity.x -= PLAYER_SPEED;
             else if (std::ranges::find(input.input_keys, Protocol::MOVE_RIGHT) != input.input_keys.end())
                 velocity.x += PLAYER_SPEED;
-            if (std::ranges::find(input.input_keys, Protocol::SHOOT) != input.input_keys.end() && clock.delay <= clock.last)
+            if (std::ranges::find(input.input_keys, Protocol::SHOOT) != input.input_keys.end() && clock.delay <= clock.last) {
                 clock.last = 0;
                 callbacks.emplace([&] {
                     Shoot::create(r, position);
                 });
-        }
-        while (!callbacks.empty()) {
-            callbacks.front()();
-            callbacks.pop();
+            }
+            while (!callbacks.empty()) {
+                callbacks.front()();
+                callbacks.pop();
+            }
         }
     }
 
