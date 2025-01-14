@@ -25,7 +25,7 @@ public:
 
     void run();
 
-    static Client &createInstance(const std::string &ip, std::size_t port);
+    static Client &createInstance(const std::string &ip, std::size_t port, bool debug);
     static Client &getInstance();
 
     Graphic::IRenderer &getRenderer() const;
@@ -36,7 +36,7 @@ public:
     Registry &getRegistry();
 
 private:
-    Client(const std::string &ip, std::size_t port);
+    Client(const std::string &ip, std::size_t port, bool debug);
 
     bool connectToServer_(const std::string &ip, std::size_t port);
     void setupPacketHandler_();
@@ -50,6 +50,7 @@ private:
 
     Network::PacketHandler packet_handler_;
     Registry registry_;
+    bool debug_;
     static std::unique_ptr<Client> instance_;
     std::size_t my_server_id_{};
 };

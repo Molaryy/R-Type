@@ -13,11 +13,11 @@ int main(const int ac, char const *const *av) {
     try {
         if (ac == 2 && ArgHandler::check_help(ac, av[0], av[1]))
             return EXIT_SUCCESS;
-        ArgHandler args(4);
+        ArgHandler args(5);
 
         args.verif_arg(ac, std::vector<std::string_view>(av, av + ac));
 
-        Client::createInstance(args.ip, args.port).run();
+        Client::createInstance(args.ip, args.port, args.debug).run();
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
         return EXIT_ERROR;

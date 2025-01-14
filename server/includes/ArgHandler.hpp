@@ -12,8 +12,9 @@
 #include <string>
 #include <vector>
 
-#define IP_ADDRESS "127.0.0.1"
 #define PORT 4242
+#define MAX_LOBBY 4
+#define MAX_CLIENTS 10
 
 class ArgHandler {
 public:
@@ -23,8 +24,9 @@ public:
     static bool check_help(int ac, const std::string_view &exec_name, const std::string_view &first_arg);
     void verif_arg(int ac, const std::vector<std::string_view> &av);
 
-    std::string ip{IP_ADDRESS};
     std::size_t port{PORT};
+    std::size_t max_client{MAX_CLIENTS};
+    std::size_t max_lobby{MAX_LOBBY};
     bool debug{false};
 
 private:

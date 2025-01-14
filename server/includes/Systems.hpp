@@ -26,6 +26,7 @@ namespace Systems {
         for (auto &&[entity, input, velocity, position, clock] : IndexedZipper(inputs, velocities, positions, clocks)) {
             velocity.x = 0;
             velocity.y = 0;
+            ++clock.last;
             if (input.input_keys.empty())
                 continue;
             if (std::ranges::find(input.input_keys, Protocol::MOVE_UP) != input.input_keys.end())
@@ -36,7 +37,8 @@ namespace Systems {
                 velocity.x -= PLAYER_SPEED;
             else if (std::ranges::find(input.input_keys, Protocol::MOVE_RIGHT) != input.input_keys.end())
                 velocity.x += PLAYER_SPEED;
-            if (std::ranges::find(input.input_keys, Protocol::SHOOT) != input.input_keys.end() && clock.check_activation())
+            if (std::ranges::find(input.input_keys, Protocol::SHOOT) != input.input_keys.end() && clock.delay <= clock.last)
+                clock.last = 0;
                 callbacks.emplace([&] {
                     Shoot::create(r, position);
                 });
