@@ -50,7 +50,7 @@ void Server::run() {
     initPacketHandling();
 
     registry_.add_system(Systems::networkReceiver);
-    registry_.add_system(Systems::log);
+    //registry_.add_system(Systems::log);
 
     gameLoop();
 }
@@ -91,7 +91,7 @@ void Server::initPacketHandling() {
             players_.emplace(client, entity);
 
 
-            Network::Packet response(Protocol::AcceptConnection(static_cast<std::size_t>(entity)), Protocol::ACCEPT_CONNECTION);
+            Network::Packet response(Protocol::AcceptConnectionPacket(static_cast<std::size_t>(entity)), Protocol::ACCEPT_CONNECTION);
             networkLib_->send(client, response.serialize());
         });
 
@@ -106,12 +106,12 @@ void Server::initPacketHandling() {
                 return;
             }
 
-            Network::Packet response(Protocol::Empty(), Protocol::START_GAME);
+            Network::Packet response(Protocol::EmptyPacket(), Protocol::START_GAME);
             networkLib_->sendAll(response.serialize());
 
             for (const auto &pla : players_ | std::views::values) {
                 Network::Packet new_player_packet(
-                    Protocol::SpawnEntity(
+                    Protocol::SpawnEntityPacket(
                         static_cast<std::size_t>(pla),
                         Protocol::PLAYER,
                         Protocol::Vector2i(0, 0),
@@ -128,7 +128,7 @@ void Server::initPacketHandling() {
         [this](const Network::Packet &packet, const uint16_t client) {
             std::cout << "Client: " << client << " : Sended inputs: " << std::endl;
 
-            auto [key_pressed] = packet.getPayload<Protocol::PacketInputsKeys>();
+            auto [key_pressed] = packet.getPayload<Protocol::InputsKeysPacket>();
 
             SparseArray<ClientInputs> &inputs = registry_.get_components<ClientInputs>();
 

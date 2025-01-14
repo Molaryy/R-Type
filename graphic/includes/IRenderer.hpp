@@ -177,6 +177,22 @@ namespace Graphic {
             virtual void drawRectangle(int x, int y, int width, int height, unsigned char r, unsigned char g, unsigned char b, unsigned char a) = 0;
 
             /**
+             * @brief draw a rounded rectangle
+             * 
+             * @param x 
+             * @param y 
+             * @param width 
+             * @param height 
+             * @param roundness 
+             * @param segments 
+             * @param r 
+             * @param g 
+             * @param b 
+             * @param a 
+             */
+            virtual void drawRoundedRectangle(int x, int y, int width, int height, float roundness, int segments, unsigned char r, unsigned char g, unsigned char b, unsigned char a) = 0;
+
+            /**
              * @brief load texture / sprite
              * 
              * @param path to the file / image
@@ -220,6 +236,12 @@ namespace Graphic {
              * @return event_t 
              */
             virtual event_t getEvents() = 0;
+
+            /**
+             * @brief init sounds
+             * 
+             */
+            virtual void initAudioDevice() = 0;
 
             /**
              * @brief load sounds

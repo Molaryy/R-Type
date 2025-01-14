@@ -14,6 +14,8 @@
 #include <stdexcept>
 #include <typeindex>
 #include <unordered_map>
+#include <chrono>
+
 
 #include "Entity.hh"
 #include "SparseArray.hh"
@@ -74,9 +76,25 @@ public:
         return next_entity_ - 1;
     }
 
-    entity_t entity_from_index(std::size_t idx);
+    entity_t entity_from_index(const std::size_t idx) {
+        if (std::ranges::find(dead_entities_, idx) != dead_entities_.end() || idx >= next_entity_)
+            throw std::runtime_error("Entity index out of range.");
+        return idx;
+    }
 
-    void kill_entity(entity_t const &e);
+    void kill_entity(entity_t const &e) {
+        dead_entities_.push_back(e);
+        for (const std::function<void(Registry &, const entity_t &)> &remove_function : std::views::values(remove_functions_))
+            remove_function(*this, e);
+    }
+
+    void clear_enities() {
+        next_entity_ = 0;
+        remove_functions_.clear();
+        dead_entities_.clear();
+        loggers_.clear();
+        components_arrays_.clear();
+    }
 
     template <typename Component>
     typename SparseArray<Component>::reference_type add_component(entity_t const &to, Component &&c) {

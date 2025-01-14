@@ -7,6 +7,8 @@
 
 #include "Hunter.hpp"
 
+#include <memory>
+
 #include "Components.hh"
 #include "Zipper.hh"
 
@@ -15,7 +17,7 @@ void DuckTag::log() const {
 }
 
 void Sprite::log() const {
-        std::cout << "Sprite = { tesxtureID: " << textureID << ", w: " << width << ", h: " << height << " }";
+    std::cout << "Sprite = { tesxtureID: " << textureID << ", w: " << width << ", h: " << height << " }";
 }
 
 Hunter::Hunter(): graphicLoader_("./", "raylib_graphics") {
@@ -27,8 +29,7 @@ Hunter::Hunter(): graphicLoader_("./", "raylib_graphics") {
     }
 }
 
-Hunter::~Hunter() {
-}
+Hunter::~Hunter() = default;
 
 void Hunter::run() {
     renderer_->initWindow(800, 600, "Hunter Game POC ECS");
@@ -38,7 +39,7 @@ void Hunter::run() {
 
         reg_.add_component<Position>(e, Position(static_cast<float>(0 + i * 100), static_cast<float>(100 + i * 50)));
         reg_.add_component<Velocity>(e, Velocity(0.009f, 0.f));
-        reg_.add_component<Collision>(e, Collision(50 + i * 100, 100 + i * 50, 32, 16));
+        reg_.add_component<Collision>(e, Collision(32, 16));
         reg_.add_component<Life>(e, Life(1, 1));
         reg_.add_component<DuckTag>(e, DuckTag());
 
@@ -64,8 +65,6 @@ void Hunter::duckMovementSystem(Registry &r) {
     for (auto &&[pos, vel, col, duc] : Zipper(positions, velocities, collisions, ducks)) {
         pos.x += vel.x;
         pos.y += vel.y;
-        col.x = pos.x;
-        col.y = pos.y;
 
         if (pos.x > 800)
             pos.x = -64.f;
@@ -77,7 +76,7 @@ void Hunter::duckMovementSystem(Registry &r) {
 void Hunter::duckShootingSystem(Registry &r) {
     Graphic::IRenderer &renderer = getInstance().getRenderer();
     Graphic::event_t events = renderer.getEvents();
-    bool leftClicked = std::find(events.inputs.begin(), events.inputs.end(), Graphic::Keys::LeftClick) != events.inputs.end();
+    const bool leftClicked = std::ranges::find(events.inputs, Graphic::Keys::LeftClick) != events.inputs.end();
 
     if (!leftClicked)
         return;
@@ -87,9 +86,11 @@ void Hunter::duckShootingSystem(Registry &r) {
     auto &ducks = r.get_components<DuckTag>();
     auto &collisions = r.get_components<Collision>();
     auto &lifes = r.get_components<Life>();
+    auto &positions = r.get_components<Position>();
 
-    for (auto &&[duck, col, life] : Zipper(ducks, collisions, lifes)) {
-        if (mouseX >= col.x && mouseX <= col.x + col.width && mouseY >= col.y && mouseY <= col.y + col.height) {
+    for (auto &&[duck, col, life, pos] : Zipper(ducks, collisions, lifes, positions)) {
+        if (mouseX >= static_cast<int>(pos.x) && mouseX <= static_cast<int>(pos.x) + col.width && mouseY >= static_cast<int>(pos.y)
+            && mouseY <= static_cast<int>(pos.y) + col.height) {
             life.current = 0;
         }
     }
@@ -129,7 +130,7 @@ void Hunter::duckRendererSystem(Registry &r) {
 // }
 
 Hunter &Hunter::createInstance() {
-    instance_.reset(new Hunter());
+    instance_ = std::make_unique<Hunter>();
     return *instance_;
 }
 

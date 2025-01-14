@@ -39,11 +39,6 @@ struct Sprite {
     }
 };
 
-// struct Score {
-//     int value;
-//     void log() const;
-// };
-
 class Platform {
     public:
         Platform();
@@ -55,13 +50,12 @@ class Platform {
         static void playerMovementSystem(Registry &r);
         static void collisionSystem(Registry &r);
         static void renderingSystem(Registry &r);
-        // static void platformGenerationSystem(Registry &r);
-        // static void scoreSystem(Registry &r);
+        static void platformGenerationSystem(Registry &r);
+        static void cameraSystem(Registry &r);
 
         static Platform &createInstance();
         [[nodiscard]] static Platform &getInstance();
         [[nodiscard]] Graphic::IRenderer &getRenderer() const;
-        // [[nodiscard]] int getPlayerTextureID() const;
 
     private:
         dylib graphicLoader_;
@@ -70,18 +64,17 @@ class Platform {
         std::unique_ptr<Graphic::IRenderer> renderer_;
         Registry reg_;
 
-        // int playerTextureID_;
-        // int jumpSoundID_;
-        // int backGroundMusicID_;
-
+        int jumpSoundID_ = -1;
+        int backGroundMusicID_ = -1;
         int texturePlayer_ = -1;
-        int texturePlatform_ = -1;
 
         float dt_ = 0.f;
         std::mt19937 rng_;
+        float cameraOffsetY_ = 0.f;
+        bool autoJump_ = false;
 
         void initEntities();
         void createPlayer(float x, float y);
         void createPlatform(float x, float y, int w, int h);
-
+        void generatePlatformStair(size_t count);
 };

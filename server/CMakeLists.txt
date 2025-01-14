@@ -21,7 +21,7 @@ target_include_directories(${PROJECT_NAME}
 )
 
 target_link_libraries(${PROJECT_NAME}
-        PRIVATE PacketNetwork
+        PRIVATE packet_network
         PRIVATE dylib
 )
 

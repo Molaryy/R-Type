@@ -6,6 +6,7 @@
 */
 
 #include "RaylibGraphic.hpp"
+#include <iostream>
 
 #if defined(_WIN32) || defined(_WIN64)
 #define LIB_EXPORT __declspec(dllexport)
@@ -64,6 +65,17 @@ namespace Graphic {
         DrawRectangle(x, y, width, height, Color(r, g, b, a));
     }
 
+    void RaylibGraphic::drawRoundedRectangle(int x, int y, int width, int height, float roundness, int segments, unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
+        ::Rectangle rec = {
+            static_cast<float>(x),
+            static_cast<float>(y),
+            static_cast<float>(width),
+            static_cast<float>(height)
+        };
+        Color col = { r, g, b, a };
+        ::DrawRectangleRounded(rec, roundness, segments, col);
+    }
+
     int RaylibGraphic::loadTexture(const std::string &path) {
         Texture2D texture = LoadTexture(path.c_str());
         int id = nextTextureID_++;
@@ -101,6 +113,7 @@ namespace Graphic {
 
         events.mouse_pos = { GetMouseX(), GetMouseY() };
         events.window_size = { GetScreenWidth(), GetScreenHeight() };
+        events.inputs.clear();
         if (WindowShouldClose())
             events.inputs.push_back(Keys::CloseWindow);
 
@@ -109,13 +122,17 @@ namespace Graphic {
                 events.inputs.push_back(customKey);
             }
         }
-        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             events.inputs.push_back(Keys::LeftClick);
         }
-        if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
+        if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
             events.inputs.push_back(Keys::RightClick);
         }
         return events;
+    }
+
+    void RaylibGraphic::initAudioDevice() {
+        ::InitAudioDevice();
     }
 
     int RaylibGraphic::loadSound(const std::string &path) {
