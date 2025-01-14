@@ -8,14 +8,12 @@
 #pragma once
 
 #include "Client.hpp"
+#include "Components.hpp"
 #include "INetworkClient.hpp"
+#include "Main.hpp"
 #include "PacketHandler.hpp"
 #include "Registry.hh"
 #include "Zipper.hh"
-#include "Components.hpp"
-#include "Components.hh"
-#include "Main.hpp"
-#include "Gameplay.hpp"
 
 namespace Systems {
     inline void networkReceiver([[maybe_unused]] Registry &r) {
@@ -61,13 +59,13 @@ namespace Systems {
         auto &colorsOverText = r.get_components<Components::ColorOverText>();
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
         Graphic::event_t events = renderer.getEvents();
-        bool leftClicked = std::find(events.inputs.begin(), events.inputs.end(), Graphic::Keys::LeftClick) != events.inputs.end();
-        std::pair<int, int> mousePos = events.mouse_pos;
+        const bool leftClicked = std::ranges::find(events.inputs, Graphic::Keys::LeftClick) != events.inputs.end();
+        auto [mouse_x, mouse_y] = events.mouse_pos;
         std::function<void(Registry &r)> secureCallback;
 
         for (auto &&[clickable, text, colorsOverText] : Zipper(clickables, texts, colorsOverText)) {
-            if (mousePos.first >= text.x && mousePos.first <= text.x + (int)text.text.size() * text.fontSize &&
-                mousePos.second >= text.y && mousePos.second <= text.y + text.fontSize) {
+            if (mouse_x >= text.x && mouse_x <= text.x + static_cast<int>(text.text.size()) * text.fontSize &&
+                mouse_y >= text.y && mouse_y <= text.y + text.fontSize) {
                 if (leftClicked) {
                     secureCallback = clickable.callback;
                     break;
@@ -88,7 +86,7 @@ namespace Systems {
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
 
         for (auto &&[entity, drawable] : Zipper(entities, drawables)) {
-            renderer.drawTexture(drawable.textureID, entity.x, entity.y, entity.width, entity.height);
+            renderer.drawTexture(drawable.textureID, entity.x, entity.y, static_cast<int>(entity.width), static_cast<int>(entity.height), 0);
         }
     }
 }

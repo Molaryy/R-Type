@@ -8,7 +8,6 @@
 #pragma once
 
 #include "Client.hpp"
-#include "Components.hpp"
 
 #define NB_MENU_BUTTONS 5
 
@@ -16,8 +15,6 @@
 #define COLOR_GREY {200, 200, 200, 255}
 #define COLOR_DARK_BLUE {20, 82, 172, 255}
 #define COLOR_WHITE {255, 255, 255, 255}
-
-
 
 void settingsCallback(Registry &r);
 void createMenuScene(Registry &registry);

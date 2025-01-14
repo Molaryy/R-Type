@@ -14,10 +14,3 @@
 
 #define EXIT_SUCCESS 0
 #define EXIT_ERROR 84
-
-struct Color {
-    unsigned char r;
-    unsigned char g;
-    unsigned char b;
-    unsigned char a;
-};

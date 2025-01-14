@@ -10,13 +10,13 @@
 
 void settingsCallback(Registry &r)
 {
-    r.clear_enities();
+    r.clear_entities();
     entity_t e = r.spawn_entity();
 
     r.add_component(e, Components::RenderText("Settings", 50, 50, 40));
     r.add_component(e, Components::ColorText({255, 255, 255, 255}));
 
-    std::vector<std::string> settingsOptions = {
+    const std::vector<std::string> settingsOptions = {
         "Change FPS",
         "Toggle Music",
         "Toggle Sound Effects",
@@ -33,26 +33,26 @@ void settingsCallback(Registry &r)
     static int currentResolutionIndex = 0;
 
     std::vector<std::function<void()>> actions = {
-        []() {
-            const int maxFPSOptions[] = {30, 60, 120};
+        [] {
+            constexpr int maxFPSOptions[] = {30, 60, 120};
             currentFPSIndex = (currentFPSIndex + 1) % (sizeof(maxFPSOptions) / sizeof(maxFPSOptions[0]));
             std::cout << "FPS set to: " << maxFPSOptions[currentFPSIndex] << std::endl;
         },
-        []() {
+        [] {
             musicEnabled = !musicEnabled;
             std::cout << "Music " << (musicEnabled ? "enabled" : "disabled") << std::endl;
         },
-        []() {
+        [] {
             soundEffectsEnabled = !soundEffectsEnabled;
             std::cout << "Sound Effects " << (soundEffectsEnabled ? "enabled" : "disabled") << std::endl;
         },
-        []() {
+        [] {
             const std::vector<std::pair<int, int>> resolutions = {
                 {800, 600}, {1280, 720}, {1920, 1080}
             };
             currentResolutionIndex = (currentResolutionIndex + 1) % resolutions.size();
-            auto res = resolutions[currentResolutionIndex];
-            std::cout << "Resolution set to: " << res.first << "x" << res.second << std::endl;
+            auto [x, y] = resolutions[currentResolutionIndex];
+            std::cout << "Resolution set to: " << x << "x" << y << std::endl;
         },
         []() {
             colorBlindMode = !colorBlindMode;
