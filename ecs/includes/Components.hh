@@ -7,57 +7,54 @@
 
 #pragma once
 
-#include <string>
+#include <functional>
 #include <iostream>
 
+#include "Registry.hh"
 
-struct Position
-{
+struct Position {
     float x;
     float y;
+
     void log() const {
         std::cout << "Position = { " << x << ", " << y << " }";
     }
 };
 
-struct Velocity
-{
+struct Velocity {
     float x;
     float y;
+
     void log() const {
         std::cout << "Velocity = { " << x << ", " << y << " }";
     }
 };
 
-struct Controllable
-{
+struct Controllable {
     float speed;
+
     void log() const {
         std::cout << "Controllable = { " << speed << " }";
     }
 };
 
-struct Life
-{
+struct Life {
     int current;
     int max;
 
-    void takeDamage(int damage)
-    {
+    void takeDamage(const int damage) {
         current -= damage;
         if (current < 0)
             current = 0;
     }
 
-    void heal(int heal)
-    {
+    void heal(const int heal) {
         current += heal;
         if (current > max)
             current = max;
     }
 
-    bool is_alive() const
-    {
+    [[nodiscard]] bool is_alive() const {
         return current > 0;
     }
 
@@ -66,34 +63,26 @@ struct Life
     }
 };
 
-struct Relation
-{
-    bool is_ally;
-    void log() const {
-        std::cout << "Relation = { " << is_ally << " }";
-    }
-};
+struct Collision {
+    float width;
+    float height;
 
-struct Collision
-{
-    int width;
-    int height;
+    std::function<void(Registry &r, entity_t me, entity_t other)> collisionTask;
+
     bool is_colliding = false;
+
 
     void log() const {
         std::cout << "Collision = { " << width << ", " << height << ", " << is_colliding << " }";
     }
 };
 
-struct Delay
-{
+struct Delay {
     int delay = 10;
     int last = 0;
 
-    bool can_shoot()
-    {
-        if (last >= delay)
-        {
+    bool check_activation() {
+        if (last >= delay) {
             last = 0;
             return true;
         }

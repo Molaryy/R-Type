@@ -4,27 +4,27 @@
 ** File description:
 ** Client
 */
+#include "Client.hpp"
 
-#include "Scenes.hpp"
 #include <chrono>
 #include <iostream>
 #include <memory>
-#include <Systems.hh>
 #include <thread>
 
 #include "Packet.hpp"
 #include "PacketHandler.hpp"
 #include "Registry.hh"
-#include "Systems.hpp"
-#include "Components.hpp"
 #include "RTypeProtocol.hpp"
-#include "Main.hpp"
+#include "Scenes.hpp"
+#include "Systems.hh"
+#include "Systems.hpp"
 
 Client::~Client() = default;
 
 Client::Client(const std::string &ip, const std::size_t port)
     : graph_loader_("./", "raylib_graphics"),
       network_loader_("./", "asio_client") {
+    std::cout << ip << port << std::endl;
     try {
         auto *create_graph_lib = graph_loader_.get_function<Graphic::IRenderer *()>("create_instance");
         auto *create_network_lib = network_loader_.get_function<Network::INetworkClient *()>("create_instance");
@@ -34,9 +34,9 @@ Client::Client(const std::string &ip, const std::size_t port)
     } catch (const dylib::exception &e) {
         throw std::runtime_error("Failed to load dyn lib : " + std::string(e.what()));
     }
-    connectToServer_(ip, port);
-
     setupPacketHandler_();
+
+    connectToServer_(ip, port);
 }
 
 Client &Client::createInstance(const std::string &ip, const std::size_t port) {
@@ -65,17 +65,16 @@ Registry &Client::getRegistry() {
 }
 
 bool Client::connectToServer_(const std::string &ip, const std::size_t port) {
-    network_lib_->connect(ip, port);
+    network_lib_->connect(ip, static_cast<uint16_t>(port));
     bool success = false;
 
-    packet_handler_.setPacketCallback(Protocol::ACCEPT_CONNECTION, [&success,
-                                          this](const Network::Packet &packet) {
-                                          const auto [entity_id] = packet.getPayload<Protocol::AcceptConnectionPacket>();
-
-                                          my_server_id_ = entity_id;
-                                          std::cout << "Connection established : My server id is : " << my_server_id_ << std::endl;
-                                          success = true;
-                                      });
+    packet_handler_.setPacketCallback(
+        Protocol::ACCEPT_CONNECTION,
+        [&success, this]([[maybe_unused]] const Network::Packet &packet) {
+            std::cout << "Connection established with server" << success << std::endl;
+            success = true;
+        }
+    );
 
     Network::Packet packet(Protocol::EmptyPacket(), Protocol::CONNECT);
     network_lib_->send(packet.serialize());
@@ -134,16 +133,20 @@ void Client::run() {
     setupSystems_();
 
     renderer_->initWindow(800, 600, "rtype");
-    
+
     createMenuScene(registry_);
 
     renderer_->loadTexture("assets/spaceship.gif");
-    
 
+
+    Network::Packet jPacket(Protocol::EmptyPacket(), Protocol::JOIN_RANDOM_LOBBY);
+    network_lib_->send(jPacket.serialize());
+
+    renderer_->initWindow(1920, 1080, "rtype");
     while (!renderer_->windowShouldClose()) {
         renderer_->beginDrawing();
         renderer_->clearBackground(0, 0, 0, 0);
-    
+
         registry_.run_systems();
 
         renderer_->endDrawing();

@@ -10,13 +10,13 @@
 #include "Arguments.hpp"
 #include "Server.hpp"
 
-int main(const int argc, char * const argv[]) {
+int main(const int argc, char *const argv[]) {
     try {
         Arguments args;
         args.getArguments(argc, argv);
 
         Server::createInstance(args.getPort(), args.getNbClients()).run();
-    } catch (Arguments::ArgumentsException &e) {
+    } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
         return 84;
     }

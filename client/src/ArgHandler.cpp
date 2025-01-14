@@ -29,17 +29,18 @@ void ArgHandler::verif_arg(const int ac, const std::vector<std::string_view> &av
     if (static_cast<std::size_t>(ac) > max_args_ + 1 || av.size() > max_args_ + 1)
         throw std::runtime_error(std::string(av[0]) + ": max args: " + std::to_string(max_args_));
 
-    const std::optional<std::string> port = getArgument_("-p", av);
-    if (port.has_value())
-        this->port = std::stoi(port.value());
+    const std::optional<std::string> my_port = getArgument_("-p", av);
+    if (my_port.has_value())
+        this->port = std::stoi(my_port.value());
 
-    const std::optional<std::string> ip = getArgument_("-i", av);
-    if (ip.has_value())
-        this->ip = ip.value();
+    const std::optional<std::string> my_ip = getArgument_("-i", av);
+    if (my_ip.has_value())
+        this->ip = my_ip.value();
 }
 
 std::optional<std::string> ArgHandler::getArgument_(const std::string &arg, const std::vector<std::string_view> &av) {
-    const auto &it = std::ranges::find(av, arg);
-
+    auto it = std::ranges::find(av, arg);
+    if (it != av.end())
+        ++it;
     return it == av.end() ? std::nullopt : std::optional(std::string(*it));
 }

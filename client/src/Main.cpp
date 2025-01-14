@@ -13,7 +13,7 @@ int main(const int ac, char const *const *av) {
     try {
         if (ac == 2 && ArgHandler::check_help(ac, av[0], av[1]))
             return EXIT_SUCCESS;
-        ArgHandler args(0);
+        ArgHandler args(4);
 
         args.verif_arg(ac, std::vector<std::string_view>(av, av + ac));
 

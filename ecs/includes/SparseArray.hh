@@ -7,16 +7,12 @@
 
 #pragma once
 
-#include <vector>    // std::vector
-#include <memory>    // std::allocator
-#include <any>       // std::any
-#include <algorithm> // std::find
-#include <optional>  //std::optional
+#include <algorithm>
+#include <optional>
+#include <vector>
 
-//! Primary template any T
 template <typename Component>
-class SparseArray
-{
+class SparseArray {
 public:
     using value_type = std::optional<Component>;
     using reference_type = value_type &;
@@ -34,41 +30,58 @@ public:
     SparseArray &operator=(SparseArray const &) noexcept = default;
     SparseArray &operator=(SparseArray &&) noexcept = default;
 
-    reference_type operator[](size_type index) noexcept
-    {
+    reference_type operator[](size_type index) noexcept {
         if (index >= size())
             resize(index + 1);
         return data_[index];
     }
-    const_reference_type operator[](size_type index) const noexcept
-    {
+
+    const_reference_type operator[](size_type index) const noexcept {
+        if (index >= size())
+            return null_;
         return data_[index];
     }
 
-    iterator begin() noexcept { return data_.begin(); }
-    const_iterator begin() const noexcept { return data_.begin(); }
-    const_iterator cbegin() const noexcept { return data_.cbegin(); }
+    iterator begin() noexcept {
+        return data_.begin();
+    }
 
-    iterator end() noexcept { return data_.end(); }
-    const_iterator end() const noexcept { return data_.end(); }
-    const_iterator cend() const noexcept { return data_.cend(); }
+    const_iterator begin() const noexcept {
+        return data_.begin();
+    }
 
-    size_type size() const noexcept { return data_.size(); }
+    const_iterator cbegin() const noexcept {
+        return data_.cbegin();
+    }
 
-    void resize(size_type new_size)
-    {
+    iterator end() noexcept {
+        return data_.end();
+    }
+
+    const_iterator end() const noexcept {
+        return data_.end();
+    }
+
+    const_iterator cend() const noexcept {
+        return data_.cend();
+    }
+
+    size_type size() const noexcept {
+        return data_.size();
+    }
+
+    void resize(size_type new_size) {
         data_.resize(new_size, std::nullopt);
     }
 
     /**
-     * @brief Insert a value at the end of the array
+     * @brief Insert a value
      *
      * @param pos Position to insert the value
      * @param value Value to insert
      * @return reference_type
      */
-    reference_type insert_at(size_type pos, value_type const &value)
-    {
+    reference_type insert_at(size_type pos, value_type const &value) {
         if (pos >= data_.size())
             data_.resize(pos + 1);
         data_[pos] = value;
@@ -76,14 +89,13 @@ public:
     }
 
     /**
-     * @brief Insert a value at the end of the array
+     * @brief Insert a value
      *
      * @param pos Position to insert the value
      * @param value Value to insert
      * @return reference_type
      */
-    reference_type insert_at(size_type pos, value_type &&value)
-    {
+    reference_type insert_at(size_type pos, value_type &&value) {
         if (pos >= data_.size())
             data_.resize(pos + 1);
         data_[pos] = std::move(value);
@@ -91,7 +103,7 @@ public:
     }
 
     /**
-     * @brief Insert a value at the end of the array
+     * @brief Emplace a value
      *
      * @tparam Params Parameters to forward to the value constructor
      * @param pos Position to insert the value
@@ -99,8 +111,7 @@ public:
      * @return reference_type
      */
     template <class... Params>
-    reference_type emplace_at(size_type pos, Params &&...params)
-    {
+    reference_type emplace_at(size_type pos, Params &&... params) {
         if (pos >= data_.size())
             data_.resize(pos + 1);
         data_[pos] = value_type(std::forward<Params>(params)...);
@@ -113,8 +124,7 @@ public:
      * @param pos Position to erase
      * @return void
      */
-    void erase(size_type pos)
-    {
+    void erase(size_type pos) {
         if (pos < data_.size())
             data_.erase(data_.begin() + pos);
     }
@@ -125,9 +135,8 @@ public:
      * @param value Value to search
      * @return size_type
      */
-    size_type get_index(value_type const &value) const noexcept
-    {
-        auto iter = std::find(data_.begin(), data_.end(), value);
+    size_type get_index(value_type const &value) const noexcept {
+        auto iter = std::ranges::find(data_, value);
         if (iter == data_.end())
             return data_.size();
         return static_cast<size_type>(std::distance(data_.begin(), iter));

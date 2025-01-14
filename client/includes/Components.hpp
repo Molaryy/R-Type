@@ -7,9 +7,10 @@
 
 #pragma once
 
-#include <string>
 #include <iostream>
-#include "Main.hpp"
+#include <string>
+
+#include "Gameplay.hpp"
 
 namespace Components {
     struct RenderText
@@ -20,10 +21,10 @@ namespace Components {
         int fontSize;
 
         void log() const {
-            std::cout << "RenderText = { " 
-                "text = " << text << ", " << 
-                "x = " << x << ", " << 
-                "y = " << y << ", " << 
+            std::cout << "RenderText = { "
+                "text = " << text << ", " <<
+                "x = " << x << ", " <<
+                "y = " << y << ", " <<
                "fontSize = " << fontSize << "} ";
         }
     };
@@ -33,11 +34,11 @@ namespace Components {
        Color color;
 
         void log() const {
-            std::cout << "ColorText = { " 
-                "r = " << (unsigned int)color.r << ", " << 
-                "g = " << (unsigned int)color.g << ", " << 
-                "b = " << (unsigned int)color.b << ", " << 
-                "a = " << (unsigned int)color.a << ", " << 
+            std::cout << "ColorText = { "
+                "r = " << static_cast<unsigned int>(color.r) << ", " <<
+                "g = " << static_cast<unsigned int>(color.g) << ", " <<
+                "b = " << static_cast<unsigned int>(color.b) << ", " <<
+                "a = " << static_cast<unsigned int>(color.a) << ", " <<
                 "}";
         }
     };
@@ -57,11 +58,11 @@ namespace Components {
         Color defaultColor;
         bool isOver;
         void log() const {
-            std::cout << "ColorOverText = { " 
-                "r = " << (unsigned int)newColor.r << ", " << 
-                "g = " << (unsigned int)newColor.g << ", " << 
-                "b = " << (unsigned int)newColor.b << ", " << 
-                "a = " << (unsigned int)newColor.a << ", " << 
+            std::cout << "ColorOverText = { "
+                "r = " << static_cast<unsigned int>(newColor.r) << ", " <<
+                "g = " << static_cast<unsigned int>(newColor.g) << ", " <<
+                "b = " << static_cast<unsigned int>(newColor.b) << ", " <<
+                "a = " << static_cast<unsigned int>(newColor.a) << ", " <<
                 "}";
         }
     };
@@ -108,6 +109,7 @@ namespace Components {
     ** of all the entities in the game, only one can have Movable component, because
     ** only one entity can be moved at a time.
     ** TODO: Add a way to handle multiple entities with Movable component, for example A, W, S, D keys to move the 1 and >, <, ^, v keys to move the other entity
+    ** r: I dont think this is mandatory and compatible with the left time
     */
     struct Movable {
         int speed;
@@ -123,16 +125,6 @@ namespace Components {
         int textureID;
         void log() const {
             std::cout << "Drawable = { textureID = " << textureID << " }";
-        }
-    };
-
-    /*
-    ** Collidable allows to entities to detect if there was a collision with any entity in the game other
-    */
-    struct Collidable {
-        bool isColliding;
-        void log() const {
-            std::cout << "Collidable = { isColliding = " << isColliding << " }";
         }
     };
 };
