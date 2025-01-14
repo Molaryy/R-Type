@@ -39,8 +39,8 @@ namespace Network {
         std::vector<std::pair<uint16_t, std::vector<uint8_t>>> packets;
 
         int i = -1;
+        std::lock_guard lock(_mutex);
         for (auto &data : _clients | std::views::values) {
-            std::lock_guard lock(_mutex);
             i++;
             auto it_end = std::ranges::search(data, _packet_end);
             if (it_end.empty())
@@ -63,9 +63,14 @@ namespace Network {
     }
 
     void AsioServer::send(const uint16_t client, const std::vector<uint8_t> &packet) {
-        if (client >= _clients.size()) {
-            std::cerr << "Client " << client << " not found" << std::endl;
-            return;
+        asio::ip::basic_endpoint<asio::ip::udp> endpoint;
+        {
+            std::lock_guard lock(_mutex);
+            if (client >= _clients.size()) {
+                std::cerr << "Client " << client << " not found" << std::endl;
+                return;
+            }
+            endpoint = _clients[client].first;
         }
 
         std::vector<uint8_t> data(_packet_start.begin(), _packet_start.end());
@@ -74,7 +79,7 @@ namespace Network {
 
         _socket.async_send_to(
             asio::buffer(data),
-            _clients[client].first,
+            endpoint,
             []([[maybe_unused]] std::error_code err, [[maybe_unused]] std::size_t bytes) {
             }
         );
@@ -104,7 +109,8 @@ namespace Network {
                 if (ec) {
                     std::cerr << "DEBUG: async_receive_from encountered an error: " << ec.message() << std::endl;
                     return;
-                } {
+                }
+                {
                     std::lock_guard lock(_mutex);
                     auto it = std::ranges::find_if(
                         _clients,
