@@ -56,7 +56,7 @@ private:
 };
 
 struct NetworkId {
-    int id;
+    uint16_t id;
 
     void log() const {
         std::cout << "NetworkId = { " << id << " }";

@@ -67,8 +67,8 @@ void settingsCallback(Registry &r)
 
     for (std::size_t i = 0; i < settingsOptions.size(); ++i) {
         entity_t optionEntity = r.spawn_entity();
-    
-        r.add_component(optionEntity, Components::RenderText(settingsOptions[i], 100, 150 + i * 40, 20));
+
+        r.add_component(optionEntity, Components::RenderText(settingsOptions[i], 100, static_cast<int>(150 + i * 40), 20));
         r.add_component(optionEntity, Components::ColorText({255, 255, 255, 255}));
         r.add_component(optionEntity, Components::ClickableText([i, actions](Registry &) {
             actions[i]();

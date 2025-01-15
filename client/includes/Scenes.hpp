@@ -17,6 +17,5 @@
 #define COLOR_WHITE {255, 255, 255, 255}
 
 void lobbyCallback(Registry &r);
-void newGameCallback(Registry &r);
 void settingsCallback(Registry &r);
 void createMenuScene(Registry &r);
