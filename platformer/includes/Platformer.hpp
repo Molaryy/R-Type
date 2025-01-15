@@ -39,6 +39,12 @@ struct Sprite {
     }
 };
 
+struct SpringTag {
+    void log() const {
+        std::cout << "SpringTag";
+    }
+};
+
 class Platform {
     public:
         Platform();
@@ -72,9 +78,14 @@ class Platform {
         std::mt19937 rng_;
         float cameraOffsetY_ = 0.f;
         bool autoJump_ = false;
+        bool gameStarted_ = false;
+        int score_ = 0;
+        bool gameOver_ = false;
 
         void initEntities();
         void createPlayer(float x, float y);
         void createPlatform(float x, float y, int w, int h);
+        void createSpring(float x, float y);
+        void restartGame();
         void generatePlatformStair(size_t count);
 };
