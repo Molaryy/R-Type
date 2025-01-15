@@ -72,7 +72,7 @@ void Lobby::addPlayer(const uint16_t client) {
                 return;
             }
 
-            const entity_t entity = Player::create(registry_);
+            const entity_t entity = Player::create(registry_, client);
             players_.emplace(client, entity);
 
             Network::Packet response(Protocol::AcceptLobbyJoinPacket(lobbyId_, entity), Protocol::ACCEPT_LOBBY_JOIN);

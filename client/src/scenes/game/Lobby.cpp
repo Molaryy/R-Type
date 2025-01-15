@@ -91,9 +91,7 @@ Protocol::LobbyDataPacket getLobbyData(const std::size_t lobby_id) {
     return lobby_data;
 }
 
-void startLobby(Registry &r) {
-    r.clear_entities();
-
+void startLobby([[maybe_unused]] Registry &r) {
     Network::Packet packetSended(Protocol::EmptyPacket(), Protocol::ASK_START_GAME);
     Client::getInstance().getNetworkLib().send(packetSended.serialize());
 

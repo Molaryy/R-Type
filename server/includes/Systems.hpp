@@ -54,10 +54,14 @@ namespace Systems {
     }
 
     [[maybe_unused]] static void sendGameState(Registry &r) {
+        Network::INetworkServer &network = Server::getInstance().getNetwork();
+
         const SparseArray<Velocity> &velocities = r.get_components<Velocity>();
         const SparseArray<Life> &lifes = r.get_components<Life>();
         const SparseArray<Position> &positions = r.get_components<Position>();
         const SparseArray<ComponentEntityType> &entity_types = r.get_components<ComponentEntityType>();
+        const SparseArray<NetworkId> &network_ids = r.get_components<NetworkId>();
+
         for (const auto &&[entity, velocity, position, type, life] : IndexedZipper(velocities, positions, entity_types, lifes)) {
             if (!life.is_alive() || type.type == Protocol::ENEMY_BULLET || type.type == Protocol::PLAYER_BULLET
                 || type.type == Protocol::WALL || type.type == Protocol::ENEMY_TURRET)
@@ -70,7 +74,8 @@ namespace Systems {
                     {velocity.x, velocity.y}),
                 Protocol::POSITION_VELOCITY
             );
-            Server::getInstance().getNetwork().sendAll(packet.serialize());
+            for (auto &&[network_id] : Zipper(network_ids))
+                network.send(network_id.id, packet.serialize());
         }
     }
 }

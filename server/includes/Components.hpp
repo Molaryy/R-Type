@@ -55,6 +55,14 @@ private:
     };
 };
 
+struct NetworkId {
+    int id;
+
+    void log() const {
+        std::cout << "NetworkId = { " << id << " }";
+    }
+};
+
 class ClientInputs {
 public:
     ClientInputs() = default;

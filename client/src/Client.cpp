@@ -98,8 +98,8 @@ bool Client::connectToServer_(const std::string &ip, const std::size_t port) {
 }
 
 void Client::setupPacketHandler_() {
-    packet_handler_.setPacketCallback(Protocol::START_GAME, [](Network::Packet &) {
-        std::cout << "START_GAME received\n";
+    packet_handler_.setPacketCallback(Protocol::START_GAME, [&](Network::Packet &) {
+        registry_.clear_entities();
     });
     packet_handler_.setPacketCallback(Protocol::POSITION_VELOCITY, [this](const Network::Packet &packet) {
         auto [entity_id, position, velocity] = packet.getPayload<Protocol::EntityPositionVelocityPacket>();

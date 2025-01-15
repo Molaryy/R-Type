@@ -28,10 +28,11 @@ void Player::collision(Registry &r, const entity_t me, const entity_t other) {
     Server::getInstance().getNetwork().sendAll(packet.serialize());
 }
 
-entity_t Player::create(Registry &r) {
+entity_t Player::create(Registry &r, const std::uint16_t client_id) {
     const entity_t entity = r.spawn_entity();
 
     r.add_component(entity, ClientInputs());
+    r.add_component(entity, NetworkId(client_id));
     r.add_component(entity, Position(0, 0));
     r.add_component(entity, Velocity(0, 0));
     r.add_component(entity, Delay(PLAYER_BULLET_RATE, PLAYER_BULLET_RATE));
