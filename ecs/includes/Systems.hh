@@ -7,20 +7,28 @@
 
 #pragma once
 
-#include "Registry.hh"
-#include "Components.hh"
-#include "Zipper.hh"
 
+#include <queue>
 #include <thread>
 
-#define DEFAULT_FPS 33333 // 30 fps
+#include "Components.hh"
+#include "IndexedZipper.hh"
+#include "Registry.hh"
+#include "Zipper.hh"
 
-namespace Systems
-{
-	static void log(const Registry &r)
-    {
-        for (entity_t i = 0; i < r.max_entities(); ++i)
-        {
+namespace Systems {
+    [[maybe_unused]] static void position_velocity(Registry &r) {
+        SparseArray<Position> &positions = r.get_components<Position>();
+        const SparseArray<Velocity> &velocitys = r.get_components<Velocity>();
+
+        for (const auto &&[pos, vel] : Zipper(positions, velocitys)) {
+            pos.x += vel.x;
+            pos.y += vel.y;
+        }
+    }
+
+    [[maybe_unused]] static void log(const Registry &r) {
+        for (entity_t i = 0; i < r.max_entities(); ++i) {
             std::cout << "Entity " << i << ": ";
             r.log(i);
             std::cout << std::endl;
@@ -29,8 +37,7 @@ namespace Systems
         }
     }
 
-    static void limit_framerate([[maybe_unused]]Registry &r, const uint8_t fps)
-    {
+    [[maybe_unused]] static void limit_framerate([[maybe_unused]] Registry &r, const uint8_t fps) {
         static const auto frame_duration = std::chrono::microseconds(1 / fps);
         static auto last_frame = std::chrono::steady_clock::now();
         const auto current_frame = std::chrono::steady_clock::now();
@@ -41,33 +48,38 @@ namespace Systems
         last_frame = std::chrono::steady_clock::now();
     }
 
-    static void generic_collide(Registry &r)
-    {
+    [[maybe_unused]] static void generic_collide(Registry &r) {
+        std::queue<std::function<void(Registry &)>> collisionCallbacks;
         auto &positions = r.get_components<Position>();
         auto &collisions = r.get_components<Collision>();
-        auto &relations = r.get_components<Relation>();
 
-        Zipper zipper(positions, collisions, relations);
+        IndexedZipper zipper(positions, collisions);
 
-        for (auto it1 = zipper.begin(); it1 != zipper.end(); ++it1)
-        {
-            for (auto it2 = std::next(it1); it2 != zipper.end(); ++it2)
-            {
-                auto &&[pos1, col1, rel1] = *it1;
-                auto &&[pos2, col2, rel2] = *it2;
+        for (auto it1 = zipper.begin(); it1 != zipper.end(); ++it1) {
+            for (auto it2 = std::next(it1); it2 != zipper.end(); ++it2) {
+                auto &&[e1, pos1, col1] = *it1;
+                auto &&[e2, pos2, col2] = *it2;
 
-                if (rel1.is_ally != rel2.is_ally)
-                {
-                    if (pos1.x < pos2.x + col2.width &&
-                        pos1.x + col1.width > pos2.x &&
-                        pos1.y < pos2.y + col2.height &&
-                        pos1.y + col1.height > pos2.y)
-                    {
-                        col1.is_colliding = true;
-                        col2.is_colliding = true;
-                    }
+                if (pos1.x < pos2.x + col2.width &&
+                    pos1.x + col1.width > pos2.x &&
+                    pos1.y < pos2.y + col2.height &&
+                    pos1.y + col1.height > pos2.y) {
+                    col1.is_colliding = true;
+                    col2.is_colliding = true;
+
+                    collisionCallbacks.emplace([&col1, e1, e2](Registry &registry) {
+                        col1.collisionTask(registry, e1, e2);
+                    });
+                    collisionCallbacks.emplace([&col2, e2, e1](Registry &registry) {
+                        col2.collisionTask(registry, e2, e1);
+                    });
                 }
             }
+        }
+        while (!collisionCallbacks.empty()) {
+            std::function<void(Registry &)> function = collisionCallbacks.front();
+            function(r);
+            collisionCallbacks.pop();
         }
     }
 }

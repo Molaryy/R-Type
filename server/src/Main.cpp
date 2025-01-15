@@ -1,26 +1,26 @@
 /*
 ** EPITECH PROJECT, 2024
-** R_Type
+** B-CPP-500-PAR-5-2-bsrtype-arthaud.poupard
 ** File description:
-** Main
+** main.cpp
 */
 
-#include "Main.hpp"
-#include "ArgHandler.hpp"
-#include "Client.hpp"
+#include <iostream>
+
+#include "../includes/ArgHandler.hpp"
+#include "../includes/Server.hpp"
 
 int main(const int ac, char const *const *av) {
     try {
         if (ac == 2 && ArgHandler::check_help(ac, av[0], av[1]))
             return EXIT_SUCCESS;
-        ArgHandler args(5);
+        ArgHandler args(7);
 
         args.verif_arg(ac, std::vector<std::string_view>(av, av + ac));
 
-        Client::createInstance(args.ip, args.port, args.debug).run();
+        Server::createInstance(args.port, args.max_lobby, args.max_client, args.debug).run();
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
-        return EXIT_ERROR;
+        return 84;
     }
-    return EXIT_SUCCESS;
 }

@@ -14,8 +14,6 @@
 #include <stdexcept>
 #include <typeindex>
 #include <unordered_map>
-#include <chrono>
-
 
 #include "Entity.hh"
 #include "SparseArray.hh"
@@ -88,7 +86,7 @@ public:
             remove_function(*this, e);
     }
 
-    void clear_enities() {
+    void clear_entities() {
         next_entity_ = 0;
         remove_functions_.clear();
         dead_entities_.clear();
@@ -136,12 +134,11 @@ public:
         systems_.clear();
     }
 
-
     void run_systems() {
-        for (std::function<void(Registry &)> &system : systems_)
+        std::vector<std::function<void(Registry &)>> systems_copy = systems_;
+        for (std::function<void(Registry &)> &system : systems_copy)
             system(*this);
     }
-
 
     void log(const entity_t &entity) const {
         for (const auto &logger : std::views::values(loggers_)) {

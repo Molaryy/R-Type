@@ -28,7 +28,7 @@ namespace Graphic {
             void drawRoundedRectangle(int x, int y, int width, int height, float roundness, int segments, unsigned char r, unsigned char g, unsigned char b, unsigned char a) override;
             int loadTexture(const std::string &path) override;
             void unloadTexture(int textureID) override;
-            void drawTexture(int textureID, int x, int y, int width, int height, int frame = 0) override;
+            void drawTexture(int textureID, int x, int y, int width, int height, int frame) override;
             void drawText(const std::string &text, int x, int y, int fontSize, unsigned char r, unsigned char g, unsigned char b, unsigned char a) override;
             event_t getEvents() override;
             void initAudioDevice() override;

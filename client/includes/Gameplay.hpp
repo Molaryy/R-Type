@@ -10,6 +10,13 @@
 #include "Client.hpp"
 #include "Components.hpp"
 
+struct Color {
+    unsigned char r;
+    unsigned char g;
+    unsigned char b;
+    unsigned char a;
+};
+
 // Textures IDs
 enum Textures {
     PLAYER_ID,
