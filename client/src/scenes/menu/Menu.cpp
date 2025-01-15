@@ -35,6 +35,7 @@ std::vector<PlayerScore> loadScores(const std::string &filename) {
     //     return a.score > b.score;
     // });
     // return scores;
+    return {};
 }
 
 void leaderBoardCallback(Registry &r) {
