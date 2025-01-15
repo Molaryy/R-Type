@@ -11,6 +11,7 @@ add_executable(${PROJECT_NAME}
         src/scenes/menu/Menu.cpp
         src/scenes/settings/Settings.cpp
         src/scenes/game/Game.cpp
+        src/scenes/game/Lobby.cpp
 )
 
 target_include_directories(${PROJECT_NAME}

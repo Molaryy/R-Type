@@ -79,6 +79,7 @@ namespace Protocol {
         JOIN_LOBBY_BY_ID, // JoinLobbyPacket, Ask to join a lobby by id -> Server will respond with ACCEPT_LOBBY_JOIN if success
         JOIN_NEW_LOBBY, // EmptyPacket, Ask to join a newly created lobby -> Server will respond with ACCEPT_LOBBY_JOIN
         JOIN_RANDOM_LOBBY, // EmptyPacket, Join a random open lobby, or create a new one if all are closed -> Server will respond with ACCEPT_LOBBY_JOIN
+        LEAVE_LOBBY, // EmptyPacket, Leave actual lobby
 
         ASK_START_GAME, // EmptyPacket, Ask for game start, will start game for the actual lobby
 

@@ -6,13 +6,3 @@
 */
 
 #pragma once
-
-class Lobby
-{
-public:
-    Lobby();
-    ~Lobby();
-
-protected:
-private:
-};

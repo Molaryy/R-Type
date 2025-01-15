@@ -14,8 +14,7 @@ struct PlayerScore {
     int score;
 };
 
-std::vector<PlayerScore> loadScores(const std::string &filename)
-{
+std::vector<PlayerScore> loadScores(const std::string &filename) {
     // std::vector<PlayerScore> scores;
     // std::ifstream file(filename);
 
@@ -38,8 +37,7 @@ std::vector<PlayerScore> loadScores(const std::string &filename)
     // return scores;
 }
 
-void leaderBoardCallback(Registry &r)
-{
+void leaderBoardCallback(Registry &r) {
     r.clear_entities();
 
     const entity_t title = r.spawn_entity();
@@ -69,8 +67,7 @@ void leaderBoardCallback(Registry &r)
     // }));
 }
 
-void creditsCallback(Registry &r)
-{
+void creditsCallback(Registry &r) {
     r.clear_entities();
 
     const entity_t titleEntity = r.spawn_entity();
@@ -103,27 +100,26 @@ void creditsCallback(Registry &r)
 }
 
 
-void exitCallback(Registry &r)
-{
+void exitCallback(Registry &r) {
     r.clear_entities();
 }
 
-void createMenuScene(Registry &r)
-{
+void createMenuScene(Registry &r) {
     r.clear_entities();
 
-    entity_t e = r.spawn_entity();
-    Color white = {255, 255, 255, 255};
+    const entity_t e = r.spawn_entity();
+
+    constexpr Color white = COLOR_WHITE;
+    constexpr Color grey = COLOR_GREY;
+    constexpr Color darkBlue = COLOR_DARK_BLUE;
 
     r.add_component(e, Components::RenderText("R-TYPE", 50, 50, 40));
     r.add_component(e, Components::ColorText(white));
     const std::vector<std::string> titles = {"Play", "Leaderboard", "Settings", "Credits", "Exit"};
-    const std::vector<std::function<void(Registry &r)>> callbacks = {newGameCallback, leaderBoardCallback, settingsCallback, creditsCallback, exitCallback};
+    const std::vector<std::function<void(Registry &r)>> callbacks = {lobbyCallback, leaderBoardCallback, settingsCallback, creditsCallback, exitCallback};
 
     for (std::size_t i = 0; i < NB_MENU_BUTTONS; i++) {
         entity_t button = r.spawn_entity();
-        constexpr Color grey = COLOR_GREY;
-        constexpr Color darkBlue = COLOR_DARK_BLUE;
 
         r.add_component(button, Components::RenderText(titles[i], 100, static_cast<int>(150 + i * 50), 20));
         r.add_component(button, Components::ColorText(grey));

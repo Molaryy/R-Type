@@ -16,7 +16,7 @@
 
 class ArgHandler {
 public:
-    explicit ArgHandler(std::size_t max_args) : max_args_(max_args) {}
+    explicit ArgHandler(const std::size_t max_args) : max_args_(max_args) {}
 
     static void display_help(const std::string_view &exec_name);
     static bool check_help(int ac, const std::string_view &exec_name, const std::string_view &first_arg);

@@ -86,28 +86,23 @@ namespace Systems {
         auto &drawables = r.get_components<Components::Drawable>();
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
 
-        for (auto &&[drawable, position] : Zipper(drawables, positions)) {
-            renderer.drawTexture(drawable.textureID, static_cast<int>(position.x), static_cast<int>(position.y),
-                                 drawable.width, drawable.height, 0);
-        }
+        for (auto &&[drawable, position] : Zipper(drawables, positions))
+            renderer.drawTexture(drawable.textureID, static_cast<int>(position.x), static_cast<int>(position.y), drawable.width, drawable.height, 0);
     }
 
-    inline void moveEntities([[maybe_unused]] Registry &r) {
+    inline void handleInputs([[maybe_unused]] Registry &r) {
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
         Graphic::event_t events = renderer.getEvents();
         Protocol::InputsKeysPacket inputs{};
 
-        if (std::ranges::find(events.inputs, Graphic::Keys::UpArrow) != events.inputs.end())
-            inputs.input_keys[Protocol::InputKey::MOVE_UP] = true;
-        if (std::ranges::find(events.inputs, Graphic::Keys::DownArrow) != events.inputs.end())
-            inputs.input_keys[Protocol::InputKey::MOVE_DOWN] = true;
-        if (std::ranges::find(events.inputs, Graphic::Keys::LeftArrow) != events.inputs.end())
-            inputs.input_keys[Protocol::InputKey::MOVE_LEFT] = true;
-        if (std::ranges::find(events.inputs, Graphic::Keys::RightArrow) != events.inputs.end())
-            inputs.input_keys[Protocol::InputKey::MOVE_RIGHT] = true;
-        if (std::ranges::find(events.inputs, Graphic::Keys::Space) != events.inputs.end())
-            inputs.input_keys[Protocol::InputKey::SHOOT] = true;
+        inputs.input_keys[Protocol::InputKey::MOVE_UP] = std::ranges::find(events.inputs, Graphic::Keys::UpArrow) != events.inputs.end();
+        inputs.input_keys[Protocol::InputKey::MOVE_DOWN] = std::ranges::find(events.inputs, Graphic::Keys::DownArrow) != events.inputs.end();
+        inputs.input_keys[Protocol::InputKey::MOVE_LEFT] = std::ranges::find(events.inputs, Graphic::Keys::LeftArrow) != events.inputs.end();
+        inputs.input_keys[Protocol::InputKey::MOVE_RIGHT] = std::ranges::find(events.inputs, Graphic::Keys::RightArrow) != events.inputs.end();
+        inputs.input_keys[Protocol::InputKey::SHOOT] = std::ranges::find(events.inputs, Graphic::Keys::Space) != events.inputs.end();
 
+        if (!std::ranges::any_of(inputs.input_keys, [](const bool value) { return value; }))
+            return;
         Network::Packet packet(inputs, Protocol::INPUT_KEYS);
         Client::getInstance().getNetworkLib().send(packet.serialize());
     }
