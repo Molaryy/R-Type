@@ -148,7 +148,9 @@ void Client::setupPacketHandler_() {
         case Protocol::EntityType::ENEMY_FLY:
             registry_.add_component(e, Components::Drawable(ENNEMY_ID, FLY_SIZE, FLY_SIZE, 0, 0, FLY_SIZE, FLY_SIZE));
             break;
-        default: ;
+        default:
+            std::cerr << "Unknown entity type: " << type << std::endl;
+            break;
         }
     });
     packet_handler_.setPacketCallback(Protocol::HIT, [](Network::Packet &) {
