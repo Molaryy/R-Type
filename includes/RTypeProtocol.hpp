@@ -91,7 +91,8 @@ namespace Protocol {
 
         LOBBY_LIST, // LobbyListPacket, Send number of lobbys
         LOBBY_DATA, // LobbyDataPacket, Send data about lobby id
-        ACCEPT_LOBBY_JOIN, //AcceptLobbyJoinPacket, server send this after receiving JOIN_LOBBY_BY_ID, JOIN_NEW_LOBBY, JOIN_LOBBY_RANDOM
+        ACCEPT_LOBBY_JOIN, // AcceptLobbyJoinPacket, server send this after receiving JOIN_LOBBY_BY_ID, JOIN_NEW_LOBBY, JOIN_LOBBY_RANDOM
+        ACCEPT_LEAVE_LOBBY, // EmptyPacket, server send this after receiving LEAVE_LOBBY
         START_GAME, // EmptyPacket, Game is starting, server will start sending game state
         END_GAME, // EmptyPacket, Game is over
 

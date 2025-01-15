@@ -81,6 +81,31 @@ void Lobby::addPlayer(const uint16_t client) {
     }
 }
 
+void Lobby::leavePlayer(uint16_t client) {
+    {
+        std::unique_lock lock(networkMutex_);
+
+        networkTasks_.emplace([this, client] {
+            if (state_ == Protocol::IN_GAME) {
+                std::cout << "Lobby already started" << std::endl;
+                // TODO send error code
+                return;
+            }
+            if (state_ == Protocol::CLOSE) {
+                std::cout << "Lobby is closed" << std::endl;
+                // TODO send error code
+                return;
+            }
+
+            registry_.kill_entity(players_[client]);
+            players_.erase(client);
+
+            Network::Packet response(Protocol::EmptyPacket(), Protocol::ACCEPT_LEAVE_LOBBY);
+            networkLib_.send(client, response.serialize());
+        });
+    }
+}
+
 void Lobby::startGame() {
     {
         std::unique_lock lock(networkMutex_);

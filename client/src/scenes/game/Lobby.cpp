@@ -12,6 +12,32 @@
 #include "RTypeProtocol.hpp"
 #include "Scenes.hpp"
 
+void leaveLobby() {
+    bool received = false;
+    Network::INetworkClient &network = Client::getInstance().getNetworkLib();
+    Network::PacketHandler &packet_handler = Client::getInstance().getPacketHandler();
+
+    packet_handler.setPacketCallback(Protocol::ACCEPT_LEAVE_LOBBY, [&received]([[maybe_unused]] const Network::Packet &packet) {
+        received = true;
+    });
+
+    Network::Packet packetSended(Protocol::EmptyPacket(), Protocol::LEAVE_LOBBY);
+    network.send(packetSended.serialize());
+
+    const std::chrono::system_clock::time_point time_out_clock = std::chrono::system_clock::now();
+
+    while (!received) {
+        const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+        if (const std::chrono::duration<double> elapsed_seconds = now - time_out_clock; elapsed_seconds.count() > 3.0)
+            throw std::runtime_error("Can't leave lobby: time out");
+        std::vector<uint8_t> oldest_packet = network.getOldestPacket();
+        if (oldest_packet.empty())
+            continue;
+        Network::Packet deserialized_packet(oldest_packet);
+        packet_handler(deserialized_packet);
+    }
+}
+
 std::vector<Protocol::LobbyDataPacket> getLobbyList(Network::INetworkClient &network, Network::PacketHandler &packet_handler) {
     bool get_lobby_list = false;
     std::size_t nb_lobby;
@@ -129,9 +155,12 @@ void lobbyPage(Registry &r, const std::size_t lobby_id) {
     r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
 
     e = r.spawn_entity();
-    r.add_component(e, Components::RenderText("Lobby list", 50, 550, 20));
+    r.add_component(e, Components::RenderText("Lobbies list", 50, 550, 20));
     r.add_component(e, Components::ColorText(white));
-    r.add_component(e, Components::ClickableText(lobbyCallback));
+    r.add_component(e, Components::ClickableText([](Registry &reg) {
+        leaveLobby();
+        lobbyCallback(reg);
+    }));
     r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
 }
 
