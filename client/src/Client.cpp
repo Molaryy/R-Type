@@ -118,24 +118,25 @@ void Client::setupPacketHandler_()
     packet_handler_.setPacketCallback(Protocol::SPAWN, [this](const Network::Packet &packet)
     {
         std::cout << "SPAWN received\n";
-        Protocol::SpawnEntityPacket spawn_packet = packet.getPayload<Protocol::SpawnEntityPacket>();
-        entity_t e = registry_.spawn_entity();
+        auto [entity_id, type, position, velocity] = packet.getPayload<Protocol::SpawnEntityPacket>();
+        const entity_t e = registry_.spawn_entity();
 
-        registry_.add_component(e, Position(spawn_packet.position.x, spawn_packet.position.y));
-        registry_.add_component(e, Components::ServerId(spawn_packet.entity_id));
-        registry_.add_component(e, Components::EntityType(spawn_packet.type));
-        registry_.add_component(e, Velocity(spawn_packet.velocity.x, spawn_packet.velocity.y));
-        switch (spawn_packet.type)
+        registry_.add_component(e, Position(position.x, position.y));
+        registry_.add_component(e, Components::ServerId(entity_id));
+        registry_.add_component(e, Components::ComponentEntityType(type));
+        registry_.add_component(e, Velocity(velocity.x, velocity.y));
+        switch (type)
         {
             case Protocol::EntityType::PLAYER:
-                registry_.add_component(e, Components::Drawable(Textures::PLAYER_ID));
+                registry_.add_component(e, Components::Drawable(PLAYER_ID, PLAYER_SIZE, PLAYER_SIZE));
                 break;
             case Protocol::EntityType::PLAYER_BULLET:
-                registry_.add_component(e, Components::Drawable(Textures::BULLET_ID));
+                registry_.add_component(e, Components::Drawable(BULLET_ID, PLAYER_BULLET_SIZE, PLAYER_BULLET_SIZE));
                 break;
             case Protocol::EntityType::ENEMY_FLY:
-                registry_.add_component(e, Components::Drawable(Textures::ENNEMY_ID));
+                registry_.add_component(e, Components::Drawable(ENNEMY_ID, FLY_SIZE, FLY_SIZE));
                 break;
+            default: ;
         }
     });
     packet_handler_.setPacketCallback(Protocol::HIT, [](Network::Packet &)

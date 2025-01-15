@@ -7,67 +7,54 @@
 
 #pragma once
 
-#include <ranges>
-
 #include "Client.hpp"
-#include "Components.hpp"
 #include "Components.hh"
+#include "Components.hpp"
+#include "Gameplay.hpp"
 #include "INetworkClient.hpp"
 #include "Main.hpp"
 #include "PacketHandler.hpp"
-#include "Gameplay.hpp"
 #include "RTypeProtocol.hpp"
 
-namespace Systems
-{
-    inline void networkReceiver([[maybe_unused]] Registry &r)
-    {
+namespace Systems {
+    inline void networkReceiver([[maybe_unused]] Registry &r) {
         auto &core = Client::getInstance();
         auto &network = core.getNetworkLib();
         auto &packet_handler = core.getPacketHandler();
 
-        for (std::vector<uint8_t> oldest_packet = network.getOldestPacket(); !oldest_packet.empty(); oldest_packet = network.getOldestPacket())
-        {
+        for (std::vector<uint8_t> oldest_packet = network.getOldestPacket(); !oldest_packet.empty(); oldest_packet = network.getOldestPacket()) {
             Network::Packet deserialized_packet(oldest_packet);
             packet_handler(deserialized_packet);
         }
     }
 
-    inline void drawAllTexts(Registry &r)
-    {
+    inline void drawAllTexts(Registry &r) {
         auto &texts = r.get_components<Components::RenderText>();
         auto &colorsTexts = r.get_components<Components::ColorText>();
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
 
-        for (auto &&[text, colorText] : Zipper(texts, colorsTexts))
-        {
+        for (auto &&[text, colorText] : Zipper(texts, colorsTexts)) {
             renderer.drawText(text.text, text.x, text.y, text.fontSize, colorText.color.r, colorText.color.g, colorText.color.b, colorText.color.a);
         }
     }
 
-    inline void drawOverText(Registry &r)
-    {
+    inline void drawOverText(Registry &r) {
         auto &texts = r.get_components<Components::RenderText>();
         auto &colorsTexts = r.get_components<Components::ColorText>();
         auto &colorsOverText = r.get_components<Components::ColorOverText>();
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
 
-        for (auto &&[text, colorText, colorOverText] : Zipper(texts, colorsTexts, colorsOverText))
-        {
-            if (colorOverText.isOver)
-            {
+        for (auto &&[text, colorText, colorOverText] : Zipper(texts, colorsTexts, colorsOverText)) {
+            if (colorOverText.isOver) {
                 colorText.color = colorOverText.newColor;
-            }
-            else
-            {
+            } else {
                 colorText.color = colorOverText.defaultColor;
             }
             renderer.drawText(text.text, text.x, text.y, text.fontSize, colorText.color.r, colorText.color.g, colorText.color.b, colorText.color.a);
         }
     }
 
-    inline void handleMouse(Registry &r)
-    {
+    inline void handleMouse(Registry &r) {
         auto &texts = r.get_components<Components::RenderText>();
         auto &clickables = r.get_components<Components::ClickableText>();
         auto &colorsOverTexts = r.get_components<Components::ColorOverText>();
@@ -85,36 +72,30 @@ namespace Systems
                     break;
                 }
                 colorsOverText.isOver = true;
-            }
-            else
-            {
+            } else {
                 colorsOverText.isOver = false;
             }
         }
-        if (secureCallback)
-        {
+        if (secureCallback) {
             secureCallback(r);
         }
     }
 
-    inline void drawEntities(Registry &r)
-    {
-        auto &Position = r.get_components<Position>();
+    inline void drawEntities(Registry &r) {
+        auto &positions = r.get_components<Position>();
         auto &drawables = r.get_components<Components::Drawable>();
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
 
         for (auto &&[drawable, position] : Zipper(drawables, positions)) {
-            renderer.drawTexture(drawable.textureID, position.x, position.y, static_cast<int>(position.width), static_cast<int>(position.height), 0);
+            renderer.drawTexture(drawable.textureID, static_cast<int>(position.x), static_cast<int>(position.y),
+                                 drawable.width, drawable.height, 0);
         }
     }
 
-    inline void moveEntities(Registry &r)
-    {
-        auto &entities = r.get_components<Components::Entity>();
-        auto &movables = r.get_components<Components::Movable>();
+    inline void moveEntities([[maybe_unused]] Registry &r) {
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
         Graphic::event_t events = renderer.getEvents();
-        Protocol::InputsKeysPacket inputs;
+        Protocol::InputsKeysPacket inputs{};
 
         if (std::ranges::find(events.inputs, Graphic::Keys::UpArrow) != events.inputs.end())
             inputs.input_keys[Protocol::InputKey::MOVE_UP] = true;

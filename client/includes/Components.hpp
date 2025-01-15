@@ -7,31 +7,30 @@
 
 #pragma once
 
+#include <functional>
 #include <iostream>
 #include <string>
+#include <unordered_map>
 
 #include "Gameplay.hpp"
+#include "Registry.hh"
 #include "RTypeProtocol.hpp"
 
-namespace Components
-{
-    struct RenderText
-    {
+namespace Components {
+    struct RenderText {
         std::string text;
         int x;
         int y;
         int fontSize;
 
-        void log() const
-        {
+        void log() const {
             std::cout << "RenderText = { " "text = " << text << ", " <<
-            "x = " << x << ", " << "y = " << y << ", " <<
-            "fontSize = " << fontSize << "} ";
+                "x = " << x << ", " << "y = " << y << ", " <<
+                "fontSize = " << fontSize << "} ";
         }
     };
 
-    struct ColorText
-    {
+    struct ColorText {
         Color color;
 
         void log() const {
@@ -44,20 +43,19 @@ namespace Components
         }
     };
 
-    struct ClickableText
-    {
+    struct ClickableText {
         std::function<void(Registry &r)> callback;
-        void log() const
-        {
+
+        void log() const {
             std::cout << "Button = { clicked }" << std::endl;
         }
     };
 
-    struct ColorOverText
-    {
+    struct ColorOverText {
         Color newColor;
         Color defaultColor;
         bool isOver;
+
         void log() const {
             std::cout << "ColorOverText = { "
                 "r = " << static_cast<unsigned int>(newColor.r) << ", " <<
@@ -68,30 +66,49 @@ namespace Components
         }
     };
 
-    struct ScrollableText
-    {
+    struct ScrollableText {
     };
 
-    struct ServerId
-    {
+    struct ServerId {
         std::size_t id;
+
+        void log() const {
+            std::cout << "ServerId = { " << id << " }";
+        }
     };
 
-    struct EntityType
-    {
+    struct ComponentEntityType {
+        explicit ComponentEntityType(const Protocol::EntityType &type) {
+            this->type = type;
+        }
+
         Protocol::EntityType type;
+
+        void log() const {
+            std::cout << "EntityType = { " << typeName_.at(type) << " }";
+        }
+
+    private:
+        std::unordered_map<Protocol::EntityType, std::string> typeName_{
+            {Protocol::PLAYER, "Player"},
+            {Protocol::PLAYER_BULLET, "Player Bullet"},
+            {Protocol::ENEMY_FLY, "Enemy Fly"},
+            {Protocol::ENEMY_TURRET, "Enemy Turret"},
+            {Protocol::ENEMY_BULLET, "Enemy Bullet"},
+            {Protocol::BOSS_HEART, "Boss Heart"},
+            {Protocol::WALL, "Wall"},
+        };
     };
 
     /*
     ** Drawable allows to entities to be drawn on the screen
     */
-    struct Drawable
-    {
+    struct Drawable {
         int textureID;
+        int width;
+        int height;
 
-        Drawable(int textureID) : textureID(textureID) {}
-        void log() const
-        {
+        void log() const {
             std::cout << "Drawable = { textureID = " << textureID << " }";
         }
     };

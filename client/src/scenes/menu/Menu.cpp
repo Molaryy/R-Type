@@ -8,7 +8,7 @@
 
 #include "Components.hpp"
 #include "Scenes.hpp"
-#include <fstream>
+
 struct PlayerScore {
     std::string name;
     int score;
@@ -40,9 +40,9 @@ std::vector<PlayerScore> loadScores(const std::string &filename)
 
 void leaderBoardCallback(Registry &r)
 {
-    r.clear_enities();
+    r.clear_entities();
 
-    entity_t title = r.spawn_entity();
+    const entity_t title = r.spawn_entity();
     r.add_component(title, Components::RenderText("Leaderboard", 50, 50, 40));
     r.add_component(title, Components::ColorText({255, 255, 255, 255}));
 
@@ -71,9 +71,9 @@ void leaderBoardCallback(Registry &r)
 
 void creditsCallback(Registry &r)
 {
-    r.clear_enities();
+    r.clear_entities();
 
-    entity_t titleEntity = r.spawn_entity();
+    const entity_t titleEntity = r.spawn_entity();
     r.add_component(titleEntity, Components::RenderText("CREDITS", 100, 50, 40));
     r.add_component(titleEntity, Components::ColorText({255, 255, 255, 255}));
 
@@ -105,29 +105,29 @@ void creditsCallback(Registry &r)
 
 void exitCallback(Registry &r)
 {
-    r.clear_enities();
+    r.clear_entities();
 }
 
 void createMenuScene(Registry &r)
 {
-    r.clear_enities();
+    r.clear_entities();
 
     entity_t e = r.spawn_entity();
     Color white = {255, 255, 255, 255};
 
-    registry.add_component(e, Components::RenderText("R-TYPE", 50, 50, 40));
-    registry.add_component(e, Components::ColorText(white));
+    r.add_component(e, Components::RenderText("R-TYPE", 50, 50, 40));
+    r.add_component(e, Components::ColorText(white));
     const std::vector<std::string> titles = {"Play", "Leaderboard", "Settings", "Credits", "Exit"};
     const std::vector<std::function<void(Registry &r)>> callbacks = {newGameCallback, leaderBoardCallback, settingsCallback, creditsCallback, exitCallback};
 
     for (std::size_t i = 0; i < NB_MENU_BUTTONS; i++) {
-        entity_t button = registry.spawn_entity();
+        entity_t button = r.spawn_entity();
         constexpr Color grey = COLOR_GREY;
         constexpr Color darkBlue = COLOR_DARK_BLUE;
 
-        registry.add_component(button, Components::RenderText(titles[i], 100, static_cast<int>(150 + i * 50), 20));
-        registry.add_component(button, Components::ColorText(grey));
-        registry.add_component(button, Components::ClickableText(callbacks[i]));
-        registry.add_component(button, Components::ColorOverText(darkBlue, grey, false));
+        r.add_component(button, Components::RenderText(titles[i], 100, static_cast<int>(150 + i * 50), 20));
+        r.add_component(button, Components::ColorText(grey));
+        r.add_component(button, Components::ClickableText(callbacks[i]));
+        r.add_component(button, Components::ColorOverText(darkBlue, grey, false));
     }
 }

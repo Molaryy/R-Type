@@ -59,7 +59,7 @@ namespace Systems {
         const SparseArray<Position> &positions = r.get_components<Position>();
         const SparseArray<ComponentEntityType> &entity_types = r.get_components<ComponentEntityType>();
         for (const auto &&[entity, velocity, position, type, life] : IndexedZipper(velocities, positions, entity_types, lifes)) {
-            if (!life.is_alive() || type.type == Protocol::ENEMY_SHOOT || type.type == Protocol::PLAYER_SHOOT
+            if (!life.is_alive() || type.type == Protocol::ENEMY_BULLET || type.type == Protocol::PLAYER_BULLET
                 || type.type == Protocol::WALL || type.type == Protocol::ENEMY_TURRET)
                 continue;
 
