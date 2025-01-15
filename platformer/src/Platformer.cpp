@@ -61,6 +61,7 @@ void Platform::createPlayer(float x, float y) {
     reg_.add_component<Velocity>(e, Velocity(0.f, 0.f));
     reg_.add_component<Collision>(e, Collision(32, 16));
     reg_.add_component<PlayerTag>(e, PlayerTag());
+    reg_.add_component<Life>(e, Life{ 1, 1 });
     reg_.add_component<Sprite>(e, Sprite{ texturePlayer_, 32, 16 });
 }
 
@@ -89,9 +90,32 @@ void Platform::run() {
 
         if (realDT < 1e-9f) realDT = 1.f / 60.f;
         dt_ = realDT;
-        reg_.run_systems();
+        if (!Platform::getInstance().gameOver_)
+            reg_.run_systems();
+        else {
+            renderingSystem(reg_);
+            auto ev = renderer_->getEvents();
+            for (auto &key : ev.inputs) {
+                if (key == Graphic::Keys::Enter) {
+                    restartGame();
+                    break;
+                } else if (key == Graphic::Keys::Space) {
+                    renderer_->closeWindow();
+                    return;
+                }
+            }
+        }
     }
     renderer_->closeWindow();
+}
+
+void Platform::restartGame() {
+    reg_.clear_entities();
+    gameOver_ = false;
+    gameStarted_ = false;
+    score_= 0;
+    cameraOffsetY_ = 0.f;
+    initEntities();
 }
 
 void Platform::inputSystem(Registry &r) {
@@ -130,9 +154,19 @@ void Platform::playerMovementSystem(Registry &r) {
     auto &positions = r.get_components<Position>();
     auto &velocities = r.get_components<Velocity>();
     auto &players = r.get_components<PlayerTag>();
+    auto &lifes = r.get_components<Life>();
 
     float dt = getInstance().dt_;
     const float gravity = 800.f;
+    const float deathThreshold = 600.f;
+
+    if (!Platform::getInstance().gameStarted_) {
+        for (auto &&[pos, vel, player] : Zipper(positions, velocities, players)) {
+            pos.y = 600 - 32;
+            vel.y = 0.f;
+        }
+        return;
+    }
 
     for (auto &&[pos, vel, player] : Zipper(positions, velocities, players)) {
         auto oldPosX = pos.x;
@@ -140,17 +174,26 @@ void Platform::playerMovementSystem(Registry &r) {
         pos.x += vel.x * dt;
         pos.y += vel.y * dt;
 
-        if (pos.x < 0) {
-            pos.x = 0;
-            vel.x = 0;
+        if (pos.x > 800) {
+            pos.x -= 800;
+        } else if (pos.x + 32 < 0) {
+            pos.x += 800;
         }
-        if (pos.x > 800 - 32) {
-            pos.x = 800 - 32;
-            vel.x = 0;
+        if (pos.y > deathThreshold - 32) {
+            for (auto &&[life] : Zipper(lifes)) {
+                life.takeDamage(life.max);
+                if (!life.is_alive()) {
+                    Platform::getInstance().gameOver_ = true;
+                    Platform::getInstance().reg_.clear_entities();
+                }
+            }
         }
-        if (pos.y > 600 - 32) {
-            pos.y = 600 - 32;
-            vel.y = 0;
+        if (Platform::getInstance().gameStarted_) {
+            float currentHeight = -pos.y;
+
+            if (currentHeight > Platform::getInstance().score_) {
+                Platform::getInstance().score_ = (int) currentHeight;
+            }
         }
     }
 }
@@ -161,6 +204,7 @@ void Platform::collisionSystem(Registry &r) {
     auto &collisions = r.get_components<Collision>();
     auto &players = r.get_components<PlayerTag>();
     auto &platforms = r.get_components<PlatformTag>();
+    auto &springs = r.get_components<SpringTag>();
 
     float dt = getInstance().dt_;
 
@@ -181,10 +225,9 @@ void Platform::collisionSystem(Registry &r) {
                 bool overLapX = (right > platLeft && left < platRight);
                 bool crossingTop = (oldBottom <= platTop && newBottom >= platTop);
 
-                if (overLapX && crossingTop) {
-                    pPos.y = platTop - pCol.height;
-                    pVel.y = 0.f;
-                }
+            if (overLapX && crossingTop) {
+                pPos.y = platTop - pCol.height;
+                pVel.y = 0.f;
             }
         }
     }
@@ -198,6 +241,16 @@ void Platform::renderingSystem(Registry &r) {
 
     renderer.beginDrawing();
     renderer.clearBackground(100, 200, 255, 255);
+    const int groundY = 575;
+    const int windowWidth = 800;
+    const float groundDrawThreshold = 100.f;
+
+    if (Platform::getInstance().cameraOffsetY_ < groundDrawThreshold && !Platform::getInstance().gameOver_) {
+        int screenGroundY = static_cast<int>(groundY + Platform::getInstance().cameraOffsetY_);
+
+        renderer.drawRectangle(0, screenGroundY, windowWidth, 50, 101, 67, 33, 255);
+        renderer.drawRectangle(0, screenGroundY, windowWidth, 10, 121, 87, 60, 255);
+    }
     for (std::size_t e = 0; e < r.max_entities(); ++e) {
         if (!positions[e].has_value()) continue;
         auto &pos = positions[e].value();
@@ -220,6 +273,64 @@ void Platform::renderingSystem(Registry &r) {
         }
     }
     renderer.endDrawing();
+}
+
+void Platform::cameraSystem(Registry &r) {
+    auto &positions = r.get_components<Position>();
+    auto &players = r.get_components<PlayerTag>();
+
+    for (auto &&[pos, player] : Zipper(positions, players)) {
+        float screenY = pos.y + Platform::getInstance().cameraOffsetY_;
+        float safeZoneTop = 80.f;
+
+        if (screenY < safeZoneTop) {
+            float delta = safeZoneTop - screenY;
+
+            Platform::getInstance().cameraOffsetY_ += delta;
+        }
+    }
+}
+
+void Platform::platformGenerationSystem(Registry &r) {
+    static float lastGeneratedY = 350.f;
+    auto &positions = r.get_components<Position>();
+    auto &players = r.get_components<PlayerTag>();
+    float minScreenY = 999999.f;
+
+    for (auto &&[pos, player] : Zipper(positions, players)) {
+        float screenY = pos.y + Platform::getInstance().cameraOffsetY_;
+
+        if (screenY < minScreenY) {
+            minScreenY = screenY;
+        }
+    }
+
+    if (minScreenY < 100.f) {
+        float newY = lastGeneratedY - 100.f;
+        std::uniform_real_distribution<float> distX(50.f, 800.f - 100.f);
+        float x = distX(Platform::getInstance().rng_);
+
+        Platform::getInstance().createPlatform(x, newY, 100, 20);
+        if (Platform::getInstance().rng_() % 2 == 0) {
+            float x2 = distX(Platform::getInstance().rng_);
+            Platform::getInstance().createPlatform(x2, newY, 100, 20);
+        }
+        lastGeneratedY = newY;
+    }
+
+    auto &platforms = r.get_components<PlatformTag>();
+    const float removeThreshold = 600.f + 50.f;
+
+    for (std::size_t e = 0; e < r.max_entities(); ++e) {
+        if (!platforms[e].has_value()) continue;
+        if (!positions[e].has_value()) continue;
+        auto &pos = positions[e].value();
+        float screenY = pos.y + Platform::getInstance().cameraOffsetY_;
+
+        if (screenY > removeThreshold) {
+            r.kill_entity(static_cast<entity_t>(e));
+        }
+    }
 }
 
 Platform &Platform::createInstance() {

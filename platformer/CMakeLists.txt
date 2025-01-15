@@ -34,7 +34,7 @@ target_link_libraries(${PROJECT_NAME}
 if (WIN32)
     target_compile_options(${PROJECT_NAME} PRIVATE /W4)
 elseif (UNIX OR APPLE)
-    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -g3)
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
 else ()
     message(FATAL_ERROR "Only support window and unix")
 endif ()
