@@ -20,4 +20,5 @@ enum Textures
     PLAYER_ID,
     ENNEMY_ID,
     BULLET_ID,
+    BACKGROUND_ID,
 };

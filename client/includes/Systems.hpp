@@ -87,7 +87,8 @@ namespace Systems {
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
 
         for (auto &&[drawable, position] : Zipper(drawables, positions))
-            renderer.drawTexture(drawable.textureID, static_cast<int>(position.x), static_cast<int>(position.y), drawable.width, drawable.height, 0);
+            renderer.drawTexture(drawable.textureID, position.x, position.y,
+                                 drawable.width, drawable.height, drawable.text_x, drawable.text_y, drawable.text_width, drawable.text_height);
     }
 
     inline void handleInputs([[maybe_unused]] Registry &r) {

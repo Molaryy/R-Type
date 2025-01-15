@@ -105,8 +105,14 @@ namespace Components {
     */
     struct Drawable {
         int textureID;
-        int width;
-        int height;
+
+        float width;
+        float height;
+
+        float text_x;
+        float text_y;
+        float text_width;
+        float text_height;
 
         void log() const {
             std::cout << "Drawable = { textureID = " << textureID << " }";

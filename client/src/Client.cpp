@@ -98,11 +98,26 @@ bool Client::connectToServer_(const std::string &ip, const std::size_t port) {
 }
 
 void Client::setupPacketHandler_() {
-    packet_handler_.setPacketCallback(Protocol::START_GAME, [&](Network::Packet &) {
+    packet_handler_.setPacketCallback(Protocol::START_GAME, [this](Network::Packet &) {
         registry_.clear_entities();
+
+        const entity_t e = registry_.spawn_entity();
+
+        registry_.add_component(e, Components::Drawable(BACKGROUND_ID, WIDTH, HEIGHT, 0, 0, WIDTH / (HEIGHT / 189.0), 189));
+        registry_.add_component(e, Position(0, 0));
     });
     packet_handler_.setPacketCallback(Protocol::POSITION_VELOCITY, [this](const Network::Packet &packet) {
-        auto [entity_id, position, velocity] = packet.getPayload<Protocol::EntityPositionVelocityPacket>();
+        auto [network_id, position, velocity] = packet.getPayload<Protocol::EntityPositionVelocityPacket>();
+        SparseArray<Components::ServerId> server_ids = registry_.get_components<Components::ServerId>();
+
+        const auto it = std::ranges::find_if(server_ids, [network_id](const std::optional<Components::ServerId> &server_id) {
+            return server_id.has_value() && server_id->id == network_id;
+        });
+        if (it == server_ids.end()) {
+            std::cerr << "Failed to find server id: " << network_id << std::endl;
+            return;
+        }
+        const entity_t entity_id = std::ranges::distance(server_ids.begin(), it);
 
         std::optional<Velocity> &vel = registry_.get_components<Velocity>()[entity_id];
         if (vel.has_value()) {
@@ -125,13 +140,13 @@ void Client::setupPacketHandler_() {
         registry_.add_component(e, Velocity(velocity.x, velocity.y));
         switch (type) {
         case Protocol::EntityType::PLAYER:
-            registry_.add_component(e, Components::Drawable(PLAYER_ID, PLAYER_SIZE, PLAYER_SIZE));
+            registry_.add_component(e, Components::Drawable(PLAYER_ID, PLAYER_SIZE, PLAYER_SIZE, 0, 0, PLAYER_SIZE, PLAYER_SIZE));
             break;
         case Protocol::EntityType::PLAYER_BULLET:
-            registry_.add_component(e, Components::Drawable(BULLET_ID, PLAYER_BULLET_SIZE, PLAYER_BULLET_SIZE));
+            registry_.add_component(e, Components::Drawable(BULLET_ID, PLAYER_BULLET_SIZE, PLAYER_BULLET_SIZE, 0, 0, PLAYER_BULLET_SIZE, PLAYER_BULLET_SIZE));
             break;
         case Protocol::EntityType::ENEMY_FLY:
-            registry_.add_component(e, Components::Drawable(ENNEMY_ID, FLY_SIZE, FLY_SIZE));
+            registry_.add_component(e, Components::Drawable(ENNEMY_ID, FLY_SIZE, FLY_SIZE, 0, 0, FLY_SIZE, FLY_SIZE));
             break;
         default: ;
         }
@@ -177,6 +192,7 @@ void Client::run() {
     renderer_->loadTexture("assets/spaceship.gif");
     renderer_->loadTexture("assets/enemies.gif");
     renderer_->loadTexture("assets/missiles.gif");
+    renderer_->loadTexture("assets/maps/space.png");
 
     while (!renderer_->windowShouldClose()) {
         renderer_->beginDrawing();
