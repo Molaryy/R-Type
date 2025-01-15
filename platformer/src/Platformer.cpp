@@ -337,7 +337,7 @@ void Platform::renderingSystem(Registry &r) {
         if (sprites[e].has_value()) {
             auto &spr = sprites[e].value();
 
-            renderer.drawTexture(spr.textureID, screenX, screenY, spr.width, spr.height, 0);
+            renderer.drawTexture(spr.textureID, screenX, screenY, spr.width, spr.height, 0.f, 0.f, spr.width, spr.height);
         } else {
             int w = 32;
             int h = 32;
@@ -366,7 +366,7 @@ void Platform::renderingSystem(Registry &r) {
         renderer.drawText("Press SPACE key to exit", 225, 200, 30, 255, 255, 255, 255);
         renderer.drawText("Press ENTER key to restart", 185, 240, 30, 255, 255, 255, 255);
         std::snprintf(buffer, sizeof(buffer), "Score: %d", Platform::getInstance().score_);
-        renderer.drawText(buffer, 350, 400, 30, 255, 255, 255, 255);
+        renderer.drawText(buffer, 325, 400, 30, 255, 255, 255, 255);
     }
     renderer.endDrawing();
 }
