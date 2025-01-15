@@ -36,23 +36,31 @@ public:
 private:
     std::unordered_map<Protocol::EntityType, Side> typeSides_{
         {Protocol::PLAYER, Ally},
-        {Protocol::PLAYER_SHOOT, Ally},
+        {Protocol::PLAYER_BULLET, Ally},
         {Protocol::ENEMY_FLY, Ennemy},
         {Protocol::ENEMY_TURRET, Ennemy},
-        {Protocol::ENEMY_SHOOT, Ennemy},
+        {Protocol::ENEMY_BULLET, Ennemy},
         {Protocol::BOSS_HEART, Ennemy},
         {Protocol::WALL, Neutral},
     };
 
     std::unordered_map<Protocol::EntityType, std::string> typeName_{
         {Protocol::PLAYER, "Player"},
-        {Protocol::PLAYER_SHOOT, "Player Shoot"},
+        {Protocol::PLAYER_BULLET, "Player Bullet"},
         {Protocol::ENEMY_FLY, "Enemy Fly"},
         {Protocol::ENEMY_TURRET, "Enemy Turret"},
-        {Protocol::ENEMY_SHOOT, "Enemy Shoot"},
+        {Protocol::ENEMY_BULLET, "Enemy Bullet"},
         {Protocol::BOSS_HEART, "Boss Heart"},
         {Protocol::WALL, "Wall"},
     };
+};
+
+struct NetworkId {
+    uint16_t id;
+
+    void log() const {
+        std::cout << "NetworkId = { " << id << " }";
+    }
 };
 
 class ClientInputs {

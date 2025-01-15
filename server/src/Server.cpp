@@ -117,6 +117,14 @@ void Server::initPacketHandling_() {
 
             const auto [lobby_id] = packet.getPayload<Protocol::JoinLobbyPacket>();
 
+            const auto it_contain_client = std::ranges::find_if(lobbies_, [client](const std::unique_ptr<Lobby> &lobby) {
+                return lobby->containPlayer(client);
+            });
+            if (it_contain_client != lobbies_.end()) {
+                std::cerr << "Client " << client << ": already in a lobby\n";
+                return;
+            }
+
             const auto it = std::ranges::find_if(lobbies_, [lobby_id](const std::unique_ptr<Lobby> &lobby) {
                 return lobby->getId() == lobby_id;
             });
@@ -130,6 +138,14 @@ void Server::initPacketHandling_() {
         Protocol::JOIN_NEW_LOBBY,
         [this]([[maybe_unused]] const Network::Packet &packet, const uint16_t client) {
             std::cout << "Client: " << client << " : Join a newly created lobby" << std::endl;
+
+            const auto it = std::ranges::find_if(lobbies_, [client](const std::unique_ptr<Lobby> &lobby) {
+                return lobby->containPlayer(client);
+            });
+            if (it != lobbies_.end()) {
+                std::cerr << "Client " << client << ": already in a lobby\n";
+                return;
+            }
 
             lobbies_.push_back(std::make_unique<Lobby>(maxClient_, debug_));
             lobbies_.back().get()->addPlayer(client);
@@ -145,6 +161,15 @@ void Server::initPacketHandling_() {
                 lobby->addPlayer(client);
                 return;
             }
+
+            const auto it = std::ranges::find_if(lobbies_, [client](const std::unique_ptr<Lobby> &lobby) {
+                return lobby->containPlayer(client);
+            });
+            if (it != lobbies_.end()) {
+                std::cerr << "Client " << client << ": already in a lobby\n";
+                return;
+            }
+
             lobbies_.push_back(std::make_unique<Lobby>(maxClient_, debug_));
             lobbies_.back().get()->addPlayer(client);
         });
@@ -173,8 +198,6 @@ void Server::initPacketHandling_() {
     packetHandler_.setPacketCallback(
         Protocol::INPUT_KEYS,
         [this](const Network::Packet &packet, const uint16_t client) {
-            std::cout << "Client: " << client << " : Sended inputs: " << std::endl;
-
             const auto it = std::ranges::find_if(lobbies_, [client](const std::unique_ptr<Lobby> &lobby) {
                 return lobby->containPlayer(client);
             });
@@ -183,6 +206,9 @@ void Server::initPacketHandling_() {
                 return;
             }
             auto [key_pressed] = packet.getPayload<Protocol::InputsKeysPacket>();
+            std::cout << "Client: " << client << " : Sended inputs: " << std::boolalpha << key_pressed[0] << ", " << key_pressed[1] << ", "
+                << key_pressed[2] << ", " << key_pressed[3] << ", " << key_pressed[4] << std::endl;
+
             std::vector<Protocol::InputKey> input_keys;
             for (int8_t i = 0; i < Protocol::NB_INPUTS_KEYS; i++) {
                 if (!key_pressed[i])
@@ -190,6 +216,20 @@ void Server::initPacketHandling_() {
                 input_keys.push_back(static_cast<Protocol::InputKey>(i));
             }
             it->get()->setInputKeys(input_keys, client);
+        });
+    packetHandler_.setPacketCallback(
+        Protocol::LEAVE_LOBBY,
+        [this]([[maybe_unused]] const Network::Packet &packet, const uint16_t client) {
+            std::cout << "Client: " << client << " : Leave lobby" << std::endl;
+
+            const auto it = std::ranges::find_if(lobbies_, [client](const std::unique_ptr<Lobby> &lobby) {
+                return lobby->containPlayer(client);
+            });
+            if (it == lobbies_.end()) {
+                std::cerr << "Client " << client << " isn't connected in any lobby" << std::endl;
+                return;
+            }
+            (*it)->leavePlayer(client);
         });
 }
 

@@ -60,7 +60,7 @@ namespace Graphic {
         return id;
     }
 
-    void RaylibGraphic::unloadTexture(int textureID) {
+    void RaylibGraphic::unloadTexture(const int textureID) {
         const auto it = textures_.find(textureID);
 
         if (it != textures_.end()) {
@@ -69,14 +69,15 @@ namespace Graphic {
         }
     }
 
-    void RaylibGraphic::drawTexture(const int textureID, const int x, const int y, const int width, const int height, const int frame) {
+    void RaylibGraphic::drawTexture(const int textureID, const float x, const float y, const float width, const float height,
+                                    const float text_x, const float text_y, const float text_width, const float text_height) {
         const auto it = textures_.find(textureID);
 
         if (it != textures_.end()) {
-            const Rectangle srcRec = {0.0f, static_cast<float>(frame * height), static_cast<float>(width), static_cast<float>(height)};
-            const Vector2 pos = {static_cast<float>(x), static_cast<float>(y)};
+            const Rectangle srcRec = {text_x, text_y, text_width, text_height};
+            const Rectangle destRec = {x, y, width, height};
 
-            DrawTextureRec(it->second, srcRec, pos, WHITE);
+            DrawTexturePro(it->second, srcRec, destRec, Vector2(0, 0), 0.0f, WHITE);
         }
     }
 
@@ -88,8 +89,8 @@ namespace Graphic {
     event_t RaylibGraphic::getEvents() {
         event_t events;
 
-        events.mouse_pos = { GetMouseX(), GetMouseY() };
-        events.window_size = { GetScreenWidth(), GetScreenHeight() };
+        events.mouse_pos = {GetMouseX(), GetMouseY()};
+        events.window_size = {GetScreenWidth(), GetScreenHeight()};
         events.inputs.clear();
         if (WindowShouldClose())
             events.inputs.push_back(CloseWindow);

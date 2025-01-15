@@ -44,7 +44,7 @@ void Hunter::run() {
         reg_.add_component<Life>(e, Life(1, 1));
         reg_.add_component<DuckTag>(e, DuckTag());
 
-        reg_.add_component<Sprite>(e, Sprite(renderer_->loadTexture("assets/spaceship.gif"), 32, 16, 0, 0.0f, 0.2f));
+        reg_.add_component<Sprite>(e, Sprite(renderer_->loadTexture("assets/spaceship.gif"), 32, 16, 0.0f, 0.2f));
     }
 
     reg_.add_system(duckMovementSystem);
@@ -109,7 +109,7 @@ void Hunter::duckRendererSystem(Registry &r) {
     for (auto &&[pos, life, sprite] : Zipper(positions, lifes, sprites)) {
         if (life.current <= 0)
             continue;
-        renderer.drawTexture(sprite.textureID, static_cast<int>(pos.x), static_cast<int>(pos.y), sprite.width, sprite.height, sprite.currentFrame);
+        renderer.drawTexture(sprite.textureID, pos.x, pos.y, sprite.width, sprite.width, 0, 0, sprite.width, sprite.width);
     }
     renderer.endDrawing();
 }

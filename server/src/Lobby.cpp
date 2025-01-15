@@ -72,10 +72,35 @@ void Lobby::addPlayer(const uint16_t client) {
                 return;
             }
 
-            const entity_t entity = Player::create(registry_);
+            const entity_t entity = Player::create(registry_, client);
             players_.emplace(client, entity);
 
             Network::Packet response(Protocol::AcceptLobbyJoinPacket(lobbyId_, entity), Protocol::ACCEPT_LOBBY_JOIN);
+            networkLib_.send(client, response.serialize());
+        });
+    }
+}
+
+void Lobby::leavePlayer(uint16_t client) {
+    {
+        std::unique_lock lock(networkMutex_);
+
+        networkTasks_.emplace([this, client] {
+            if (state_ == Protocol::IN_GAME) {
+                std::cout << "Lobby already started" << std::endl;
+                // TODO send error code
+                return;
+            }
+            if (state_ == Protocol::CLOSE) {
+                std::cout << "Lobby is closed" << std::endl;
+                // TODO send error code
+                return;
+            }
+
+            registry_.kill_entity(players_[client]);
+            players_.erase(client);
+
+            Network::Packet response(Protocol::EmptyPacket(), Protocol::ACCEPT_LEAVE_LOBBY);
             networkLib_.send(client, response.serialize());
         });
     }

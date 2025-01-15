@@ -51,6 +51,7 @@ Debug/
 Release/
 CPackConfig.cmake
 CPackSourceConfig.cmake
+.cache/
 
 r-type_server
 r-type_client

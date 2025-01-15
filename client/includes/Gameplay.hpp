@@ -7,9 +7,6 @@
 
 #pragma once
 
-#include "Client.hpp"
-#include "Components.hpp"
-
 struct Color {
     unsigned char r;
     unsigned char g;
@@ -18,8 +15,10 @@ struct Color {
 };
 
 // Textures IDs
-enum Textures {
+enum Textures
+{
     PLAYER_ID,
     ENNEMY_ID,
     BULLET_ID,
+    BACKGROUND_ID,
 };

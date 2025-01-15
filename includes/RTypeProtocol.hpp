@@ -16,13 +16,13 @@
 #define PLAYER_SIZE 30
 #define PLAYER_HEALTH 100
 
-#define PLAYER_SHOOT_RATE 15
-#define PLAYER_SHOOT_SPEED 5
-#define PLAYER_SHOOT_SIZE 15
+#define PLAYER_BULLET_RATE 15
+#define PLAYER_BULLET_SPEED 5
+#define PLAYER_BULLET_SIZE 15
 
-#define TURRET_SHOOT_SPEED 1
-#define TURRET_SHOOT_SIZE 15
-#define TURRET_SHOOT_RATE 40
+#define TURRET_BULLET_SPEED 1
+#define TURRET_BULLET_SIZE 15
+#define TURRET_BULLET_RATE 40
 
 #define TURRET_HEALTH 4
 #define TURRET_SIZE 30
@@ -33,11 +33,11 @@
 
 #define BOSS_HEART_SIZE 50
 #define BOSS_HEART_HEALTH 5
-#define BOSS_HEART_SHOOT_RATE 60
+#define BOSS_HEART_BULLET_RATE 60
 
 #define BOSS_SIZE 50
 #define BOSS_HEALTH 10
-#define BOSS_SHOOT_RATE 20
+#define BOSS_BULLET_RATE 20
 
 #define SERVER_TPS 30
 
@@ -53,10 +53,10 @@ namespace Protocol {
 
     enum EntityType : uint8_t {
         PLAYER,
-        PLAYER_SHOOT,
+        PLAYER_BULLET,
         ENEMY_FLY,
         ENEMY_TURRET,
-        ENEMY_SHOOT,
+        ENEMY_BULLET,
         BOSS_HEART,
         BOSS,
         WALL,
@@ -79,6 +79,7 @@ namespace Protocol {
         JOIN_LOBBY_BY_ID, // JoinLobbyPacket, Ask to join a lobby by id -> Server will respond with ACCEPT_LOBBY_JOIN if success
         JOIN_NEW_LOBBY, // EmptyPacket, Ask to join a newly created lobby -> Server will respond with ACCEPT_LOBBY_JOIN
         JOIN_RANDOM_LOBBY, // EmptyPacket, Join a random open lobby, or create a new one if all are closed -> Server will respond with ACCEPT_LOBBY_JOIN
+        LEAVE_LOBBY, // EmptyPacket, Leave actual lobby
 
         ASK_START_GAME, // EmptyPacket, Ask for game start, will start game for the actual lobby
 
@@ -90,7 +91,8 @@ namespace Protocol {
 
         LOBBY_LIST, // LobbyListPacket, Send number of lobbys
         LOBBY_DATA, // LobbyDataPacket, Send data about lobby id
-        ACCEPT_LOBBY_JOIN, //AcceptLobbyJoinPacket, server send this after receiving JOIN_LOBBY_BY_ID, JOIN_NEW_LOBBY, JOIN_LOBBY_RANDOM
+        ACCEPT_LOBBY_JOIN, // AcceptLobbyJoinPacket, server send this after receiving JOIN_LOBBY_BY_ID, JOIN_NEW_LOBBY, JOIN_LOBBY_RANDOM
+        ACCEPT_LEAVE_LOBBY, // EmptyPacket, server send this after receiving LEAVE_LOBBY
         START_GAME, // EmptyPacket, Game is starting, server will start sending game state
         END_GAME, // EmptyPacket, Game is over
 

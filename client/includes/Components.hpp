@@ -7,31 +7,31 @@
 
 #pragma once
 
+#include <functional>
 #include <iostream>
 #include <string>
+#include <unordered_map>
 
 #include "Gameplay.hpp"
+#include "Registry.hh"
+#include "RTypeProtocol.hpp"
 
 namespace Components {
-    struct RenderText
-    {
+    struct RenderText {
         std::string text;
         int x;
         int y;
         int fontSize;
 
         void log() const {
-            std::cout << "RenderText = { "
-                "text = " << text << ", " <<
-                "x = " << x << ", " <<
-                "y = " << y << ", " <<
-               "fontSize = " << fontSize << "} ";
+            std::cout << "RenderText = { " "text = " << text << ", " <<
+                "x = " << x << ", " << "y = " << y << ", " <<
+                "fontSize = " << fontSize << "} ";
         }
     };
 
-    struct ColorText
-    {
-       Color color;
+    struct ColorText {
+        Color color;
 
         void log() const {
             std::cout << "ColorText = { "
@@ -43,20 +43,19 @@ namespace Components {
         }
     };
 
-
-    struct ClickableText
-    {
+    struct ClickableText {
         std::function<void(Registry &r)> callback;
+
         void log() const {
             std::cout << "Button = { clicked }" << std::endl;
         }
     };
 
-    struct ColorOverText
-    {
+    struct ColorOverText {
         Color newColor;
         Color defaultColor;
         bool isOver;
+
         void log() const {
             std::cout << "ColorOverText = { "
                 "r = " << static_cast<unsigned int>(newColor.r) << ", " <<
@@ -67,55 +66,38 @@ namespace Components {
         }
     };
 
-    struct Entity {
-        int x;
-        int y;
-        std::size_t width;
-        std::size_t height;
+    struct ScrollableText {
+    };
+
+    struct ServerId {
+        std::size_t id;
+
         void log() const {
-            std::cout << "Entity = { x = " << x << ", y = " << y << ", width = " << width << ", height = " << height << " }";
+            std::cout << "ServerId = { " << id << " }";
         }
     };
 
-    struct Player {
-        std::size_t health;
-        std::string name;
-        std::size_t score;
-        void log() const {
-            std::cout << "Player = { health = " << health << ", name = " << name << ", score = " << score << " }";
+    struct ComponentEntityType {
+        explicit ComponentEntityType(const Protocol::EntityType &type) {
+            this->type = type;
         }
-    };
 
+        Protocol::EntityType type;
 
-    struct Bullet {
-        int speed;
-        int damagePower;
         void log() const {
-            std::cout << "Bullet = { x = " << speed << ", y = " << damagePower << " }";
+            std::cout << "EntityType = { " << typeName_.at(type) << " }";
         }
-    };
 
-    struct Ennemy {
-        std::size_t health;
-        void log() const {
-            std::cout << "Ennemy = { health = " << health << " }";
-        }
-    };
-
-    // Game generic components
-
-    /*
-    ** Movable allows to entities to be moved by the player
-    ** of all the entities in the game, only one can have Movable component, because
-    ** only one entity can be moved at a time.
-    ** TODO: Add a way to handle multiple entities with Movable component, for example A, W, S, D keys to move the 1 and >, <, ^, v keys to move the other entity
-    ** r: I dont think this is mandatory and compatible with the left time
-    */
-    struct Movable {
-        int speed;
-        void log() const {
-            std::cout << "Movable = { speed = " << speed << " }";
-        }
+    private:
+        std::unordered_map<Protocol::EntityType, std::string> typeName_{
+            {Protocol::PLAYER, "Player"},
+            {Protocol::PLAYER_BULLET, "Player Bullet"},
+            {Protocol::ENEMY_FLY, "Enemy Fly"},
+            {Protocol::ENEMY_TURRET, "Enemy Turret"},
+            {Protocol::ENEMY_BULLET, "Enemy Bullet"},
+            {Protocol::BOSS_HEART, "Boss Heart"},
+            {Protocol::WALL, "Wall"},
+        };
     };
 
     /*
@@ -123,6 +105,15 @@ namespace Components {
     */
     struct Drawable {
         int textureID;
+
+        float width;
+        float height;
+
+        float text_x;
+        float text_y;
+        float text_width;
+        float text_height;
+
         void log() const {
             std::cout << "Drawable = { textureID = " << textureID << " }";
         }

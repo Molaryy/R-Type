@@ -5,8 +5,7 @@
 ** Client
 */
 
-#ifndef CLIENT_HPP_
-#define CLIENT_HPP_
+#pragma once
 
 #include <dylib.hpp>
 #include <memory>
@@ -16,7 +15,11 @@
 #include "PacketHandler.hpp"
 #include "Registry.hh"
 
-class Client {
+#define WIDTH 800
+#define HEIGHT 600
+
+class Client
+{
 public:
     Client(const Client &ref) = delete;
     void operator=(const Client &ref) = delete;
@@ -54,5 +57,3 @@ private:
     static std::unique_ptr<Client> instance_;
     std::size_t my_server_id_{};
 };
-
-#endif /* !CLIENT_HPP_ */
