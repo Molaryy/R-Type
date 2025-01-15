@@ -7,27 +7,44 @@
 
 #pragma once
 
-#include "Network.hpp"
-#include <asio.hpp>
-#include <thread>
+#include <dylib.hpp>
+#include <vector>
 
-class Server
-{
-    public:
-        Server(asio::io_context &ioContext, const int port, const int maxClients) : network_(ioContext, port, maxClients), ioContext_(ioContext){}
-        ~Server()
-        {
-            if (gameThread_.joinable())
-                gameThread_.join();
-            if (checkClientThread_.joinable())
-                checkClientThread_.join();
-        }
-        void run();
-        void gameLoop();
-        void monitorClients();
-    private:
-        Network network_;
-        asio::io_context &ioContext_;
-        std::thread gameThread_;
-        std::thread checkClientThread_;
+#include "INetworkServer.hpp"
+#include "Lobby.hpp"
+#include "PacketHandler.hpp"
+
+class Server {
+public:
+    Server(const Server &ref) = delete;
+    void operator=(const Server &ref) = delete;
+    ~Server();
+
+    static Server &createInstance(std::size_t port, std::size_t max_lobby, std::size_t max_client, bool debug);
+    [[nodiscard]] static Server &getInstance();
+    [[nodiscard]] Network::PacketHandler &getPacketHandler();
+    [[nodiscard]] Network::INetworkServer &getNetwork() const;
+
+    void run();
+
+private:
+    Server(std::size_t port, std::size_t max_lobby, std::size_t max_client, bool debug);
+
+    void gameLoop_();
+    void initPacketHandling_();
+    void networkReceiver_();
+
+    dylib networkLoader_;
+    std::size_t port_;
+    std::size_t maxClient_;
+    std::size_t nbClient_;
+    bool debug_;
+    std::size_t maxLobby_;
+    static std::unique_ptr<Server> instance_;
+
+    std::unique_ptr<Network::INetworkServer> networkLib_;
+    Network::PacketHandler packetHandler_;
+    std::vector<std::unique_ptr<Lobby>> lobbies_;
+
+    bool serverRunning_;
 };
