@@ -6,6 +6,7 @@
 */
 
 #include "ArgHandler.hpp"
+#include <ranges>
 
 #include <iostream>
 #include <optional>

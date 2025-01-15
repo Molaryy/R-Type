@@ -10,8 +10,7 @@
 #include <iostream>
 #include <optional>
 #include <string>
-
-#include "ArgHandler.hpp"
+#include <ranges>
 
 void ArgHandler::display_help(const std::string_view &exec_name) {
     std::cout << "USAGE: " << exec_name << "[OPTIONS]"  << std::endl;;
