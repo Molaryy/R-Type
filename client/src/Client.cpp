@@ -11,6 +11,7 @@
 #include <iostream>
 #include <memory>
 #include <thread>
+#include <X11/X.h>
 
 #include "Components.hh"
 #include "Packet.hpp"
@@ -103,7 +104,11 @@ void Client::setupPacketHandler_() {
 
         const entity_t e = registry_.spawn_entity();
 
-        registry_.add_component(e, Components::Drawable(BACKGROUND_ID, WIDTH, HEIGHT, 0, 0, WIDTH / (HEIGHT / 189.0), 189));
+        registry_.add_component(e, Components::Drawable(BACKGROUND_ID, WIDTH, HEIGHT, 0, 0, WIDTH / (HEIGHT / 189.0), 189, [](Components::Drawable &drawable) {
+            drawable.text_x += 3;
+            if (drawable.text_x >= 1221)
+                drawable.text_x = 0;
+        }));
         registry_.add_component(e, Position(0, 0));
     });
     packet_handler_.setPacketCallback(Protocol::POSITION_VELOCITY, [this](const Network::Packet &packet) {
@@ -131,30 +136,79 @@ void Client::setupPacketHandler_() {
         }
     });
     packet_handler_.setPacketCallback(Protocol::SPAWN, [this](const Network::Packet &packet) {
-        auto [entity_id, type, position, velocity] = packet.getPayload<Protocol::SpawnEntityPacket>();
+        auto [entity_id, type, position, size, velocity, health] = packet.getPayload<Protocol::SpawnEntityPacket>();
         const entity_t e = registry_.spawn_entity();
 
-        registry_.add_component(e, Position(position.x, position.y));
-        registry_.add_component(e, Components::ServerId(entity_id));
-        registry_.add_component(e, Components::ComponentEntityType(type));
-        registry_.add_component(e, Velocity(velocity.x, velocity.y));
         switch (type) {
         case Protocol::EntityType::PLAYER:
-            registry_.add_component(e, Components::Drawable(PLAYER_ID, PLAYER_SIZE, PLAYER_SIZE, 0, 0, PLAYER_SIZE, PLAYER_SIZE));
+            registry_.add_component(e, Components::Drawable(
+                                        PLAYER_ID,
+                                        size.x, size.y,
+                                        0, static_cast<float>(17 * std::ranges::count_if(
+                                            registry_.get_components<Components::ComponentEntityType>(),
+                                            [](const std::optional<Components::ComponentEntityType> &ent_type) {
+                                                return ent_type.has_value() && ent_type.value().type == Protocol::EntityType::PLAYER;
+                                            })),
+                                        33, 17,
+                                        [increasing = true, frame = 0](Components::Drawable &drawable) mutable {
+                                            if (frame++ < 3)
+                                                return;
+                                            frame = 0;
+                                            if (drawable.text_x > drawable.text_width * 3)
+                                                increasing = false;
+                                            if (drawable.text_x <= 0)
+                                                increasing = true;
+                                            drawable.text_x += increasing ? drawable.text_width : -drawable.text_width;
+                                        }));
+            registry_.add_component(e, Life(health, health));
             break;
         case Protocol::EntityType::PLAYER_BULLET:
-            registry_.add_component(e, Components::Drawable(BULLET_ID, PLAYER_BULLET_SIZE, PLAYER_BULLET_SIZE, 0, 0, PLAYER_BULLET_SIZE, PLAYER_BULLET_SIZE));
+            registry_.add_component(e, Components::Drawable(BULLET_ID, size.x, size.y, 0, 0, 82, 16, [frame = 0](Components::Drawable &drawable) mutable {
+                if (frame++ < 3)
+                    return;
+                frame = 0;
+                drawable.text_x += drawable.text_width;
+                if (drawable.text_x > drawable.text_width)
+                    drawable.text_x = 0;
+            }));
             break;
         case Protocol::EntityType::ENEMY_FLY:
-            registry_.add_component(e, Components::Drawable(ENNEMY_ID, FLY_SIZE, FLY_SIZE, 0, 0, FLY_SIZE, FLY_SIZE));
+            registry_.add_component(e, Components::Drawable(ENNEMY_ID, size.x, size.y, 0, 0, 65, 49, [frame = 0](Components::Drawable &drawable) mutable {
+                if (frame++ < 3)
+                    return;
+                frame = 0;
+                drawable.text_x += drawable.text_width;
+                if (drawable.text_x > drawable.text_width * 2)
+                    drawable.text_x = 0;
+            }));
+            registry_.add_component(e, Life(health, health));
             break;
         default:
             std::cerr << "Unknown entity type: " << type << std::endl;
             break;
         }
+
+        registry_.add_component(e, Position(position.x, position.y));
+        registry_.add_component(e, Components::ServerId(entity_id));
+        registry_.add_component(e, Components::ComponentEntityType(type));
+        registry_.add_component(e, Velocity(velocity.x, velocity.y));
     });
-    packet_handler_.setPacketCallback(Protocol::HIT, [](Network::Packet &) {
-        std::cout << "HIT received\n";
+    packet_handler_.setPacketCallback(Protocol::HIT, [this](const Network::Packet &packet) {
+        auto [network_id, health] = packet.getPayload<Protocol::HitPacket>();
+        SparseArray<Components::ServerId> server_ids = registry_.get_components<Components::ServerId>();
+
+        const auto it = std::ranges::find_if(server_ids, [network_id](const std::optional<Components::ServerId> &server_id) {
+            return server_id.has_value() && server_id->id == network_id;
+        });
+        if (it == server_ids.end()) {
+            std::cerr << "Failed to find server id: " << network_id << std::endl;
+            return;
+        }
+        const entity_t entity_id = std::ranges::distance(server_ids.begin(), it);
+
+        std::optional<Life> &life = registry_.get_components<Life>()[entity_id];
+        if (life.has_value())
+            life.value().current = health;
     });
     packet_handler_.setPacketCallback(Protocol::KILL, [](Network::Packet &) {
         std::cout << "KILL received\n";
@@ -174,6 +228,7 @@ void Client::setupSystems_() {
     registry_.add_system(Systems::drawOverText);
     registry_.add_system(Systems::handleMouse);
     registry_.add_system(Systems::drawEntities);
+    registry_.add_system(Systems::spriteSheetHandler);
     registry_.add_system(Systems::handleInputs);
     if (debug_)
         registry_.add_system(Systems::log);

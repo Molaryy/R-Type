@@ -114,6 +114,8 @@ namespace Components {
         float text_width;
         float text_height;
 
+        std::function<void(Drawable &)> next_frame;
+
         void log() const {
             std::cout << "Drawable = { textureID = " << textureID << " }";
         }

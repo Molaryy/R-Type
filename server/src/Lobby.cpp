@@ -131,7 +131,9 @@ void Lobby::startGame() {
                         pla,
                         Protocol::PLAYER,
                         Protocol::Vector2f(0, 0),
-                        Protocol::Vector2f(0, 0)),
+                        Protocol::Vector2f(PLAYER_SIZE, PLAYER_SIZE),
+                        Protocol::Vector2f(0, 0),
+                        PLAYER_HEALTH),
                     Protocol::SPAWN
                 );
                 networkLib_.sendAll(new_player_packet.serialize());

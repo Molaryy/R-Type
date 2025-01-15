@@ -35,7 +35,7 @@ void Shoot::collision(Registry &r, const entity_t me, const entity_t other) {
 entity_t Shoot::create(Registry &r, const Position &position) {
     const entity_t entity = r.spawn_entity();
 
-    Position pos(position.x, position.y);
+    Position pos(position.x + PLAYER_SIZE, static_cast<float>(position.y + PLAYER_SIZE / 2.0));
     r.add_component(entity, Position(pos));
     r.add_component(entity, Velocity(PLAYER_BULLET_SPEED, 0));
     r.add_component(entity, ComponentEntityType(Protocol::PLAYER_BULLET));
@@ -47,7 +47,9 @@ entity_t Shoot::create(Registry &r, const Position &position) {
             entity,
             Protocol::PLAYER_BULLET,
             Protocol::Vector2f(pos.x, pos.y),
-            Protocol::Vector2f(PLAYER_BULLET_SPEED, 0)
+            Protocol::Vector2f(PLAYER_BULLET_SIZE, PLAYER_BULLET_SIZE),
+            Protocol::Vector2f(PLAYER_BULLET_SPEED, 0),
+            1
         ),
         Protocol::SPAWN
     );

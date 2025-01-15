@@ -12,12 +12,12 @@
 
 #define TILE_SIZE 50
 
-#define PLAYER_SPEED 4
+#define PLAYER_SPEED 6
 #define PLAYER_SIZE 30
 #define PLAYER_HEALTH 100
 
 #define PLAYER_BULLET_RATE 15
-#define PLAYER_BULLET_SPEED 5
+#define PLAYER_BULLET_SPEED 15
 #define PLAYER_BULLET_SIZE 15
 
 #define TURRET_BULLET_SPEED 1
@@ -117,7 +117,9 @@ namespace Protocol {
         std::size_t entity_id; // Server id for entity
         EntityType type; // Type of entity
         Vector2f position; // Position at creation
+        Vector2f size; // Size of the entity hitbox (a square with top corner at position)
         Vector2f velocity; // Velocity at creation
+        int health; // Health at creation
     };
 
     struct EntityPositionVelocityPacket {
