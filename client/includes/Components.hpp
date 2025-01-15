@@ -135,6 +135,8 @@ namespace Components {
         float text_width;
         float text_height;
 
+        std::function<void(Drawable &)> next_frame;
+
         bool can_draw = true;
 
         void log() const {

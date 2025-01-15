@@ -92,6 +92,13 @@ namespace Systems {
         }
     }
 
+    inline void spriteSheetHandler(Registry &r) {
+        SparseArray<Components::Drawable> &drawables = r.get_components<Components::Drawable>();
+
+        for (auto &&[drawable] : Zipper(drawables))
+            drawable.next_frame(drawable);
+    }
+
     inline void drawEntities(Registry &r) {
         auto &positions = r.get_components<Position>();
         auto &drawables = r.get_components<Components::Drawable>();
