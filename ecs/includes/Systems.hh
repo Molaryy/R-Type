@@ -38,10 +38,10 @@ namespace Systems {
     }
 
     [[maybe_unused]] static void limit_framerate([[maybe_unused]] Registry &r, const uint8_t fps) {
-        static const auto frame_duration = std::chrono::microseconds(1 / fps);
+        static const auto frame_duration = std::chrono::microseconds(static_cast<int64_t>(1e6 / fps));
         static auto last_frame = std::chrono::steady_clock::now();
         const auto current_frame = std::chrono::steady_clock::now();
-        const auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(current_frame - last_frame);
+        const auto elapsed_time = current_frame - last_frame;
 
         if (elapsed_time < frame_duration)
             std::this_thread::sleep_for(frame_duration - elapsed_time);

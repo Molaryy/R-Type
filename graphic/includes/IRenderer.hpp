@@ -211,32 +211,35 @@ namespace Graphic {
              * @brief draw texture / sprite
              * 
              * @param textureID 
-             * @param x pos x
-             * @param y pos y
-             * @param width
-             * @param height
-             * @param frame
+             * @param x Position were texture should be drawn
+             * @param y Position were texture should be drawn
+             * @param width Resize texture to those pixel size
+             * @param height Resize texture to those pixel size
+             * @param text_x Start of the rectangle texture to draw
+             * @param text_y Start of the rectangle texture to draw
+             * @param text_width Size of the rectangle texture to draw
+             * @param text_height Size of the rectangle texture to draw
              */
-            virtual void drawTexture(int textureID, int x, int y, int width, int height, int frame) = 0;
+            virtual void drawTexture(int textureID, float x, float y, float width, float height, float text_x, float text_y, float text_width, float text_height) = 0;
 
             /**
              * @brief draw text
              * 
-             * @param text 
-             * @param x 
-             * @param y 
-             * @param fontSize 
-             * @param r 
-             * @param g 
-             * @param b 
-             * @param a 
+             * @param text String to draw
+             * @param x Position were text should be drawn
+             * @param y Position were text should be drawn
+             * @param fontSize Size of the text font
+             * @param r Color red
+             * @param g Color green
+             * @param b Color blue
+             * @param a Color transparency
              */
             virtual void drawText(const std::string &text, int x, int y, int fontSize, unsigned char r, unsigned char g, unsigned char b, unsigned char a) = 0;
 
             /**
              * @brief Get the Events object
              * 
-             * @return event_t 
+             * @return event_t lis
              */
             virtual event_t getEvents() = 0;
 

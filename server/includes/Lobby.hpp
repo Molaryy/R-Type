@@ -27,6 +27,7 @@ public:
     [[nodiscard]] std::size_t getNbPLayers() const;
 
     void addPlayer(uint16_t client);
+    void leavePlayer(uint16_t client);
     void startGame();
     void setInputKeys(std::vector<Protocol::InputKey> key_pressed, uint16_t client);
 

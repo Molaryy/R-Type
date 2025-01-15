@@ -32,7 +32,7 @@ namespace Network {
         _packet_callbacks[command_id](packet, 0);
     }
 
-    void PacketHandler::operator()(Packet &packet, uint16_t client_id) {
+    void PacketHandler::operator()(Packet &packet, const uint16_t client_id) {
         const uint16_t command_id = packet.getCommandId();
         if (!_packet_callbacks.contains(command_id)) {
             std::cerr << "Command id: " << command_id << " not implemented 2" << std::endl;

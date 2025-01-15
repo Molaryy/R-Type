@@ -7,9 +7,10 @@
 
 #pragma once
 
-#include <raylib.h>
 #include <map>
+#include <raylib.h>
 #include <unordered_map>
+
 #include "IRenderer.hpp"
 
 namespace Graphic {
@@ -28,7 +29,7 @@ namespace Graphic {
             void drawRoundedRectangle(int x, int y, int width, int height, float roundness, int segments, unsigned char r, unsigned char g, unsigned char b, unsigned char a) override;
             int loadTexture(const std::string &path) override;
             void unloadTexture(int textureID) override;
-            void drawTexture(int textureID, int x, int y, int width, int height, int frame) override;
+            void drawTexture(int textureID, float x, float y, float width, float height, float text_x, float text_y, float text_width, float text_height) override;
             void drawText(const std::string &text, int x, int y, int fontSize, unsigned char r, unsigned char g, unsigned char b, unsigned char a) override;
             event_t getEvents() override;
             void initAudioDevice() override;

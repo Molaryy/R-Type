@@ -11,8 +11,7 @@
 #include <optional>
 #include <string>
 
-ArgHandler::ArgHandler(const std::size_t max_args) : max_args_(max_args) {
-}
+#include "ArgHandler.hpp"
 
 void ArgHandler::display_help(const std::string_view &exec_name) {
     std::cout << "USAGE: " << exec_name << "[OPTIONS]"  << std::endl;;
@@ -32,7 +31,8 @@ bool ArgHandler::check_help(const int ac, const std::string_view &exec_name, con
     return false;
 }
 
-void ArgHandler::verif_arg(const int ac, const std::vector<std::string_view> &av) {
+void ArgHandler::verif_arg(const int ac, const std::vector<std::string_view> &av)
+{
     if (static_cast<std::size_t>(ac) > max_args_ + 1 || av.size() > max_args_ + 1)
         throw std::runtime_error(std::string(av[0]) + ": max args: " + std::to_string(max_args_));
 

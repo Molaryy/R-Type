@@ -19,9 +19,8 @@ struct DuckTag {
 
 struct Sprite {
     int textureID;
-    int width;
-    int height;
-    int currentFrame;
+    float width;
+    float height;
     float frameTimer;
     float frameDuration;
 

@@ -8,12 +8,13 @@
 #pragma once
 
 #include "Client.hpp"
+#include "Components.hh"
 #include "Components.hpp"
+#include "Gameplay.hpp"
 #include "INetworkClient.hpp"
 #include "Main.hpp"
 #include "PacketHandler.hpp"
-#include "Registry.hh"
-#include "Zipper.hh"
+#include "RTypeProtocol.hpp"
 
 namespace Systems {
     inline void networkReceiver([[maybe_unused]] Registry &r) {
@@ -80,13 +81,36 @@ namespace Systems {
         }
     }
 
-    inline void DrawEntities(Registry &r) {
-        auto &entities = r.get_components<Components::Entity>();
+    inline void drawEntities(Registry &r) {
+        auto &positions = r.get_components<Position>();
         auto &drawables = r.get_components<Components::Drawable>();
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
 
-        for (auto &&[entity, drawable] : Zipper(entities, drawables)) {
-            renderer.drawTexture(drawable.textureID, entity.x, entity.y, static_cast<int>(entity.width), static_cast<int>(entity.height), 0);
+        for (auto &&[drawable, position] : Zipper(drawables, positions))
+            renderer.drawTexture(drawable.textureID, position.x, position.y,
+                                 drawable.width, drawable.height, drawable.text_x, drawable.text_y, drawable.text_width, drawable.text_height);
+    }
+
+    inline void handleInputs([[maybe_unused]] Registry &r) {
+        Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
+        Graphic::event_t events = renderer.getEvents();
+        static Protocol::InputsKeysPacket last_inputs{};
+        Protocol::InputsKeysPacket inputs{};
+
+        inputs.input_keys[Protocol::InputKey::MOVE_UP] = std::ranges::find(events.inputs, Graphic::Keys::UpArrow) != events.inputs.end();
+        inputs.input_keys[Protocol::InputKey::MOVE_DOWN] = std::ranges::find(events.inputs, Graphic::Keys::DownArrow) != events.inputs.end();
+        inputs.input_keys[Protocol::InputKey::MOVE_LEFT] = std::ranges::find(events.inputs, Graphic::Keys::LeftArrow) != events.inputs.end();
+        inputs.input_keys[Protocol::InputKey::MOVE_RIGHT] = std::ranges::find(events.inputs, Graphic::Keys::RightArrow) != events.inputs.end();
+        inputs.input_keys[Protocol::InputKey::SHOOT] = std::ranges::find(events.inputs, Graphic::Keys::Space) != events.inputs.end();
+
+        for (uint8_t i = 0; i < Protocol::NB_INPUTS_KEYS; ++i) {
+            if (last_inputs.input_keys[i] ^ inputs.input_keys[i]) {
+                for (uint8_t j = i; j < Protocol::NB_INPUTS_KEYS; ++j)
+                    last_inputs.input_keys[j] = inputs.input_keys[j];
+                Network::Packet packet(inputs, Protocol::INPUT_KEYS);
+                Client::getInstance().getNetworkLib().send(packet.serialize());
+                return;
+            }
         }
     }
 }
