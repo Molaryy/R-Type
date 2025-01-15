@@ -93,6 +93,7 @@ namespace Systems {
     inline void handleInputs([[maybe_unused]] Registry &r) {
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
         Graphic::event_t events = renderer.getEvents();
+        static Protocol::InputsKeysPacket last_inputs{};
         Protocol::InputsKeysPacket inputs{};
 
         inputs.input_keys[Protocol::InputKey::MOVE_UP] = std::ranges::find(events.inputs, Graphic::Keys::UpArrow) != events.inputs.end();
@@ -101,9 +102,14 @@ namespace Systems {
         inputs.input_keys[Protocol::InputKey::MOVE_RIGHT] = std::ranges::find(events.inputs, Graphic::Keys::RightArrow) != events.inputs.end();
         inputs.input_keys[Protocol::InputKey::SHOOT] = std::ranges::find(events.inputs, Graphic::Keys::Space) != events.inputs.end();
 
-        if (!std::ranges::any_of(inputs.input_keys, [](const bool value) { return value; }))
-            return;
-        Network::Packet packet(inputs, Protocol::INPUT_KEYS);
-        Client::getInstance().getNetworkLib().send(packet.serialize());
+        for (uint8_t i = 0; i < Protocol::NB_INPUTS_KEYS; ++i) {
+            if (last_inputs.input_keys[i] ^ inputs.input_keys[i]) {
+                for (uint8_t j = i; j < Protocol::NB_INPUTS_KEYS; ++j)
+                    last_inputs.input_keys[j] = inputs.input_keys[j];
+                Network::Packet packet(inputs, Protocol::INPUT_KEYS);
+                Client::getInstance().getNetworkLib().send(packet.serialize());
+                return;
+            }
+        }
     }
 }

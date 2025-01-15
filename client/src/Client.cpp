@@ -101,11 +101,21 @@ void Client::setupPacketHandler_() {
     packet_handler_.setPacketCallback(Protocol::START_GAME, [](Network::Packet &) {
         std::cout << "START_GAME received\n";
     });
-    packet_handler_.setPacketCallback(Protocol::POSITION_VELOCITY, [](Network::Packet &) {
-        std::cout << "POSITION_VELOCITY received\n";
+    packet_handler_.setPacketCallback(Protocol::POSITION_VELOCITY, [this](const Network::Packet &packet) {
+        auto [entity_id, position, velocity] = packet.getPayload<Protocol::EntityPositionVelocityPacket>();
+
+        std::optional<Velocity> &vel = registry_.get_components<Velocity>()[entity_id];
+        if (vel.has_value()) {
+            vel.value().x = velocity.x;
+            vel.value().y = velocity.y;
+        }
+        std::optional<Position> &pos = registry_.get_components<Position>()[entity_id];
+        if (pos.has_value()) {
+            pos.value().x = position.x;
+            pos.value().y = position.y;
+        }
     });
     packet_handler_.setPacketCallback(Protocol::SPAWN, [this](const Network::Packet &packet) {
-        std::cout << "SPAWN received\n";
         auto [entity_id, type, position, velocity] = packet.getPayload<Protocol::SpawnEntityPacket>();
         const entity_t e = registry_.spawn_entity();
 
@@ -142,6 +152,7 @@ void Client::setupPacketHandler_() {
 
 void Client::setupSystems_() {
     registry_.add_system(Systems::networkReceiver);
+    registry_.add_system(Systems::position_velocity);
     registry_.add_system(Systems::drawAllTexts);
     registry_.add_system(Systems::drawOverText);
     registry_.add_system(Systems::handleMouse);
