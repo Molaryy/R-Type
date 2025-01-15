@@ -179,7 +179,10 @@ void Platform::playerMovementSystem(Registry &r) {
         } else if (pos.x + 32 < 0) {
             pos.x += 800;
         }
-        if (pos.y > deathThreshold - 32) {
+
+        int screenY = static_cast<int>(pos.y + Platform::getInstance().cameraOffsetY_);
+
+        if (screenY > deathThreshold) {
             for (auto &&[life] : Zipper(lifes)) {
                 life.takeDamage(life.max);
                 if (!life.is_alive()) {
