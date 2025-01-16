@@ -30,7 +30,8 @@ public:
     void leavePlayer(uint16_t client);
     void startGame();
     void setInputKeys(std::vector<Protocol::InputKey> key_pressed, uint16_t client);
-
+    void swapGameMode(uint16_t client);
+    bool getGameMode() const;
 
 private:
     void run_();
@@ -42,8 +43,10 @@ private:
     Registry registry_;
     std::size_t maxClient_;
     bool debug_;
+    bool game_mode_;
     std::unordered_map<uint16_t, entity_t> players_;
     Protocol::LobbyState state_;
+    std::size_t posInLevel_;
 
     std::queue<std::function<void()>> networkTasks_;
 

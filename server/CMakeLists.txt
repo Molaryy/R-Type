@@ -10,6 +10,7 @@ add_executable(${PROJECT_NAME}
         src/Server.cpp
         src/Lobby.cpp
         src/entities/Player.cpp
+        src/entities/EnemyFly.cpp
         src/entities/Shoot.cpp
 )
 

@@ -15,9 +15,6 @@
 #include "PacketHandler.hpp"
 #include "Registry.hh"
 
-#define WIDTH 800
-#define HEIGHT 600
-
 class Client
 {
 public:

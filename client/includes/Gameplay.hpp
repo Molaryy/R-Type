@@ -21,4 +21,5 @@ enum Textures
     ENNEMY_ID,
     BULLET_ID,
     BACKGROUND_ID,
+    EXPLOSION_ID,
 };

@@ -6,30 +6,25 @@
 */
 
 #include "entities/Shoot.hpp"
-
 #include "Components.hh"
 #include "Components.hpp"
 #include "Packet.hpp"
 #include "RTypeProtocol.hpp"
 #include "Server.hpp"
+#include "Zipper.hh"
 
 void Shoot::collision(Registry &r, const entity_t me, const entity_t other) {
     const std::optional<ComponentEntityType> otherType = r.get_components<ComponentEntityType>()[other];
-    std::optional<Life> &optLife = r.get_components<Life>()[me];
-    if (!otherType.has_value() || !optLife.has_value() || otherType.value().side == ComponentEntityType::Ally)
+    if (!otherType.has_value() || otherType.value().side != ComponentEntityType::Ennemy)
         return;
 
-    Life &life = optLife.value();
-    life.takeDamage(1);
-
-    if (!life.is_alive()) {
-        Network::Packet packet(
-            Protocol::DeadPacket(me, true),
-            Protocol::KILL
-        );
-        Server::getInstance().getNetwork().sendAll(packet.serialize());
-        r.kill_entity(me);
-    }
+    Network::Packet packet(
+        Protocol::DeadPacket(me, true),
+        Protocol::KILL
+    );
+    Network::INetworkServer &network = Server::getInstance().getNetwork();
+    for (auto &&[network_id] : Zipper(r.get_components<NetworkId>()))
+        network.send(network_id.id, packet.serialize());
 }
 
 entity_t Shoot::create(Registry &r, const Position &position) {
@@ -53,7 +48,8 @@ entity_t Shoot::create(Registry &r, const Position &position) {
         ),
         Protocol::SPAWN
     );
-    Server::getInstance().getNetwork().sendAll(packet.serialize());
-
+    Network::INetworkServer &network = Server::getInstance().getNetwork();
+    for (auto &&[network_id] : Zipper(r.get_components<NetworkId>()))
+        network.send(network_id.id, packet.serialize());
     return entity;
 }

@@ -20,7 +20,9 @@ Lobby::Lobby(const std::size_t maxClient, const bool debug)
     : networkLib_(Server::getInstance().getNetwork()),
       maxClient_(maxClient),
       debug_(debug),
-      state_(Protocol::OPEN) {
+      game_mode_(true),
+      state_(Protocol::OPEN),
+      posInLevel_(0) {
     static std::size_t next_lobby = 0;
     lobbyId_ = next_lobby++;
     thread_ = std::thread(&Lobby::run_, this);
@@ -145,8 +147,18 @@ void Lobby::startGame() {
             });
             registry_.add_system(Systems::handleClientInputs);
             registry_.add_system(Systems::position_velocity);
-            registry_.add_system(Systems::levelHandler);
+
+            if (game_mode_)
+                registry_.add_system([this](Registry &r) {
+                    Systems::levelEndlessHandler(r, posInLevel_);
+                });
+            else
+                registry_.add_system([this](Registry &r) {
+                    Systems::levelCampaignHandler(r, posInLevel_);
+                });
+
             registry_.add_system(Systems::generic_collide);
+            registry_.add_system(Systems::killNoHealthEntitys);
             registry_.add_system(Systems::sendGameState);
             if (debug_)
                 registry_.add_system(Systems::log);
@@ -173,6 +185,24 @@ void Lobby::setInputKeys(std::vector<Protocol::InputKey> key_pressed, const uint
             inputs[players_.at(client)].value().setInputs(key_pressed);
         });
     }
+}
+
+void Lobby::swapGameMode(uint16_t client) {
+    {
+        std::unique_lock lock(networkMutex_);
+
+        networkTasks_.emplace([this, client] {
+            game_mode_ = !game_mode_;
+            const Protocol::LobbyDataPacket lobbyDataPacket(lobbyId_, state_, static_cast<uint8_t>(players_.size()), game_mode_);
+
+            Network::Packet lobbyData(lobbyDataPacket, Protocol::CommandIdServer::LOBBY_DATA);
+            networkLib_.send(client, lobbyData.serialize());
+        });
+    }
+}
+
+bool Lobby::getGameMode() const {
+    return game_mode_;
 }
 
 void Lobby::executeNetworkSystem_([[maybe_unused]] const Registry &r, Lobby &lobby) {

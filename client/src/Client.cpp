@@ -11,7 +11,6 @@
 #include <iostream>
 #include <memory>
 #include <thread>
-#include <X11/X.h>
 
 #include "Components.hh"
 #include "Packet.hpp"
@@ -126,13 +125,13 @@ void Client::setupPacketHandler_() {
 
         std::optional<Velocity> &vel = registry_.get_components<Velocity>()[entity_id];
         if (vel.has_value()) {
-            vel.value().x = velocity.x;
-            vel.value().y = velocity.y;
+            vel->x = velocity.x;
+            vel->y = velocity.y;
         }
         std::optional<Position> &pos = registry_.get_components<Position>()[entity_id];
         if (pos.has_value()) {
-            pos.value().x = position.x;
-            pos.value().y = position.y;
+            pos->x = position.x;
+            pos->y = position.y;
         }
     });
     packet_handler_.setPacketCallback(Protocol::SPAWN, [this](const Network::Packet &packet) {
@@ -147,7 +146,7 @@ void Client::setupPacketHandler_() {
                                         0, static_cast<float>(17 * std::ranges::count_if(
                                             registry_.get_components<Components::ComponentEntityType>(),
                                             [](const std::optional<Components::ComponentEntityType> &ent_type) {
-                                                return ent_type.has_value() && ent_type.value().type == Protocol::EntityType::PLAYER;
+                                                return ent_type.has_value() && ent_type->type == Protocol::EntityType::PLAYER;
                                             })),
                                         33, 17,
                                         [increasing = true, frame = 0](Components::Drawable &drawable) mutable {
@@ -208,10 +207,38 @@ void Client::setupPacketHandler_() {
 
         std::optional<Life> &life = registry_.get_components<Life>()[entity_id];
         if (life.has_value())
-            life.value().current = health;
+            life->current = health;
     });
-    packet_handler_.setPacketCallback(Protocol::KILL, [](Network::Packet &) {
-        std::cout << "KILL received\n";
+    packet_handler_.setPacketCallback(Protocol::KILL, [this](const Network::Packet &packet) {
+        auto [network_id, natural] = packet.getPayload<Protocol::DeadPacket>();
+        SparseArray<Components::ServerId> server_ids = registry_.get_components<Components::ServerId>();
+
+        const auto it = std::ranges::find_if(server_ids, [network_id](const std::optional<Components::ServerId> &server_id) {
+            return server_id.has_value() && server_id->id == network_id;
+        });
+        if (it == server_ids.end()) {
+            std::cerr << "Failed to find server id: " << network_id << std::endl;
+            return;
+        }
+        const entity_t entity_id = std::ranges::distance(server_ids.begin(), it);
+
+        if (!natural)
+            return registry_.kill_entity(entity_id);
+        const std::optional<Position> &pos = registry_.get_components<Position>()[entity_id];
+        const std::optional<Components::Drawable> &draw = registry_.get_components<Components::Drawable>()[entity_id];
+
+        if (pos.has_value() && draw.has_value()) {
+            const entity_t e = registry_.spawn_entity();
+
+            registry_.add_component(e, Position(pos->x, pos->y));
+            registry_.add_component(e, Components::Drawable(EXPLOSION_ID, draw->width, draw->height, 0, 0, 65, 66, [frame = 0](Components::Drawable &drawable) mutable {
+                if (frame++ < 3)
+                    return;
+                frame = 0;
+                drawable.text_x += drawable.text_width;
+            }));
+        }
+        registry_.kill_entity(entity_id);
     });
     packet_handler_.setPacketCallback(Protocol::SERVER_SHUTDOWN, [](Network::Packet &) {
         std::cout << "SERVER_SHUTDOWN received\n";
@@ -233,7 +260,7 @@ void Client::setupSystems_() {
     if (debug_)
         registry_.add_system(Systems::log);
     registry_.add_system([](Registry &r) {
-        Systems::limit_framerate(r, 30);
+        Systems::limit_framerate(r, SERVER_TPS);
     });
 }
 

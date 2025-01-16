@@ -39,6 +39,9 @@
 #define BOSS_HEALTH 10
 #define BOSS_BULLET_RATE 20
 
+#define WIDTH 800
+#define HEIGHT 600
+
 #define SERVER_TPS 30
 
 namespace Protocol {
@@ -70,18 +73,19 @@ namespace Protocol {
     };
 
     enum CommandIdClient : uint16_t {
-        CONNECT, // EmptyPacket, Client send this packet at startup
+        CONNECT, // EmptyPacket, Client send this packet at startup -> Server will respond with ACCEPT_CONNECTION
         DISCONNECT, // EmptyPacket, Disconnection
 
-        ASK_LOBBY_LIST, // EmptyPacket, Ask for number of lobby
-        ASK_LOBBY_DATA, // AskLobbyDataPacket, Ask for data of a lobby id
+        ASK_LOBBY_LIST, // EmptyPacket, Ask for number of lobby -> Server will respond with LOBBY_LIST
+        ASK_LOBBY_DATA, // AskLobbyDataPacket, Ask for data of a lobby id ->< Server will respond with LOBBY_DATA
 
         JOIN_LOBBY_BY_ID, // JoinLobbyPacket, Ask to join a lobby by id -> Server will respond with ACCEPT_LOBBY_JOIN if success
         JOIN_NEW_LOBBY, // EmptyPacket, Ask to join a newly created lobby -> Server will respond with ACCEPT_LOBBY_JOIN
         JOIN_RANDOM_LOBBY, // EmptyPacket, Join a random open lobby, or create a new one if all are closed -> Server will respond with ACCEPT_LOBBY_JOIN
+        CHANGE_GAME_MODE, // EmptyPacket, Change from infinite mode to campain mode -> Server will respond with LOBBY_DATA
         LEAVE_LOBBY, // EmptyPacket, Leave actual lobby
 
-        ASK_START_GAME, // EmptyPacket, Ask for game start, will start game for the actual lobby
+        ASK_START_GAME, // EmptyPacket, Ask for game start, will start game for the actual lobby -> Server will respond with START_GAME
 
         INPUT_KEYS, // PacketInputsKeysPacket, all inputs from clients
     };
@@ -159,6 +163,7 @@ namespace Protocol {
         std::size_t lobby_id; // Lobby id of data
         LobbyState lobby_state; // State of lobby
         uint8_t nb_players; // Numbers of players in lobby
+        bool game_mode; // True for infinite, false for campaign
     };
 
     struct InputsKeysPacket {

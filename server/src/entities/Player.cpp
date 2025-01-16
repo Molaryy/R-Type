@@ -7,6 +7,7 @@
 
 #include "entities/Player.hpp"
 
+#include "Zipper.hh"
 #include "Components.hh"
 #include "Components.hpp"
 #include "Packet.hpp"
@@ -25,7 +26,9 @@ void Player::collision(Registry &r, const entity_t me, const entity_t other) {
         Protocol::HitPacket(me, life.current),
         Protocol::HIT
     );
-    Server::getInstance().getNetwork().sendAll(packet.serialize());
+    Network::INetworkServer &network = Server::getInstance().getNetwork();
+    for (auto &&[network_id] : Zipper(r.get_components<NetworkId>()))
+        network.send(network_id.id, packet.serialize());
 }
 
 entity_t Player::create(Registry &r, const std::uint16_t client_id) {
