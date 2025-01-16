@@ -9,7 +9,6 @@
 
 #include <iostream>
 #include <ranges>
-#include <map>
 #include <vector>
 
 #include "Components.hpp"
@@ -24,6 +23,7 @@ Server::Server(const std::size_t port, const std::size_t max_lobby, const std::s
       maxLobby_(max_lobby),
       serverRunning_(true),
       score_(path) {
+    std::srand(std::time(nullptr));
     try {
         auto *create_network_lib = networkLoader_.get_function<Network::INetworkServer *()>("create_instance");
 
@@ -99,7 +99,7 @@ void Server::initPacketHandling_() {
 
             std::cout << "Client: " << client << " : Ask data of lobby " << lobby_id << std::endl;
 
-            Protocol::LobbyDataPacket lobbyDataPacket(lobby_id, Protocol::LobbyState::CLOSE, 0);
+            Protocol::LobbyDataPacket lobbyDataPacket(lobby_id, Protocol::LobbyState::CLOSE, 0, false);
 
             const auto &it = std::ranges::find_if(lobbies_, [lobby_id](const std::unique_ptr<Lobby> &lobby) {
                 return lobby->getId() == lobby_id;
@@ -108,6 +108,7 @@ void Server::initPacketHandling_() {
                 const std::unique_ptr<Lobby> &lobby = *it;
                 lobbyDataPacket.lobby_state = lobby->getState();
                 lobbyDataPacket.nb_players = static_cast<uint8_t>(lobby->getNbPLayers());
+                lobbyDataPacket.game_mode = lobby->getGameMode();
             }
 
             Network::Packet lobbyData(lobbyDataPacket, Protocol::CommandIdServer::LOBBY_DATA);
@@ -250,6 +251,20 @@ void Server::initPacketHandling_() {
             }
             Network::Packet response(scoreboardP, Protocol::SCOREBOARD);
             networkLib_->send(client, response.serialize());
+        });
+    packetHandler_.setPacketCallback(
+        Protocol::CHANGE_GAME_MODE,
+        [this]([[maybe_unused]] const Network::Packet &packet, const uint16_t client) {
+            std::cout << "Client: " << client << " : Leave lobby" << std::endl;
+
+            const auto it = std::ranges::find_if(lobbies_, [client](const std::unique_ptr<Lobby> &lobby) {
+                return lobby->containPlayer(client);
+            });
+            if (it == lobbies_.end()) {
+                std::cerr << "Client " << client << " isn't connected in any lobby" << std::endl;
+                return;
+            }
+            (*it)->swapGameMode(client);
         });
 }
 

@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <entities/EnemyFly.hpp>
 #include <entities/Shoot.hpp>
 
 #include "Components.hh"
@@ -50,7 +51,29 @@ namespace Systems {
         }
     }
 
-    [[maybe_unused]] static void levelHandler(Registry &r) {
+    [[maybe_unused]] static void levelEndlessHandler(Registry &r, std::size_t &pos_in_level) {
+        pos_in_level += 1;
+
+        if (pos_in_level % 100)
+            return;
+        const int difficulty = static_cast<int>(pos_in_level / 180) + 1;
+        for (int i = 0; i <= difficulty; ++i)
+            EnemyFly::create(r);
+    }
+
+    [[maybe_unused]] static void levelCampaignHandler(Registry &r, std::size_t &pos_in_level) {
+    }
+
+    [[maybe_unused]] static void killNoHealthEntitys(Registry &r) {
+        std::queue<entity_t> entity_to_kill;
+        for (auto &&[id, life] : IndexedZipper(r.get_components<Life>()))
+            if (!life.is_alive())
+                entity_to_kill.push(id);
+
+        while (!entity_to_kill.empty()) {
+            r.kill_entity(entity_to_kill.front());
+            entity_to_kill.pop();
+        }
     }
 
     [[maybe_unused]] static void sendGameState(Registry &r) {
@@ -63,8 +86,7 @@ namespace Systems {
         const SparseArray<NetworkId> &network_ids = r.get_components<NetworkId>();
 
         for (const auto &&[entity, velocity, position, type, life] : IndexedZipper(velocities, positions, entity_types, lifes)) {
-            if (!life.is_alive() || type.type == Protocol::ENEMY_BULLET || type.type == Protocol::PLAYER_BULLET
-                || type.type == Protocol::WALL || type.type == Protocol::ENEMY_TURRET)
+            if (!life.is_alive() || type.type != Protocol::PLAYER)
                 continue;
 
             Network::Packet packet(

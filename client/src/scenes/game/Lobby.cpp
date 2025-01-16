@@ -154,9 +154,40 @@ void lobbyPage(Registry &r, const std::size_t lobby_id) {
 
     e = r.spawn_entity();
     r.add_component(e, Components::RenderText("Start Game", 60, true));
-    r.add_component(e, Position(230, 350));
+    r.add_component(e, Position(225, 350));
     r.add_component(e, Components::ColorText(white));
     r.add_component(e, Components::ClickableText(startLobby));
+    r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
+
+    e = r.spawn_entity();
+    r.add_component(e, Components::RenderText(std::string("Gamemode: ") + (lobby.game_mode ? "Endless" : "Campaign"), 265, 400, 30));
+    r.add_component(e, Components::ColorText(white));
+    r.add_component(e, Components::ClickableText([lobby_id](Registry &reg) {
+        bool received_lobby_data = false;
+        Network::INetworkClient &network = Client::getInstance().getNetworkLib();
+        Network::PacketHandler &packet_handler = Client::getInstance().getPacketHandler();
+
+        packet_handler.setPacketCallback(Protocol::LOBBY_DATA, [&received_lobby_data](Network::Packet &) {
+            received_lobby_data = true;
+        });
+
+        Network::Packet packetSended(Protocol::EmptyPacket(), Protocol::CHANGE_GAME_MODE);
+        network.send(packetSended.serialize());
+
+        const std::chrono::system_clock::time_point time_out_clock = std::chrono::system_clock::now();
+
+        while (!received_lobby_data) {
+            const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+            if (const std::chrono::duration<double> elapsed_seconds = now - time_out_clock; elapsed_seconds.count() > 3.0)
+                throw std::runtime_error("Can't get lobby list: time out");
+            std::vector<uint8_t> oldest_packet = network.getOldestPacket();
+            if (oldest_packet.empty())
+                continue;
+            Network::Packet deserialized_packet(oldest_packet);
+            packet_handler(deserialized_packet);
+        }
+        lobbyPage(reg, lobby_id);
+    }));
     r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
 
     e = r.spawn_entity();
