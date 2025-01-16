@@ -30,6 +30,29 @@ Before you begin, make sure you have the following prerequisites installed on yo
    git clone git@github.com:Molaryy/R-Type.git
    cd R-Type
 
+2. Build the project:
+
+   ```bash
+   ./bin/setup.sh build
+
+> Note: Ensure you are in the root directory of the project before running the above command. This will generate the binaries for the server (r-type_server) and the client (r-type_client).
+
+3. Run the project :
+
+- Open a terminal and start the server:
+   ```bash
+   ./r-type_server
+
+- Open another terminal and start the client:
+   ```bash
+   ./r-type_client
+
+4. Clean the build files (if necessary):
+
+   ```bash
+   ./bin/setup.sh clean
+> This will clean the build files and remove the r-type_server and r-type_client binaries.
+
 ## Contributing 💡
 
 If you encounter any bugs, have feature requests, or want to contribute improvements, feel free to open an issue.
