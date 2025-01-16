@@ -5,16 +5,28 @@
 ** Settings scene
 */
 
-
 #include "Components.hpp"
 #include "Scenes.hpp"
+#include "Client.hpp"
 
 struct PlayerScore {
     std::string name;
     int score;
 };
 
-std::vector<PlayerScore> loadScores(const std::string &filename) {
+void exitButtonCallback(Registry &r)
+{
+    entity_t backButton = r.spawn_entity();
+    r.add_component(backButton, Components::RenderText("Back to Menu", 50, 500, 20));
+    r.add_component(backButton, Components::ColorText({255, 255, 255, 255}));
+    r.add_component(backButton, Components::ClickableText([](Registry &r) {
+        createMenuScene(r);
+    }));
+    r.add_component(backButton, Components::ColorOverText({20, 82, 172, 255}, {255, 255, 255, 255}, false));
+}
+
+std::vector<PlayerScore> loadScores(const std::string &filename)
+{
     // std::vector<PlayerScore> scores;
     // std::ifstream file(filename);
 
@@ -38,7 +50,8 @@ std::vector<PlayerScore> loadScores(const std::string &filename) {
     return {};
 }
 
-void leaderBoardCallback(Registry &r) {
+void leaderBoardCallback(Registry &r)
+{
     r.clear_entities();
 
     const entity_t title = r.spawn_entity();
@@ -60,19 +73,14 @@ void leaderBoardCallback(Registry &r) {
     //     yPosition += 30;
     // }
 
-    // entity_t backButton = r.spawn_entity();
-    // r.add_component(backButton, Components::RenderText("Press SPACE to return to Menu", 50, yPosition + 50, 20));
-    // r.add_component(backButton, Components::ColorText({255, 255, 255, 255}));
-    // r.add_component(backButton, Components::ClickableText([](Registry &r) {
-    //     createMenuScene(r);
-    // }));
+    exitButtonCallback(r);
 }
 
 void creditsCallback(Registry &r) {
     r.clear_entities();
 
     const entity_t titleEntity = r.spawn_entity();
-    r.add_component(titleEntity, Components::RenderText("CREDITS", 100, 50, 40));
+    r.add_component(titleEntity, Components::RenderText("CREDITS", 50, 50, 40));
     r.add_component(titleEntity, Components::ColorText({255, 255, 255, 255}));
 
     const std::vector<std::string> credits = {
@@ -85,24 +93,19 @@ void creditsCallback(Registry &r) {
     };
 
     int yPosition = 150;
+
     for (const auto &line : credits) {
         entity_t lineEntity = r.spawn_entity();
         r.add_component(lineEntity, Components::RenderText(line, 100, yPosition, 20));
         r.add_component(lineEntity, Components::ColorText({255, 255, 255, 255}));
         yPosition += 30;
     }
-
-    // entity_t backButton = r.spawn_entity();
-    // r.add_component(backButton, Components::RenderText("Press SPACE to return to Menu", 100, yPosition + 20, 20));
-    // r.add_component(backButton, Components::ColorText({255, 255, 255, 255}));
-    // r.add_component(backButton, Components::ClickableText([](Registry &r) {
-    //     createMenuScene(r);
-    // }));
+    exitButtonCallback(r);
 }
-
 
 void exitCallback(Registry &r) {
     r.clear_entities();
+    exit(0); // TODO handle it properly
 }
 
 void createMenuScene(Registry &r) {
