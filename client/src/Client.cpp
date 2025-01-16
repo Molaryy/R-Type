@@ -118,7 +118,7 @@ void Client::setupPacketHandler_() {
             return server_id.has_value() && server_id->id == network_id;
         });
         if (it == server_ids.end()) {
-            std::cerr << "Failed to find server id: " << network_id << std::endl;
+            std::cerr << "POSITION_VELOCITY: Failed to find server id: " << network_id << std::endl;
             return;
         }
         const entity_t entity_id = std::ranges::distance(server_ids.begin(), it);
@@ -181,6 +181,7 @@ void Client::setupPacketHandler_() {
                     drawable.text_x = 0;
             }));
             registry_.add_component(e, Life(health, health));
+            std::cerr << "new fly" << std::endl;
             break;
         default:
             std::cerr << "Unknown entity type: " << type << std::endl;
@@ -191,6 +192,8 @@ void Client::setupPacketHandler_() {
         registry_.add_component(e, Components::ServerId(entity_id));
         registry_.add_component(e, Components::ComponentEntityType(type));
         registry_.add_component(e, Velocity(velocity.x, velocity.y));
+        registry_.add_component(e, Components::RenderText(std::to_string(entity_id), static_cast<int>(position.x), static_cast<int>(position.y), 12));
+        registry_.add_component(e, Components::ColorText(COLOR_WHITE));
     });
     packet_handler_.setPacketCallback(Protocol::HIT, [this](const Network::Packet &packet) {
         auto [network_id, health] = packet.getPayload<Protocol::HitPacket>();
@@ -200,7 +203,7 @@ void Client::setupPacketHandler_() {
             return server_id.has_value() && server_id->id == network_id;
         });
         if (it == server_ids.end()) {
-            std::cerr << "Failed to find server id: " << network_id << std::endl;
+            std::cerr << "HIT: Failed to find server id: " << network_id << std::endl;
             return;
         }
         const entity_t entity_id = std::ranges::distance(server_ids.begin(), it);
@@ -217,7 +220,7 @@ void Client::setupPacketHandler_() {
             return server_id.has_value() && server_id->id == network_id;
         });
         if (it == server_ids.end()) {
-            std::cerr << "Failed to find server id: " << network_id << std::endl;
+            std::cerr << "KILL: Failed to find server id: " << network_id << std::endl;
             return;
         }
         const entity_t entity_id = std::ranges::distance(server_ids.begin(), it);
@@ -231,12 +234,13 @@ void Client::setupPacketHandler_() {
             const entity_t e = registry_.spawn_entity();
 
             registry_.add_component(e, Position(pos->x, pos->y));
-            registry_.add_component(e, Components::Drawable(EXPLOSION_ID, draw->width, draw->height, 0, 0, 65, 66, [frame = 0](Components::Drawable &drawable) mutable {
-                if (frame++ < 3)
-                    return;
-                frame = 0;
-                drawable.text_x += drawable.text_width;
-            }));
+            registry_.add_component(e, Components::Drawable(EXPLOSION_ID, draw->width, draw->height, 0, 0, 65, 66,
+                                                            [frame = 0](Components::Drawable &drawable) mutable {
+                                                                if (frame++ < 3)
+                                                                    return;
+                                                                frame = 0;
+                                                                drawable.text_x += drawable.text_width;
+                                                            }));
         }
         registry_.kill_entity(entity_id);
     });
@@ -277,6 +281,7 @@ void Client::run() {
     renderer_->loadTexture("assets/enemies.gif");
     renderer_->loadTexture("assets/missiles.gif");
     renderer_->loadTexture("assets/maps/space.png");
+    renderer_->loadTexture("assets/damage.gif");
 
     while (!renderer_->windowShouldClose()) {
         renderer_->beginDrawing();
