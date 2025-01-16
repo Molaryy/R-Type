@@ -65,11 +65,11 @@ public:
     }
 
     [[nodiscard]] entity_t spawn_entity() {
-        if (!dead_entities_.empty()) {
-            const entity_t entity = dead_entities_.back();
-            dead_entities_.pop_back();
-            return entity;
-        }
+        //if (!dead_entities_.empty()) {
+        //    const entity_t entity = dead_entities_.back();
+        //    dead_entities_.pop_back();
+        //    return entity;
+        //}
         next_entity_ += 1;
         return next_entity_ - 1;
     }

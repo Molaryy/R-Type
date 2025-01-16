@@ -24,16 +24,17 @@ void EnemyFly::collision(Registry &r, const entity_t me, const entity_t other) {
     if (otherType->type == Protocol::PLAYER)
         life->current = 0;
     Network::Packet packet;
-    if (life->is_alive())
+    if (life->is_alive()) {
         packet = Network::Packet(
             Protocol::HitPacket(me, life->current),
             Protocol::HIT
         );
-    else
+    } else {
         packet = Network::Packet(
-           Protocol::DeadPacket(me, true),
-           Protocol::KILL
-       );
+            Protocol::DeadPacket(me, true),
+            Protocol::KILL
+        );
+    }
 
     Network::INetworkServer &network = Server::getInstance().getNetwork();
     for (auto &&[network_id] : Zipper(r.get_components<NetworkId>()))
@@ -46,7 +47,7 @@ entity_t EnemyFly::create(Registry &r) {
     Position pos(WIDTH, static_cast<float>(std::rand() % HEIGHT));
 
     r.add_component(entity, Position(pos));
-    r.add_component(entity, Velocity(0, 0));
+    r.add_component(entity, Velocity(-FLY_SPEED, 0));
     r.add_component(entity, Life(FLY_HEALTH, FLY_HEALTH));
     r.add_component(entity, ComponentEntityType(Protocol::ENEMY_FLY));
     r.add_component(entity, Collision(FLY_SIZE, FLY_SIZE, collision));
