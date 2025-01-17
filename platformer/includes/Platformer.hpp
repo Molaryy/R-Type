@@ -18,26 +18,6 @@
 #include "Registry.hh"
 #include "Components.hh"
 
-struct PlayerTag {
-    void log() const {
-        std::cout << "PlayerTag";
-    }
-};
-
-struct PlatformTag {
-    void log() const {
-        std::cout << "PlatformTag";
-    }
-};
-
-struct BreakableTag {
-    bool broken = false;
-
-    void log() const {
-        std::cout << "BreakableTag: broken = " << broken;
-    }
-};
-
 struct Sprite {
     int textureID;
     int width;

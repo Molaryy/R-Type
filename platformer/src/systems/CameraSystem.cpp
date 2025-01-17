@@ -10,16 +10,18 @@
 
 void Platform::cameraSystem(Registry &r) {
     auto &positions = r.get_components<Position>();
-    auto &players = r.get_components<PlayerTag>();
+    auto &entityType = r.get_components<EntityType>();
 
-    for (auto &&[pos, player] : Zipper(positions, players)) {
-        float screenY = pos.y + Platform::getInstance().cameraOffsetY_;
-        float safeZoneTop = 80.f;
+    for (auto &&[pos, player] : Zipper(positions, entityType)) {
+        if (player.type == PlayerType) {
+            float screenY = pos.y + Platform::getInstance().cameraOffsetY_;
+            float safeZoneTop = 80.f;
 
-        if (screenY < safeZoneTop) {
-            float delta = safeZoneTop - screenY;
+            if (screenY < safeZoneTop) {
+                float delta = safeZoneTop - screenY;
 
-            Platform::getInstance().cameraOffsetY_ += delta;
+                Platform::getInstance().cameraOffsetY_ += delta;
+            }
         }
     }
 }

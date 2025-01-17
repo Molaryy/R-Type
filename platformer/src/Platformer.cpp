@@ -60,7 +60,7 @@ void Platform::createPlayer(float x, float y) {
     reg_.add_component<Position>(e, Position(x, y));
     reg_.add_component<Velocity>(e, Velocity(0.f, 0.f));
     reg_.add_component<Collision>(e, Collision(32, 16));
-    reg_.add_component<PlayerTag>(e, PlayerTag());
+    reg_.add_component<EntityType>(e, EntityType(PlayerType));
     reg_.add_component<Life>(e, Life{ 1, 1 });
     reg_.add_component<Sprite>(e, Sprite{ texturePlayer_, 32, 16 });
 }
