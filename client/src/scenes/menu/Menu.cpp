@@ -8,6 +8,8 @@
 #include "Components.hpp"
 #include "Scenes.hpp"
 #include "Client.hpp"
+#include <fstream>
+#include <sstream>
 
 struct PlayerScore {
     std::string name;
@@ -27,27 +29,27 @@ void exitButtonCallback(Registry &r)
 
 std::vector<PlayerScore> loadScores(const std::string &filename)
 {
-    // std::vector<PlayerScore> scores;
-    // std::ifstream file(filename);
+    std::vector<PlayerScore> scores;
+    std::ifstream file(filename);
 
-    // if (!file.is_open())
-    //     return scores;
+    if (!file.is_open())
+        return scores;
 
-    // std::string line;
-    // while (std::getline(file, line)) {
-    //     std::istringstream iss(line);
-    //     PlayerScore ps;
-    //     if (iss >> ps.name >> ps.score) {
-    //         scores.push_back(ps);
-    //     }
-    // }
+    std::string line;
+    while (std::getline(file, line)) {
+        std::istringstream iss(line);
+        PlayerScore ps;
+        if (iss >> ps.name >> ps.score) {
+            scores.push_back(ps);
+        }
+    }
 
-    // file.close();
-    // std::sort(scores.begin(), scores.end(), [](const PlayerScore &a, const PlayerScore &b) {
-    //     return a.score > b.score;
-    // });
-    // return scores;
-    return {};
+    file.close();
+    std::sort(scores.begin(), scores.end(), [](const PlayerScore &a, const PlayerScore &b) {
+        return a.score > b.score;
+    });
+
+    return scores;
 }
 
 void leaderBoardCallback(Registry &r)
@@ -58,20 +60,19 @@ void leaderBoardCallback(Registry &r)
     r.add_component(title, Components::RenderText("Leaderboard", 50, 50, 40));
     r.add_component(title, Components::ColorText({255, 255, 255, 255}));
 
-    // TODO retrieve scores from file
     // TODO function to save scores when game ends
 
-    // std::vector<PlayerScore> scores = loadScores("scores.txt");
-    // int yPosition = 100;
+    std::vector<PlayerScore> scores = loadScores("scores.txt");
+    int yPosition = 100;
 
-    // for (size_t i = 0; i < scores.size() && i < 10; ++i) {
-    //     entity_t scoreEntity = r.spawn_entity();
-    //     std::string entry = std::to_string(i + 1) + ". " + scores[i].name + " - " + std::to_string(scores[i].score);
+    for (size_t i = 0; i < scores.size() && i < 10; ++i) {
+        entity_t scoreEntity = r.spawn_entity();
+        std::string entry = std::to_string(i + 1) + ". " + scores[i].name + " - " + std::to_string(scores[i].score);
 
-    //     r.add_component(scoreEntity, Components::RenderText(entry, 50, yPosition, 20));
-    //     r.add_component(scoreEntity, Components::ColorText({255, 255, 255, 255}));
-    //     yPosition += 30;
-    // }
+        r.add_component(scoreEntity, Components::RenderText(entry, 50, yPosition, 20));
+        r.add_component(scoreEntity, Components::ColorText({255, 255, 255, 255}));
+        yPosition += 30;
+    }
 
     exitButtonCallback(r);
 }
