@@ -16,6 +16,12 @@ CPMAddPackage(
 add_executable(${PROJECT_NAME}
         main.cpp
         src/Platformer.cpp
+        src/systems/CameraSystem.cpp
+        src/systems/CollisionSystem.cpp
+        src/systems/InputSystem.cpp
+        src/systems/PlatformGenerationSystem.cpp
+        src/systems/PlayerMovementSystem.cpp
+        src/systems/RenderingSystem.cpp
         ../graphic/raylib_graphic/RaylibGraphic.cpp
 )
 
