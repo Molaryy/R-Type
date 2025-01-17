@@ -16,11 +16,11 @@
 void EnemyFly::collision(Registry &r, const entity_t me, const entity_t other) {
     const std::optional<ComponentEntityType> otherType = r.get_components<ComponentEntityType>()[other];
     std::optional<Life> &life = r.get_components<Life>()[me];
-    if (!otherType.has_value() || !life.has_value() || otherType->side != ComponentEntityType::Ally)
+    if (!otherType.has_value() || !life.has_value() || !life->is_alive() || otherType->side != ComponentEntityType::Ally)
         return;
 
     if (otherType->type == Protocol::PLAYER_BULLET)
-        life->takeDamage(10);
+        life->takeDamage(PLAYER_BULLET_DAMAGE);
     if (otherType->type == Protocol::PLAYER)
         life->current = 0;
     Network::Packet packet;
@@ -46,10 +46,10 @@ entity_t EnemyFly::create(Registry &r) {
 
     Position pos(WIDTH, static_cast<float>(std::rand() % HEIGHT));
 
+    r.add_component(entity, ComponentEntityType(Protocol::ENEMY_FLY));
     r.add_component(entity, Position(pos));
     r.add_component(entity, Velocity(-FLY_SPEED, 0));
     r.add_component(entity, Life(FLY_HEALTH, FLY_HEALTH));
-    r.add_component(entity, ComponentEntityType(Protocol::ENEMY_FLY));
     r.add_component(entity, Collision(FLY_SIZE, FLY_SIZE, collision));
 
     Network::Packet packet(

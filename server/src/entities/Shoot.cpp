@@ -15,11 +15,13 @@
 
 void Shoot::collision(Registry &r, const entity_t me, const entity_t other) {
     const std::optional<ComponentEntityType> otherType = r.get_components<ComponentEntityType>()[other];
-    if (!otherType.has_value() || otherType.value().side != ComponentEntityType::Ennemy)
+    std::optional<Life> &life = r.get_components<Life>()[me];
+    if (!otherType.has_value() || !life.has_value() || !life->is_alive() || otherType.value().side == ComponentEntityType::Ally)
         return;
 
+    life->current = 0;
     Network::Packet packet(
-        Protocol::DeadPacket(me, true),
+        Protocol::DeadPacket(me, false),
         Protocol::KILL
     );
     Network::INetworkServer &network = Server::getInstance().getNetwork();

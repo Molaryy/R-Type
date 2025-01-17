@@ -181,7 +181,6 @@ void Client::setupPacketHandler_() {
                     drawable.text_x = 0;
             }));
             registry_.add_component(e, Life(health, health));
-            std::cerr << "new fly" << std::endl;
             break;
         default:
             std::cerr << "Unknown entity type: " << type << std::endl;
@@ -240,6 +239,10 @@ void Client::setupPacketHandler_() {
                                                                     return;
                                                                 frame = 0;
                                                                 drawable.text_x += drawable.text_width;
+                                                                if (drawable.text_x > drawable.text_width * 2) {
+                                                                    drawable.text_width = 0;
+                                                                    drawable.text_height = 0;
+                                                                }
                                                             }));
         }
         registry_.kill_entity(entity_id);

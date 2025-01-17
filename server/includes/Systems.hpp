@@ -57,7 +57,7 @@ namespace Systems {
         if (pos_in_level % 100)
             return;
         const int difficulty = static_cast<int>(pos_in_level / 180) + 1;
-        for (int i = 0; i <= difficulty; ++i)
+        for (int i = 0; i < difficulty; ++i)
             EnemyFly::create(r);
     }
 
