@@ -14,7 +14,7 @@
 
 static float g_dt = 0.0f;
 
-Platform::Platform(): graphicLoader_("./", "raylib_graphics"), rng_(std::random_device{}()) {
+Platform::Platform(): graphicLoader_("./", "raylib_graphics"), rng_(std::random_device{}()), lastGeneratedY_(350.f) {
     try {
         const auto createGraphic = graphicLoader_.get_function<Graphic::IRenderer *()>("create_instance");
         renderer_.reset(createGraphic());
@@ -115,6 +115,7 @@ void Platform::restartGame() {
     gameStarted_ = false;
     score_= 0;
     cameraOffsetY_ = 0.f;
+    setLastGeneratedY(350.f);
     initEntities();
 }
 

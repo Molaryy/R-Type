@@ -16,6 +16,7 @@
 
 #include "IRenderer.hpp"
 #include "Registry.hh"
+#include "Components.hh"
 
 struct PlayerTag {
     void log() const {
@@ -26,6 +27,14 @@ struct PlayerTag {
 struct PlatformTag {
     void log() const {
         std::cout << "PlatformTag";
+    }
+};
+
+struct BreakableTag {
+    bool broken = false;
+
+    void log() const {
+        std::cout << "BreakableTag: broken = " << broken;
     }
 };
 
@@ -58,6 +67,13 @@ class Platform {
         // static void platformGenerationSystem(Registry &r);
         // static void scoreSystem(Registry &r);
 
+        float getLastGeneratedY() const {
+            return lastGeneratedY_;
+        }
+        void setLastGeneratedY(float y) {
+            lastGeneratedY_ = y;
+        }
+
         static Platform &createInstance();
         [[nodiscard]] static Platform &getInstance();
         [[nodiscard]] Graphic::IRenderer &getRenderer() const;
@@ -77,6 +93,7 @@ class Platform {
         int texturePlayer_ = -1;
         int texturePlatform_ = -1;
 
+        float lastGeneratedY_;
         float dt_ = 0.f;
         std::mt19937 rng_;
 
