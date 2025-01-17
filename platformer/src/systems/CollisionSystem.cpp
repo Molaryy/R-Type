@@ -6,9 +6,14 @@
 */
 
 #include <limits>
+#include <algorithm>
 #include "Platformer.hpp"
 #include "Zipper.hh"
 #include "IndexedZipper.hh"
+
+#ifdef max
+  #undef max
+#endif
 
 void Platform::collisionSystem(Registry &r) {
     auto &positions = r.get_components<Position>();
