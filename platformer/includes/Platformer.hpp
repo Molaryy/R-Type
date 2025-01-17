@@ -18,26 +18,6 @@
 #include "Registry.hh"
 #include "Components.hh"
 
-struct PlayerTag {
-    void log() const {
-        std::cout << "PlayerTag";
-    }
-};
-
-struct PlatformTag {
-    void log() const {
-        std::cout << "PlatformTag";
-    }
-};
-
-struct BreakableTag {
-    bool broken = false;
-
-    void log() const {
-        std::cout << "BreakableTag: broken = " << broken;
-    }
-};
-
 struct Sprite {
     int textureID;
     int width;
@@ -48,9 +28,36 @@ struct Sprite {
     }
 };
 
-struct SpringTag {
+enum EntityTypes : int8_t {
+    NoneType,
+    PlayerType,
+    PlatformType,
+    BreakableType,
+    SpringType
+};
+
+struct EntityType {
+    EntityTypes type = NoneType;
+    bool broken = false;
+
     void log() const {
-        std::cout << "SpringTag";
+        switch (type) {
+            case PlayerType:
+                std::cout << "Player";
+                break;
+            case PlatformType:
+                std::cout << "Platform";
+                break;
+            case BreakableType:
+                std::cout << "Breakable (broken = " << broken << ")";
+                break;
+            case SpringType:
+                std::cout << "Spring";
+                break;
+            default:
+                std::cout << "None";
+                break;
+        }
     }
 };
 

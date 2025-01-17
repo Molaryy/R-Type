@@ -11,7 +11,7 @@
 void Platform::inputSystem(Registry &r) {
     auto &positions = r.get_components<Position>();
     auto &velocities = r.get_components<Velocity>();
-    auto &players = r.get_components<PlayerTag>();
+    auto &entityType = r.get_components<EntityType>();
 
     auto &renderer = getInstance().getRenderer();
     auto ev = renderer.getEvents();
@@ -36,20 +36,22 @@ void Platform::inputSystem(Registry &r) {
         Platform::getInstance().autoJump_ = true;
     }
 
-    for (auto &&[pos, vel, player] : Zipper(positions, velocities, players)) {
-        if (left && !right) {
-            vel.x = -250.f;
-        } else if (right && !left) {
-            vel.x = 250.f;
-        } else {
-            vel.x = 0.f;
-        }
-        if (Platform::getInstance().autoJump_) {
-            if (std::fabs(vel.y) < 0.01f) {
+    for (auto &&[pos, vel, player] : Zipper(positions, velocities, entityType)) {
+        if (player.type == PlayerType) {
+            if (left && !right) {
+                vel.x = -250.f;
+            } else if (right && !left) {
+                vel.x = 250.f;
+            } else {
+                vel.x = 0.f;
+            }
+            if (Platform::getInstance().autoJump_) {
+                if (std::fabs(vel.y) < 0.01f) {
+                    vel.y = -500.f;
+                }
+            } else if (jump && std::fabs(vel.y) < 0.01f) {
                 vel.y = -500.f;
             }
-        } else if (jump && std::fabs(vel.y) < 0.01f) {
-            vel.y = -500.f;
         }
     }
 }

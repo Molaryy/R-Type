@@ -37,7 +37,7 @@ void Platform::createPlayer(float x, float y) {
     reg_.add_component<Position>(e, Position(x, y));
     reg_.add_component<Velocity>(e, Velocity(0.f, 0.f));
     reg_.add_component<Collision>(e, Collision(32, 16));
-    reg_.add_component<PlayerTag>(e, PlayerTag());
+    reg_.add_component<EntityType>(e, EntityType(PlayerType));
     reg_.add_component<Life>(e, Life{ 1, 1 });
     reg_.add_component<Sprite>(e, Sprite{ texturePlayer_, 32, 16 });
 }
@@ -48,12 +48,12 @@ void Platform::createPlatform(float x, float y, int w, int h) {
     reg_.add_component<Position>(e, Position(x, y));
     reg_.add_component<Velocity>(e, Velocity(0.f, 0.f));
     reg_.add_component<Collision>(e, Collision(w, h));
-    reg_.add_component<PlatformTag>(e, PlatformTag());
+    reg_.add_component<EntityType>(e, EntityType(PlatformType));
 
     bool doBreakable = ((rng_() % 15) == 0);
 
     if (doBreakable) {
-        reg_.add_component<BreakableTag>(e, BreakableTag{ false });
+        reg_.add_component<EntityType>(e, EntityType{ BreakableType, false });
     } else {
         bool doSpring = ((rng_() % 10) == 0);
 
@@ -74,7 +74,7 @@ void Platform::createSpring(float x, float y) {
     reg_.add_component<Position>(e, Position(x, y));
     reg_.add_component<Velocity>(e, Velocity(0.f, 0.f));
     reg_.add_component<Collision>(e, Collision(20, 10));
-    reg_.add_component<SpringTag>(e, SpringTag());
+    reg_.add_component<EntityType>(e, EntityType(SpringType));
 }
 
 void Platform::generatePlatformStair(size_t count) {

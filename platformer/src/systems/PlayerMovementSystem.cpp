@@ -11,7 +11,7 @@
 void Platform::playerMovementSystem(Registry &r) {
     auto &positions = r.get_components<Position>();
     auto &velocities = r.get_components<Velocity>();
-    auto &players = r.get_components<PlayerTag>();
+    auto &entityType = r.get_components<EntityType>();
     auto &lifes = r.get_components<Life>();
 
     float dt = getInstance().dt_;
@@ -19,40 +19,44 @@ void Platform::playerMovementSystem(Registry &r) {
     const float deathThreshold = 600.f;
 
     if (!Platform::getInstance().gameStarted_) {
-        for (auto &&[pos, vel, player] : Zipper(positions, velocities, players)) {
-            pos.y = 600 - 32;
-            vel.y = 0.f;
+        for (auto &&[pos, vel, player] : Zipper(positions, velocities, entityType)) {
+            if (player.type == PlayerType) {
+                pos.y = 600 - 32;
+                vel.y = 0.f;
+            }
         }
         return;
     }
 
-    for (auto &&[pos, vel, player] : Zipper(positions, velocities, players)) {
-        vel.y += gravity * dt;
-        pos.x += vel.x * dt;
-        pos.y += vel.y * dt;
+    for (auto &&[pos, vel, player] : Zipper(positions, velocities, entityType)) {
+        if (player.type == PlayerType) {
+            vel.y += gravity * dt;
+            pos.x += vel.x * dt;
+            pos.y += vel.y * dt;
 
-        if (pos.x > 800) {
-            pos.x -= 800;
-        } else if (pos.x + 32 < 0) {
-            pos.x += 800;
-        }
+            if (pos.x > 800) {
+                pos.x -= 800;
+            } else if (pos.x + 32 < 0) {
+                pos.x += 800;
+            }
 
-        int screenY = static_cast<int>(pos.y + Platform::getInstance().cameraOffsetY_);
+            int screenY = static_cast<int>(pos.y + Platform::getInstance().cameraOffsetY_);
 
-        if (screenY > deathThreshold) {
-            for (auto &&[life] : Zipper(lifes)) {
-                life.takeDamage(life.max);
-                if (!life.is_alive()) {
-                    Platform::getInstance().gameOver_ = true;
-                    Platform::getInstance().reg_.clear_entities();
+            if (screenY > deathThreshold) {
+                for (auto &&[life] : Zipper(lifes)) {
+                    life.takeDamage(life.max);
+                    if (!life.is_alive()) {
+                        Platform::getInstance().gameOver_ = true;
+                        Platform::getInstance().reg_.clear_entities();
+                    }
                 }
             }
-        }
-        if (Platform::getInstance().gameStarted_) {
-            float currentHeight = -pos.y;
+            if (Platform::getInstance().gameStarted_) {
+                float currentHeight = -pos.y;
 
-            if (currentHeight > Platform::getInstance().score_) {
-                Platform::getInstance().score_ = (int) currentHeight;
+                if (currentHeight > Platform::getInstance().score_) {
+                    Platform::getInstance().score_ = (int) currentHeight;
+                }
             }
         }
     }

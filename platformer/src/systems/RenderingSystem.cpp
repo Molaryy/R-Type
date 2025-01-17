@@ -12,9 +12,7 @@ void Platform::renderingSystem(Registry &r) {
     auto &positions = r.get_components<Position>();
     auto &collisions = r.get_components<Collision>();
     auto &sprites = r.get_components<Sprite>();
-    auto &platforms = r.get_components<PlatformTag>();
-    auto &springs = r.get_components<SpringTag>();
-    auto &breakables  = r.get_components<BreakableTag>();
+    auto &entityType = r.get_components<EntityType>();
     auto &renderer = getInstance().getRenderer();
 
     renderer.beginDrawing();
@@ -30,14 +28,16 @@ void Platform::renderingSystem(Registry &r) {
         renderer.drawRectangle(0, screenGroundY, windowWidth, 10, 121, 87, 60, 255);
     }
     for (std::size_t e = 0; e < r.max_entities(); ++e) {
+        if (!entityType[e].has_value()) continue;
+        EntityType &candType = entityType[e].value();
         if (!positions[e].has_value()) continue;
         auto &pos = positions[e].value();
         int screenX = static_cast<int>(pos.x);
         int screenY = static_cast<int>(pos.y + Platform::getInstance().cameraOffsetY_);
 
-        if (platforms[e].has_value()) {
+        if (candType.type == PlatformType || candType.type == BreakableType) {
             const auto &col = collisions[e].value();
-            if (breakables[e].has_value()) {
+            if (candType.type == BreakableType) {
                 renderer.drawRoundedRectangle(screenX, screenY, col.width, col.height, 0.9f, 8, 139, 69, 19, 255);
             } else {
                 int mainR = 0, mainG = 255, mainB = 0, mainA = 255;
@@ -55,7 +55,7 @@ void Platform::renderingSystem(Registry &r) {
             }
             continue;
         }
-        if (springs[e].has_value()) {
+        if (candType.type == SpringType) {
             auto &col = collisions[e].value();
             renderer.drawRoundedRectangle(screenX, screenY, col.width, col.height, 0.5f, 4, 255, 0, 0, 255);
             continue;

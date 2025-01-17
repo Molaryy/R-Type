@@ -11,14 +11,16 @@
 void Platform::platformGenerationSystem(Registry &r) {
     float lastGeneratedY = Platform().getInstance().getLastGeneratedY();
     auto &positions = r.get_components<Position>();
-    auto &players = r.get_components<PlayerTag>();
+    auto &entityType = r.get_components<EntityType>();
     float minScreenY = 999999.f;
 
-    for (auto &&[pos, player] : Zipper(positions, players)) {
-        float screenY = pos.y + Platform::getInstance().cameraOffsetY_;
+    for (auto &&[pos, player] : Zipper(positions, entityType)) {
+        if (player.type == PlayerType) {
+            float screenY = pos.y + Platform::getInstance().cameraOffsetY_;
 
-        if (screenY < minScreenY) {
-            minScreenY = screenY;
+            if (screenY < minScreenY) {
+                minScreenY = screenY;
+            }
         }
     }
 
@@ -35,17 +37,18 @@ void Platform::platformGenerationSystem(Registry &r) {
         Platform().getInstance().setLastGeneratedY(newY);
     }
 
-    auto &platforms = r.get_components<PlatformTag>();
     const float removeThreshold = 600.f + 50.f;
 
     for (std::size_t e = 0; e < r.max_entities(); ++e) {
-        if (!platforms[e].has_value()) continue;
-        if (!positions[e].has_value()) continue;
-        auto &pos = positions[e].value();
-        float screenY = pos.y + Platform::getInstance().cameraOffsetY_;
+        if (!entityType[e].has_value()) continue;
+        if (entityType[e].value().type == PlatformType) {
+            if (!positions[e].has_value()) continue;
+            auto &pos = positions[e].value();
+            float screenY = pos.y + Platform::getInstance().cameraOffsetY_;
 
-        if (screenY > removeThreshold) {
-            r.kill_entity(static_cast<entity_t>(e));
+            if (screenY > removeThreshold) {
+                r.kill_entity(static_cast<entity_t>(e));
+            }
         }
     }
 }
