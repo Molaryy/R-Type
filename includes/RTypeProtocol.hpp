@@ -17,6 +17,7 @@
 #define PLAYER_HEALTH 100
 
 #define PLAYER_BULLET_RATE 15
+#define PLAYER_BULLET_DAMAGE 10
 #define PLAYER_BULLET_SPEED 15
 #define PLAYER_BULLET_SIZE 15
 
@@ -28,8 +29,8 @@
 #define TURRET_SIZE 30
 
 #define FLY_SPEED 1
-#define FLY_SIZE 20
-#define FLY_HEALTH 2
+#define FLY_SIZE 50
+#define FLY_HEALTH 20
 
 #define BOSS_HEART_SIZE 50
 #define BOSS_HEART_HEALTH 5

@@ -15,15 +15,14 @@
 
 void Player::collision(Registry &r, const entity_t me, const entity_t other) {
     const std::optional<ComponentEntityType> otherType = r.get_components<ComponentEntityType>()[other];
-    std::optional<Life> &optLife = r.get_components<Life>()[me];
-    if (!otherType.has_value() || !optLife.has_value() || otherType.value().side == ComponentEntityType::Ally)
+    std::optional<Life> &life = r.get_components<Life>()[me];
+    if (!otherType.has_value() || !life.has_value() || !life->is_alive() || otherType.value().side == ComponentEntityType::Ally)
         return;
 
-    Life &life = optLife.value();
-    life.takeDamage(10);
+    life->takeDamage(10);
 
     Network::Packet packet(
-        Protocol::HitPacket(me, life.current),
+        Protocol::HitPacket(me, life->current),
         Protocol::HIT
     );
     Network::INetworkServer &network = Server::getInstance().getNetwork();
