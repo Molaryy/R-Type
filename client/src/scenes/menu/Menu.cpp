@@ -11,6 +11,7 @@
 #include <fstream>
 #include <sstream>
 
+// TODO move it
 struct PlayerScore {
     std::string name;
     int score;
