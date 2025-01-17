@@ -5,6 +5,7 @@
 ** CollisionSystem.cpp
 */
 
+#include <limits>
 #include "Platformer.hpp"
 #include "Zipper.hh"
 #include "IndexedZipper.hh"
