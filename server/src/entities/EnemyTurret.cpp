@@ -8,7 +8,6 @@
 #include "entities/EnemyTurret.hpp"
 
 #include <cmath>
-#include <entities/EnemyBullet.hpp>
 
 #include "Components.hh"
 #include "Components.hpp"
@@ -16,15 +15,17 @@
 #include "Packet.hpp"
 #include "Server.hpp"
 #include "Zipper.hh"
+#include "entities/EnemyBullet.hpp"
+#include "entities/PlayerBullet.hpp"
 
 void EnemyTurret::ArtificialIntelligence::operator()(Registry &r, const entity_t me) {
     tick++;
 
-    if (tick % 100)
+    if (tick % TURRET_BULLET_RATE)
         return;
     const SparseArray<Position> &positions = r.get_components<Position>();
     const SparseArray<ComponentEntityType> &types = r.get_components<ComponentEntityType>();
-    const std::optional<Position> position = positions[me];
+    const std::optional<Position> &position = positions[me];
     if (!position.has_value())
         return;
 
@@ -34,14 +35,14 @@ void EnemyTurret::ArtificialIntelligence::operator()(Registry &r, const entity_t
         if (type.type != Protocol::PLAYER)
             continue;
         double distance = std::sqrt(std::pow(pos.x - position->x, 2) + std::pow(pos.y - position->y, 2));
-        if (shortest_distance > distance) {
+        if (shortest_distance > distance || shortest_distance == -1.0) {
             shortest_distance = distance;
             direction = pos;
         }
     }
     if (shortest_distance == -1.0)
         return;
-
+    EnemyBullet::create(r, position.value(), direction, TURRET_BULLET_SPEED);
 }
 
 void EnemyTurret::collision(Registry &r, const entity_t me, const entity_t other) {
@@ -51,7 +52,7 @@ void EnemyTurret::collision(Registry &r, const entity_t me, const entity_t other
         return;
 
     if (otherType->type == Protocol::PLAYER_BULLET)
-        life->takeDamage(ENEMY_BULLET_DAMAGE);
+        life->takeDamage(PLAYER_BULLET_DAMAGE);
     if (otherType->type == Protocol::PLAYER)
         life->current = 0;
     Network::Packet packet;

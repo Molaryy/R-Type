@@ -9,9 +9,9 @@
 
 #include "Registry.hh"
 
-#define TURRET_BULLET_SPEED 1
+#define TURRET_BULLET_SPEED 10
 #define TURRET_BULLET_SIZE 15
-#define TURRET_BULLET_RATE 40
+#define TURRET_BULLET_RATE 80
 
 #define TURRET_HEALTH 4
 #define TURRET_SIZE 40

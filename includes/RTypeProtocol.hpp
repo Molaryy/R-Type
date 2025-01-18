@@ -85,7 +85,7 @@ namespace Protocol {
         ACCEPT_LOBBY_JOIN, // AcceptLobbyJoinPacket, server send this after receiving JOIN_LOBBY_BY_ID, JOIN_NEW_LOBBY, JOIN_LOBBY_RANDOM
         ACCEPT_LEAVE_LOBBY, // EmptyPacket, server send this after receiving LEAVE_LOBBY
         START_GAME, // EmptyPacket, Game is starting, server will start sending game state
-        END_GAME, // EmptyPacket, Game is over
+        END_GAME, // EndGamePacket, Game is over
 
         SPAWN, // SpawnEntityPacket, data about a new entity to be displayed
         HIT, // HitPacket, entity got hit
@@ -147,6 +147,11 @@ namespace Protocol {
     struct AcceptLobbyJoinPacket {
         std::size_t lobby_id; // ID of to joined lobby
         std::size_t entity_id; // Server id of the new joined client
+    };
+
+    struct EndGamePacket {
+        std::size_t score;
+        std::size_t new_entity_id; // Your new entity id in this lobby
     };
 
     struct LobbyDataPacket {

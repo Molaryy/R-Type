@@ -245,13 +245,13 @@ void Client::setupPacketHandler_() {
         if (!natural)
             return registry_.kill_entity(entity_id);
         const std::optional<Position> &pos = registry_.get_components<Position>()[entity_id];
-        const std::optional<Components::Drawable> &draw = registry_.get_components<Components::Drawable>()[entity_id];
+        std::optional<Components::Drawable> &draw = registry_.get_components<Components::Drawable>()[entity_id];
 
         if (pos.has_value() && draw.has_value()) {
             const entity_t e = registry_.spawn_entity();
 
             registry_.add_component(e, Position(pos->x, pos->y));
-            registry_.add_component(e, Components::Drawable(EXPLOSION_1, draw->width, draw->height, 0, 0, 65, 66,
+            registry_.add_component(e, Components::Drawable(EXPLOSION_1, (std::max)(draw->width, draw->height), (std::max)(draw->width, draw->height), 0, 0, 65, 66,
                                                             [frame = 0](Components::Drawable &drawable) mutable {
                                                                 if (frame++ < 3)
                                                                     return;
@@ -263,13 +263,31 @@ void Client::setupPacketHandler_() {
                                                                 }
                                                             }));
         }
+        const std::optional<Components::ComponentEntityType> &type = registry_.get_components<Components::ComponentEntityType>()[entity_id];
+        if (type.has_value() && type->type == Protocol::PLAYER) {
+            draw->can_draw = false;
+            return;
+        }
         registry_.kill_entity(entity_id);
     });
     packet_handler_.setPacketCallback(Protocol::SERVER_SHUTDOWN, [](Network::Packet &) {
         std::cout << "SERVER_SHUTDOWN received\n";
     });
-    packet_handler_.setPacketCallback(Protocol::END_GAME, [](Network::Packet &) {
-        std::cout << "END_GAME received\n";
+    packet_handler_.setPacketCallback(Protocol::END_GAME, [this](const Network::Packet &packet) {
+        auto [score, new_id] = packet.getPayload<Protocol::EndGamePacket>();
+        my_server_id = new_id;
+
+        lobbyPage(registry_, lobby_id);
+
+        entity_t e = registry_.spawn_entity();
+        registry_.add_component(e, Components::RenderText(std::string("Score: ") + std::to_string(score), 30, true));
+        registry_.add_component(e, Position(330, 130));
+        registry_.add_component(e, Components::ColorText{COLOR_WHITE});
+
+        e = registry_.spawn_entity();
+        registry_.add_component(e, Components::RenderText(std::string("Game Over"), 40, true));
+        registry_.add_component(e, Position(300, 80));
+        registry_.add_component(e, Components::ColorText{COLOR_WHITE});
     });
 }
 

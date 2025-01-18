@@ -108,8 +108,13 @@ namespace Systems {
         for (auto &&[drawable, position] : Zipper(drawables, positions)) {
             if (!drawable.can_draw)
                 continue;
-            renderer.drawTexture(drawable.textureID, position.x, position.y, drawable.width, drawable.height, drawable.text_x, drawable.text_y, drawable.text_width, drawable.text_height);
+            renderer.drawTexture(drawable.textureID, position.x, position.y, drawable.width, drawable.height, drawable.text_x, drawable.text_y,
+                                 drawable.text_width, drawable.text_height);
+        }
+
         for (auto &&[life, drawable, position] : Zipper(lifes, drawables, positions)) {
+            if (!drawable.can_draw)
+                continue;
             const float life_ratio = static_cast<float>(life.current) / static_cast<float>(life.max);
             renderer.drawRectangle(position.x, position.y - 10, drawable.width, 5, 255, 0, 0, 255);
             renderer.drawRectangle(position.x, position.y - 10, drawable.width * life_ratio, 5, 0, 128, 0, 255);
