@@ -28,10 +28,38 @@ struct Sprite {
     }
 };
 
-// struct Score {
-//     int value;
-//     void log() const;
-// };
+enum EntityTypes : int8_t {
+    NoneType,
+    PlayerType,
+    PlatformType,
+    BreakableType,
+    SpringType
+};
+
+struct EntityType {
+    EntityTypes type = NoneType;
+    bool broken = false;
+
+    void log() const {
+        switch (type) {
+            case PlayerType:
+                std::cout << "Player";
+                break;
+            case PlatformType:
+                std::cout << "Platform";
+                break;
+            case BreakableType:
+                std::cout << "Breakable (broken = " << broken << ")";
+                break;
+            case SpringType:
+                std::cout << "Spring";
+                break;
+            default:
+                std::cout << "None";
+                break;
+        }
+    }
+};
 
 class Platform {
     public:
@@ -44,8 +72,8 @@ class Platform {
         static void playerMovementSystem(Registry &r);
         static void collisionSystem(Registry &r);
         static void renderingSystem(Registry &r);
-        // static void platformGenerationSystem(Registry &r);
-        // static void scoreSystem(Registry &r);
+        static void platformGenerationSystem(Registry &r);
+        static void cameraSystem(Registry &r);
 
         float getLastGeneratedY() const {
             return lastGeneratedY_;
@@ -57,7 +85,6 @@ class Platform {
         static Platform &createInstance();
         [[nodiscard]] static Platform &getInstance();
         [[nodiscard]] Graphic::IRenderer &getRenderer() const;
-        // [[nodiscard]] int getPlayerTextureID() const;
 
     private:
         dylib graphicLoader_;
@@ -66,19 +93,23 @@ class Platform {
         std::unique_ptr<Graphic::IRenderer> renderer_;
         Registry reg_;
 
-        // int playerTextureID_;
-        // int jumpSoundID_;
-        // int backGroundMusicID_;
-
+        int jumpSoundID_ = -1;
+        int backGroundMusicID_ = -1;
         int texturePlayer_ = -1;
-        int texturePlatform_ = -1;
 
         float lastGeneratedY_;
         float dt_ = 0.f;
         std::mt19937 rng_;
+        float cameraOffsetY_ = 0.f;
+        bool autoJump_ = false;
+        bool gameStarted_ = false;
+        int score_ = 0;
+        bool gameOver_ = false;
 
         void initEntities();
         void createPlayer(float x, float y);
         void createPlatform(float x, float y, int w, int h);
-
+        void createSpring(float x, float y);
+        void restartGame();
+        void generatePlatformStair(size_t count);
 };
