@@ -19,3 +19,4 @@
 void lobbyCallback(Registry &r);
 void settingsCallback(Registry &r);
 void createMenuScene(Registry &r);
+void exitButtonCallback(Registry &r);

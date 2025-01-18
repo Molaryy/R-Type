@@ -141,6 +141,9 @@ namespace Graphic {
              */
             virtual void closeWindow() = 0;
 
+
+            virtual void setWindowSize(int width, int height) = 0;
+
             /**
              * @brief 
              * 
@@ -302,5 +305,12 @@ namespace Graphic {
              * 
              */
             virtual void updateMusic() = 0;
+
+            /**
+             * @brief set the target FPS
+             * 
+             * @param fps 
+             */
+            virtual void setTargetFPS(int fps) = 0;
     };
 }

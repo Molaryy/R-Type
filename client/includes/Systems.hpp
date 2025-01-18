@@ -99,8 +99,8 @@ namespace Systems {
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
 
         for (auto &&[drawable, position] : Zipper(drawables, positions)) {
-            if (!drawable.can_draw)
-                continue;
+            //if (!drawable.can_draw)
+            //    continue;
             renderer.drawTexture(drawable.textureID, position.x, position.y,
                                  drawable.width, drawable.height, drawable.text_x, drawable.text_y, drawable.text_width, drawable.text_height);
         }

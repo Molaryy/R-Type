@@ -27,6 +27,10 @@ namespace Graphic {
         InitAudioDevice();
     }
 
+    void RaylibGraphic::setWindowSize(const int width, const int height) {
+        SetWindowSize(width, height);
+    }
+
     void RaylibGraphic::closeWindow() {
         ::CloseWindow();
     }
@@ -175,6 +179,10 @@ namespace Graphic {
         for (auto &pair : musics_) {
             UpdateMusicStream(pair.second);
         }
+    }
+
+    void RaylibGraphic::setTargetFPS(int fps) {
+        SetTargetFPS(fps);
     }
 
     extern "C" {
