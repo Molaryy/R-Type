@@ -7,6 +7,7 @@
 
 
 #include "Components.hpp"
+#include "Components.hh"
 #include "Scenes.hpp"
 
 struct PlayerScore {
@@ -42,7 +43,8 @@ void leaderBoardCallback(Registry &r) {
     r.clear_entities();
 
     const entity_t title = r.spawn_entity();
-    r.add_component(title, Components::RenderText("Leaderboard", 50, 50, 40));
+    r.add_component(title, Components::RenderText("Leaderboard", 40));
+    r.add_component(title, Position(50, 50));
     r.add_component(title, Components::ColorText({255, 255, 255, 255}));
 
     // TODO retrieve scores from file
@@ -72,7 +74,8 @@ void creditsCallback(Registry &r) {
     r.clear_entities();
 
     const entity_t titleEntity = r.spawn_entity();
-    r.add_component(titleEntity, Components::RenderText("CREDITS", 100, 50, 40));
+    r.add_component(titleEntity, Components::RenderText("CREDITS", 40));
+    r.add_component(titleEntity, Position(100, 50));
     r.add_component(titleEntity, Components::ColorText({255, 255, 255, 255}));
 
     const std::vector<std::string> credits = {
@@ -87,7 +90,8 @@ void creditsCallback(Registry &r) {
     int yPosition = 150;
     for (const auto &line : credits) {
         entity_t lineEntity = r.spawn_entity();
-        r.add_component(lineEntity, Components::RenderText(line, 100, yPosition, 20));
+        r.add_component(lineEntity, Components::RenderText(line,  20));
+        r.add_component(lineEntity, Position(100, yPosition));
         r.add_component(lineEntity, Components::ColorText({255, 255, 255, 255}));
         yPosition += 30;
     }
@@ -114,7 +118,8 @@ void createMenuScene(Registry &r) {
     constexpr Color grey = COLOR_GREY;
     constexpr Color darkBlue = COLOR_DARK_BLUE;
 
-    r.add_component(e, Components::RenderText("R-TYPE", 50, 50, 40));
+    r.add_component(e, Components::RenderText("R-TYPE", 40));
+    r.add_component(e, Position(50, 50));
     r.add_component(e, Components::ColorText(white));
     const std::vector<std::string> titles = {"Play", "Leaderboard", "Settings", "Credits", "Exit"};
     const std::vector<std::function<void(Registry &r)>> callbacks = {lobbyCallback, leaderBoardCallback, settingsCallback, creditsCallback, exitCallback};
@@ -122,9 +127,15 @@ void createMenuScene(Registry &r) {
     for (std::size_t i = 0; i < NB_MENU_BUTTONS; i++) {
         entity_t button = r.spawn_entity();
 
-        r.add_component(button, Components::RenderText(titles[i], 100, static_cast<int>(150 + i * 50), 20));
+        r.add_component(button, Components::RenderText(titles[i], 20));
+        r.add_component(button, Position(100.0f, static_cast<float>(150 + i * 50)));
         r.add_component(button, Components::ColorText(grey));
         r.add_component(button, Components::ClickableText(callbacks[i]));
         r.add_component(button, Components::ColorOverText(darkBlue, grey, false));
     }
+    entity_t pop_up = r.spawn_entity();
+
+    r.add_component(pop_up, Components::RenderText("Enter your username:", 20));
+    r.add_component(pop_up, Position(100, 500));
+    r.add_component(pop_up, Components::ColorText(white));
 }

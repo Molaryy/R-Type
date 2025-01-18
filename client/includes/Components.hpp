@@ -19,13 +19,10 @@
 namespace Components {
     struct RenderText {
         std::string text;
-        int x;
-        int y;
         int fontSize;
 
         void log() const {
             std::cout << "RenderText = { " "text = " << text << ", " <<
-                "x = " << x << ", " << "y = " << y << ", " <<
                 "fontSize = " << fontSize << "} ";
         }
     };
@@ -63,6 +60,28 @@ namespace Components {
                 "b = " << static_cast<unsigned int>(newColor.b) << ", " <<
                 "a = " << static_cast<unsigned int>(newColor.a) << ", " <<
                 "}";
+        }
+    };
+
+
+    struct Rect {
+        Color color;
+
+        void log() const {
+            std::cout << "Rect = { "
+                "r = " << static_cast<unsigned int>(color.r) << ", " <<
+                "g = " << static_cast<unsigned int>(color.g) << ", " <<
+                "b = " << static_cast<unsigned int>(color.b) << ", " <<
+                "a = " << static_cast<unsigned int>(color.a) << ", " <<
+                "}";
+        }
+    };
+
+    struct InputRect {
+        std::string text;
+
+        void log() const {
+            std::cout << "InputText = { text = " << text << "}";
         }
     };
 

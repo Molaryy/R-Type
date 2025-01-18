@@ -10,6 +10,7 @@
 #include <iostream>
 #include <optional>
 #include <string>
+#include <algorithm>
 
 #include "ArgHandler.hpp"
 
