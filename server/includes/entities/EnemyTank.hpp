@@ -2,24 +2,20 @@
 ** EPITECH PROJECT, 2025
 ** R-Type
 ** File description:
-** EnemyTurret.hpp
+** EnemyTank.hpp
 */
 
 #pragma once
 
 #include "Registry.hh"
 
-#define TURRET_BULLET_SPEED 10
-#define TURRET_BULLET_SIZE 10
-#define TURRET_BULLET_RATE 50
+#define TANK_SIZE 100
+#define TANK_SPEED (-1)
+#define TANK_HEALTH 500
 
-#define TURRET_HEALTH 4
-#define TURRET_SIZE 40
-#define TURRET_SPEED (-2)
-
-class EnemyTurret {
+class EnemyTank {
 public:
-    EnemyTurret() = delete;
+    EnemyTank() = delete;
 
     struct ArtificialIntelligence {
         std::size_t tick = 0;

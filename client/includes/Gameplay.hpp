@@ -38,7 +38,7 @@ inline std::array<std::string, NB_TEXTURES> textures_paths {
     "assets/spaceship.gif",
     "assets/shooter_enemy.gif",
     "assets/fly_enemy.png",
-    "assets/tank_enemy.png",
+    "assets/tank_enemy.gif",
     "assets/asteroid.gif",
     "assets/player_bullet.gif",
     "assets/enemy_bullet.png",

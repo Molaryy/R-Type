@@ -8,6 +8,8 @@
 #include "entities/EnemyTurret.hpp"
 
 #include <cmath>
+#include <entities/BonusHealth.hpp>
+#include <entities/BonusTripleShot.hpp>
 
 #include "entities/BonusForce.hpp"
 #include "Components.hh"
@@ -68,6 +70,17 @@ void EnemyTurret::collision(Registry &r, const entity_t me, const entity_t other
             Protocol::DeadPacket(me, true),
             Protocol::KILL
         );
+        const std::optional<Position> &pos = r.get_entity_component<Position>(me);
+        const int bon = std::rand() % 30;
+        if (pos) {
+            if (bon == 0)
+                BonusHealth::create(r, pos.value());
+            if (bon == 1)
+                BonusForce::create(r, pos.value());
+            if (bon == 2)
+                BonusTripleShot::create(r, pos.value());
+        }
+
     }
 
     Network::INetworkServer &network = Server::getInstance().getNetwork();
@@ -80,9 +93,16 @@ entity_t EnemyTurret::create(Registry &r) {
 
     Position pos(WIDTH, static_cast<float>(std::rand() % (HEIGHT - TURRET_SIZE)));
 
+    const float x = 0 - pos.x;
+    const float y = static_cast<float>(std::rand() % (HEIGHT - TURRET_SIZE)) - pos.y;
+
+    const float scalling_factor = static_cast<float>(std::abs(CAMERA_SPEED + TURRET_SPEED)) / sqrtf(powf(x, 2) + powf(y, 2));
+
+    Velocity vel(x * scalling_factor, y * scalling_factor);
+
     r.add_component(entity, ComponentEntityType(Protocol::ENEMY_TURRET));
     r.add_component(entity, Position(pos));
-    r.add_component(entity, Velocity(CAMERA_SPEED, 0));
+    r.add_component(entity, Velocity(vel));
     r.add_component(entity, Life(TURRET_HEALTH, TURRET_HEALTH));
     r.add_component(entity, Collision(TURRET_SIZE, TURRET_SIZE, collision));
     r.add_component(entity, ::ArtificialIntelligence(ArtificialIntelligence()));
@@ -93,7 +113,7 @@ entity_t EnemyTurret::create(Registry &r) {
             Protocol::ENEMY_TURRET,
             Protocol::Vector2f(pos.x, pos.y),
             Protocol::Vector2f(TURRET_SIZE, TURRET_SIZE),
-            Protocol::Vector2f(CAMERA_SPEED, 0),
+            Protocol::Vector2f(vel.x, vel.y),
             TURRET_HEALTH
         ),
         Protocol::SPAWN

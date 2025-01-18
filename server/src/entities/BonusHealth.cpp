@@ -33,7 +33,7 @@ void BonusHealth::collision(Registry &r, const entity_t me, const entity_t other
 entity_t BonusHealth::create(Registry &r, const Position position) {
     const entity_t entity = r.spawn_entity();
 
-    r.add_component(entity, ComponentEntityType(Protocol::BONUS_TRIPLE_SHOT));
+    r.add_component(entity, ComponentEntityType(Protocol::BONUS_HEALTH));
     r.add_component(entity, Position(position));
     r.add_component(entity, Velocity(CAMERA_SPEED, 0));
     r.add_component(entity, Life(1, 1));

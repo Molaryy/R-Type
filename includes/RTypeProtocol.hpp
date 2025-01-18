@@ -42,6 +42,7 @@ namespace Protocol {
         PLAYER,
         PLAYER_BULLET,
         ENEMY_FLY,
+        ENEMY_TANK,
         ENEMY_TURRET,
         ENEMY_BULLET,
         BOSS_HEART,

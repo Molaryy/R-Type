@@ -16,22 +16,24 @@
 
 void BonusForce::collision(Registry &r, const entity_t me, const entity_t other) {
     const std::optional<ComponentEntityType> otherType = r.get_components<ComponentEntityType>()[other];
-    std::optional<Life> &life = r.get_components<Life>()[me];
+    const std::optional<Life> &life = r.get_components<Life>()[me];
     if (!otherType.has_value() || !life.has_value() || !life->is_alive() || otherType->type != Protocol::PLAYER)
         return;
 
     std::optional<Bonus> &bonus = r.get_components<Bonus>()[other];
     if (!bonus.has_value())
         return;
+    if (bonus->id == me)
+        return;
     if (bonus->type != Bonus::None) {
-        r.kill_entity(bonus->id);
         Network::Packet packet(
-            Protocol::DeadPacket(me, false),
+            Protocol::DeadPacket(bonus->id, false),
             Protocol::KILL
         );
         Network::INetworkServer &network = Server::getInstance().getNetwork();
         for (auto &&[network_id] : Zipper(r.get_components<NetworkId>()))
             network.send(network_id.id, packet.serialize());
+        r.kill_entity(bonus->id);
     }
     bonus->id = me;
     bonus->type = Bonus::Damage;

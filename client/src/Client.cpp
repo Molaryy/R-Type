@@ -228,7 +228,7 @@ void Client::setupPacketHandler_() {
                 }));
                 break;
             case Protocol::BONUS_TRIPLE_SHOT:
-                registry_.add_component(e, Components::Drawable(BONUS_TRIPLE_SHOT, size.x, size.y, 0, 0, 22, 22,
+                registry_.add_component(e, Components::Drawable(BONUS_TRIPLE_SHOT, size.x, size.y, 0, 0, 30, 22,
                                                                 [frame = 0](Components::Drawable &drawable) mutable {
                                                                     if (frame++ < 3)
                                                                         return;
@@ -238,7 +238,18 @@ void Client::setupPacketHandler_() {
                                                                         drawable.text_x = 0;
                                                                 }));
                 break;
-            default:
+            case Protocol::ENEMY_TANK:
+                registry_.add_component(e, Components::Drawable(TANK_ENEMY, size.x, size.y, 0, 0, 65, 50,
+                                                                [frame = 0](Components::Drawable &drawable) mutable {
+                                                                    if (frame++ < 3)
+                                                                        return;
+                                                                    frame = 0;
+                                                                    drawable.text_x += drawable.text_width;
+                                                                    if (drawable.text_x > drawable.text_width * 2)
+                                                                        drawable.text_x = 0;
+                                                                }));
+                break;
+default:
                 std::cerr << "Unknown entity type: " << type << std::endl;
                 break;
         }
@@ -267,7 +278,6 @@ void Client::setupPacketHandler_() {
     packet_handler_.setPacketCallback(Protocol::KILL, [this](const Network::Packet &packet) {
         auto [network_id, natural] = packet.getPayload<Protocol::DeadPacket>();
         SparseArray<Components::ServerId> server_ids = registry_.get_components<Components::ServerId>();
-
         const auto it = std::ranges::find_if(server_ids, [network_id](const std::optional<Components::ServerId> &server_id) {
             return server_id.has_value() && server_id->id == network_id;
         });

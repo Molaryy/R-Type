@@ -7,8 +7,10 @@
 
 #pragma once
 
-#include <entities/EnemyTurret.hpp>
+#include <cmath>
 
+#include "entities/EnemyTank.hpp"
+#include "entities/EnemyTurret.hpp"
 #include "Components.hh"
 #include "Components.hpp"
 #include "IndexedZipper.hh"
@@ -53,20 +55,20 @@ namespace Systems {
                     });
                 }
             }
-            Protocol::EntityPositionVelocityPacket pos_vel(
-                entity,
-                {position.x, position.y},
-                {velocity.x, velocity.y});
-            Network::Packet packet(
-                pos_vel,
-                Protocol::POSITION_VELOCITY
-            );
             for (auto &&[network_id] : Zipper(network_ids)) {
+                Protocol::EntityPositionVelocityPacket pos_vel(
+                    entity,
+                    {position.x, position.y},
+                    {velocity.x, velocity.y});
+                Network::Packet packet(
+                    pos_vel,
+                    Protocol::POSITION_VELOCITY
+                );
                 network.send(network_id.id, packet.serialize());
                 if (bonus.type == Bonus::None)
                     continue;
                 pos_vel.entity_id = bonus.id;
-                pos_vel.position = {position.x + PLAYER_SIZE_X, position.y + PLAYER_SIZE_Y / 2.0f};
+                pos_vel.position = {position.x + PLAYER_SIZE_X, position.y};
                 packet = Network::Packet(pos_vel, Protocol::POSITION_VELOCITY);
                 network.send(network_id.id, packet.serialize());
             }
@@ -80,13 +82,19 @@ namespace Systems {
     inline void levelEndlessHandler(Registry &r, std::size_t &pos_in_level) {
         pos_in_level += 1;
 
-        if (pos_in_level % 120)
+        if (pos_in_level % 60 != 0)
             return;
-        const int difficulty = static_cast<int>(pos_in_level / 180) + 1;
-        for (int i = 0; i < difficulty / 2 + 1; ++i)
-            EnemyFly::create(r);
-        if (difficulty % 3 == 0)
-            EnemyTurret::create(r);
+        std::vector<std::pair<std::function<entity_t(Registry &)>, double>> spawn_rates{
+            {EnemyFly::create, 2},
+            {EnemyTurret::create, 1},
+            {EnemyTank::create, 0.3}
+        };
+        const double difficulty = static_cast<double>(pos_in_level) / 300.0 * (0.8 + static_cast<double>(std::rand()) / RAND_MAX * (1.2 - 0.8));
+        std::cout << difficulty << std::endl;
+        for (auto &&[spawn, rate] : spawn_rates) {
+            for (size_t _ : std::ranges::iota_view{static_cast<size_t>(0), static_cast<size_t>(difficulty * rate)})
+                spawn(r);
+        }
     }
 
     inline void levelCampaignHandler(Registry &r, std::size_t &pos_in_level) {
@@ -122,10 +130,11 @@ namespace Systems {
         Network::INetworkServer &network = Server::getInstance().getNetwork();
         const SparseArray<Position> positions = r.get_components<Position>();
         const SparseArray<ComponentEntityType> types = r.get_components<ComponentEntityType>();
+        const SparseArray<Collision> collisions = r.get_components<Collision>();
 
-        for (auto &&[id, pos, type] : IndexedZipper(positions, types)) {
+        for (auto &&[id, pos, type, col] : IndexedZipper(positions, types, collisions)) {
             if (type.type != Protocol::PLAYER) {
-                if (pos.x < -50 || pos.y < -50 || pos.x > WIDTH + 50 || pos.y > HEIGHT + 50) {
+                if (pos.x < -col.width || pos.y < -col.height || pos.x > WIDTH + col.width || pos.y > HEIGHT + col.height) {
                     Network::Packet packet(Protocol::DeadPacket(id, false), Protocol::KILL);
                     const SparseArray<NetworkId> &network_ids = r.get_components<NetworkId>();
                     for (auto &&[network_id] : Zipper(network_ids))
@@ -135,7 +144,7 @@ namespace Systems {
                 }
             } else {
                 std::optional<Life> &life = r.get_entity_component<Life>(id);
-                if (life && life->is_alive() && (pos.x < -5 || pos.y < -5 || pos.x > WIDTH - PLAYER_SIZE_X + 5 || pos.y > HEIGHT - PLAYER_SIZE_Y + 5)) {
+                if (life && life->is_alive() && (pos.x < -15 || pos.y < -15 || pos.x > WIDTH - PLAYER_SIZE_X + 15 || pos.y > HEIGHT - PLAYER_SIZE_Y + 15)) {
                     life->current = 0;
                     Network::Packet packet(Protocol::DeadPacket(id, true), Protocol::KILL);
                     const SparseArray<NetworkId> &network_ids = r.get_components<NetworkId>();

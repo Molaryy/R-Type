@@ -21,5 +21,6 @@ public:
     PlayerBullet() = delete;
 
     static void collision(Registry &r, entity_t me, entity_t other);
+    static entity_t create(Registry &r, Position position, Velocity velocity, Bonus bonus);
     static entity_t create(Registry &r, Position position, Bonus bonus);
 };

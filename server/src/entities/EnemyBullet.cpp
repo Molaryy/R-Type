@@ -39,7 +39,7 @@ entity_t EnemyBullet::create(Registry &r, const Position start, const Position e
     const float x = end.x - start.x;
     const float y = end.y - start.y;
 
-    const float scalling_factor = speed / sqrtf(powf(x, 2) + powf(y, 2));
+    const float scalling_factor = std::abs(speed) / sqrtf(powf(x, 2) + powf(y, 2));
 
     Velocity velocity(x * scalling_factor, y * scalling_factor);
 
