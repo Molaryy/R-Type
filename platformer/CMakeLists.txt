@@ -22,7 +22,6 @@ add_executable(${PROJECT_NAME}
         src/systems/PlatformGenerationSystem.cpp
         src/systems/PlayerMovementSystem.cpp
         src/systems/RenderingSystem.cpp
-        ../graphic/raylib_graphic/RaylibGraphic.cpp
 )
 
 target_include_directories(${PROJECT_NAME}
