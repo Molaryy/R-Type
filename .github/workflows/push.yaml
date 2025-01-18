@@ -18,8 +18,7 @@ env:
 
 jobs:
   commits:
-    if: env.REPO_NAME ==
-    github.event.repository.name
+    if: env.REPO_NAME == github.event.repository.name
 
     name: Checking for Conventional Commits
     runs-on: ubuntu-latest
