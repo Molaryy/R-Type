@@ -9,7 +9,6 @@
 
 #include <fstream>
 #include <algorithm>
-#include <ranges>
 #include <vector>
 #include <iostream>
 
@@ -24,8 +23,6 @@ void Score::loadScores(const std::string &filePath)
 {
     std::ifstream file(filePath);
     std::string line;
-    std::string playerName;
-    std::size_t score;
 
     if (!file.is_open())
         return;
@@ -35,18 +32,18 @@ void Score::loadScores(const std::string &filePath)
         if (line.find(":") == std::string::npos)
             continue;
 
-        line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());
-        line.erase(std::remove(line.begin(), line.end(), '\"'), line.end());
+        std::erase_if(line, ::isspace);
+        std::erase(line, '\"');
 
-        playerName = line.substr(0, line.find(":"));
-        score = std::stoi(line.substr(line.find(":") + 1));
+        std::string playerName = line.substr(0, line.find(":"));
+        const std::size_t score = std::stoi(line.substr(line.find(":") + 1));
 
         scores_[playerName] = score;
     }
     file.close();
 }
 
-void Score::addScore(const std::string &playerName, std::size_t score)
+void Score::addScore(const std::string &playerName, const std::size_t score)
 {
     scores_[playerName] = score;
 }

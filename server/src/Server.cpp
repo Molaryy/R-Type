@@ -240,9 +240,10 @@ void Server::initPacketHandling_() {
         [this]([[maybe_unused]] const Network::Packet &packet, const uint16_t client)
         {
             std::cout << "Client: " << client << " : Ask for scoreboard" << std::endl;
-            std::vector<std::pair<std::string, std::size_t>> scores = score_.getTopTen();
+            const std::vector<std::pair<std::string, std::size_t>> scores = score_.getTopTen();
             Protocol::ScoreboardPacket scoreboardP {};
-            for (std::size_t i = 0; i < SCOREBOARD_SIZE; ++i)
+            const std::size_t count = std::min(scores.size(), static_cast<std::size_t>(SCOREBOARD_SIZE));
+            for (std::size_t i = 0; i < count; ++i)
             {
                 std::strncpy(scoreboardP.names[i], scores[i].first.c_str(), NAME_SIZE - 1);
                 scoreboardP.scores[i] = scores[i].second;

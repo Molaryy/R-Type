@@ -14,7 +14,7 @@
 class Score
 {
     public:
-        Score(const std::string &filePath) { loadScores(filePath); }
+    explicit Score(const std::string &filePath) { loadScores(filePath); }
         ~Score() = default;
 
         std::size_t getScore(const std::string &playerName) const;

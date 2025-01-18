@@ -6,12 +6,15 @@
 */
 
 #include "Client.hpp"
+
 #include "Components.hh"
 #include "Components.hpp"
 #include "IRenderer.hpp"
 #include "Scenes.hpp"
+#include "LeaderBoard.hpp"
 
-void exitButtonCallback(Registry &r) {
+void exitButtonCallback(Registry &r)
+{
     const entity_t backButton = r.spawn_entity();
     r.add_component(backButton, Components::RenderText("Back to Menu", 20));
     r.add_component(backButton, Position(50, 500));
@@ -29,7 +32,18 @@ void leaderBoardCallback(Registry &r) {
     r.add_component(title, Components::RenderText("Leaderboard", 40, true));
     r.add_component(title, Position(50, 50));
     r.add_component(title, Components::ColorText({255, 255, 255, 255}));
-    //go through "leaderboard" store data, display it
+
+    LeaderBoard leaderboard;
+    auto [names, scores] = leaderboard.getScoreboard();
+    for (std::size_t i = 0; i < SCOREBOARD_SIZE; ++i)
+    {
+        const entity_t scoreboard = r.spawn_entity();
+        const std::string scoreboard_name = names[i];
+        const std::size_t scoreboard_scores = scores[i];
+        r.add_component(scoreboard, Components::RenderText(scoreboard_name, 40, true));
+        r.add_component(scoreboard, Components::RenderText(std::to_string(scoreboard_scores), 40, true));
+        r.add_component(scoreboard, Components::ColorText({255, 255, 255, 255}));
+    }
     exitButtonCallback(r);
 }
 

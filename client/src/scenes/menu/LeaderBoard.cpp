@@ -5,13 +5,12 @@
 ** LeaderBoard
 */
 
-#include "Score.hpp"
 #include "Client.hpp"
 #include "Components.hpp"
 #include "RTypeProtocol.hpp"
-#include "Scenes.hpp"
+#include "LeaderBoard.hpp"
 
-Protocol::ScoreboardPacket getScoreboard()
+Protocol::ScoreboardPacket LeaderBoard::getScoreboard()
 {
     Protocol::ScoreboardPacket scoreboard{};
     bool received_scoreboard = false;
@@ -44,7 +43,7 @@ Protocol::ScoreboardPacket getScoreboard()
     return scoreboard;
 }
 
-Protocol::ScoreboardIdPacket getIdScoreboard(std::string name)
+Protocol::ScoreboardIdPacket LeaderBoard::getIdScoreboard(const std::string &name)
 {
     Protocol::ScoreboardIdPacket scoreboard{};
     bool received_scoreboard = false;
