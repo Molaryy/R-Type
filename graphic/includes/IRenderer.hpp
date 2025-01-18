@@ -338,6 +338,6 @@ namespace Graphic {
              * @brief Set the Target Fps object
              * 
              */
-            virtual void setTargetFps(size_t fps) = 0;
+            virtual void setTargetFPS(int fps) = 0;
     };
 }

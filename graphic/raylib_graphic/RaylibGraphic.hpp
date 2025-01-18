@@ -43,7 +43,7 @@ namespace Graphic {
             void stopMusic(int musicID) override;
             void updateMusic() override;
             float getFrameTime() override;
-            void setTargetFps(size_t fps) override;
+            void setTargetFPS(int fps) override;
             int measureText(const std::string &text, int fontSize) override;
 
         private:
