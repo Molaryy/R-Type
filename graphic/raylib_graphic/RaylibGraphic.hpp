@@ -41,6 +41,7 @@ namespace Graphic {
             void playMusic(int musicID) override;
             void stopMusic(int musicID) override;
             void updateMusic() override;
+            int measureText(const std::string &text, int fontSize) override;
 
         private:
             std::unordered_map<int, Texture2D> textures_;

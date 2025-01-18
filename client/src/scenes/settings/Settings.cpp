@@ -7,6 +7,7 @@
 
 #include "Client.hpp"
 #include "Components.hpp"
+#include "Components.hh"
 #include "Scenes.hpp"
 
 void settingsCallback(Registry &r)
@@ -14,9 +15,8 @@ void settingsCallback(Registry &r)
     r.clear_entities();
     entity_t e = r.spawn_entity();
 
-    auto &renderer = Client::getInstance().getRenderer();
-
-    r.add_component(e, Components::RenderText("Settings", 50, 50, 40));
+    r.add_component(e, Components::RenderText("Settings", 40));
+    r.add_component(e, Position(50, 50));
     r.add_component(e, Components::ColorText({255, 255, 255, 255}));
 
     const std::vector<std::string> settingsOptions = {
@@ -33,6 +33,7 @@ void settingsCallback(Registry &r)
     static bool soundEffectsEnabled = true;
     static bool colorBlindMode = false;
     static int currentResolutionIndex = 0;
+    auto &renderer = Client::getInstance().getRenderer();
 
     std::vector<std::function<void()>> actions = {
         [&renderer] {
@@ -68,7 +69,9 @@ void settingsCallback(Registry &r)
 
     for (std::size_t i = 0; i < settingsOptions.size(); ++i) {
         entity_t optionEntity = r.spawn_entity();
-        r.add_component(optionEntity, Components::RenderText(settingsOptions[i], 100, static_cast<int>(150 + i * 40), 20));
+
+        r.add_component(optionEntity, Components::RenderText(settingsOptions[i], 20));
+        r.add_component(optionEntity, Position(100, static_cast<float>(150 + i * 40)));
         r.add_component(optionEntity, Components::ColorText({255, 255, 255, 255}));
         r.add_component(optionEntity, Components::ClickableText([i, actions](Registry &) {
             actions[i]();
