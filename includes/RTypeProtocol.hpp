@@ -89,6 +89,7 @@ namespace Protocol {
         INPUT_KEYS, // PacketInputsKeysPacket, all inputs from clients
 
         ASK_SCORE, // EmptyPacket, Ask for the scoreboard
+        ASK_SCORE_ID, // ScoreboardPacket, Ask for the scoreboard of a specific id
     };
 
     enum CommandIdServer : uint16_t {
@@ -109,6 +110,7 @@ namespace Protocol {
         SERVER_SHUTDOWN, // EmptyPacket, server death
 
         SCOREBOARD, // ScoreboardPacket, send scoreboard
+        SCOREBOARD_ID, // ScoreboardPacket, send scoreboard of a specific id
     };
 
     struct EmptyPacket {
@@ -173,5 +175,10 @@ namespace Protocol {
     struct ScoreboardPacket {
         char names[SCOREBOARD_SIZE][NAME_SIZE]; // names in the scoreboard
         std::size_t scores[SCOREBOARD_SIZE]; // Array of scores
+    };
+
+    struct ScoreboardIdPacket {
+        char name[NAME_SIZE]; // name of the player
+        std::size_t score; // score of the player
     };
 }
