@@ -51,9 +51,9 @@ namespace Graphic {
         ClearBackground(Color(r, g, b, a));
     }
 
-    void RaylibGraphic::drawRectangle(const int x, const int y, const int width, const int height, const unsigned char r, const unsigned char g,
+    void RaylibGraphic::drawRectangle(const float x, const float y, const float width, const float height, const unsigned char r, const unsigned char g,
                                       const unsigned char b, const unsigned char a) {
-        DrawRectangle(x, y, width, height, Color(r, g, b, a));
+        DrawRectangleV({x, y}, {width, height}, Color(r, g, b, a));
     }
 
     int RaylibGraphic::loadTexture(const std::string &path) {

@@ -11,7 +11,6 @@
 #include <ranges>
 #include <vector>
 
-#include "Components.hpp"
 #include "RTypeProtocol.hpp"
 #include "Systems.hh"
 
@@ -23,7 +22,7 @@ Server::Server(const std::size_t port, const std::size_t max_lobby, const std::s
       maxLobby_(max_lobby),
       serverRunning_(true),
       score_(path) {
-    std::srand(std::time(nullptr));
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
     try {
         auto *create_network_lib = networkLoader_.get_function<Network::INetworkServer *()>("create_instance");
 
@@ -251,7 +250,7 @@ void Server::initPacketHandling_() {
                 std::cout << "Client: " << client << " : Ask for scoreboard" << std::endl;
             const std::vector<std::pair<std::string, std::size_t>> scores = score_.getTopTen();
             Protocol::ScoreboardPacket scoreboardP{};
-            const std::size_t count = std::min(scores.size(), static_cast<std::size_t>(SCOREBOARD_SIZE));
+            const std::size_t count = (std::min)(scores.size(), static_cast<std::size_t>(SCOREBOARD_SIZE));
             for (std::size_t i = 0; i < count; ++i) {
                 std::strncpy(scoreboardP.names[i], scores[i].first.c_str(), NAME_SIZE - 1);
                 scoreboardP.scores[i] = scores[i].second;

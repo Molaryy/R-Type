@@ -116,8 +116,8 @@ namespace Systems {
             if (!drawable.can_draw)
                 continue;
             const float life_ratio = static_cast<float>(life.current) / static_cast<float>(life.max);
-            renderer.drawRectangle(position.x, position.y - 10, drawable.width, 5, 255, 0, 0, 255);
-            renderer.drawRectangle(position.x, position.y - 10, drawable.width * life_ratio, 5, 0, 128, 0, 255);
+            renderer.drawRectangle(position.x, position.y - 10.f, drawable.width, 5.f, 255, 0, 0, 255);
+            renderer.drawRectangle(position.x, position.y - 10.f, drawable.width * life_ratio, 5.f, 0, 128, 0, 255);
         }
     }
 

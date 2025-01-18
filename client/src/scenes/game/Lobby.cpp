@@ -304,7 +304,7 @@ void lobbyCallback(Registry &r) {
         r.add_component(button, Components::RenderText(std::string("Lobby ") + std::to_string(lobby.lobby_id)
                                                        + ": " + std::to_string(lobby.nb_players) + " player" + (lobby.nb_players > 1 ? "s " : " ") + ": Status "
                                                        + state_string.at(lobby.lobby_state), 20, true));
-        r.add_component(button, Position(100, 150 + i * 40));
+        r.add_component(button, Position(100, static_cast<float>(150 + i * 40)));
         r.add_component(button, Components::ColorText(grey));
         r.add_component(button, Components::ClickableText([lobby, &network]([[maybe_unused]] Registry &registry) {
             joinLobby(registry, [lobby, &network] {

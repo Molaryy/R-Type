@@ -186,7 +186,7 @@ namespace Graphic {
              * @param b blue
              * @param a alpha
              */
-            virtual void drawRectangle(int x, int y, int width, int height, unsigned char r, unsigned char g, unsigned char b, unsigned char a) = 0;
+            virtual void drawRectangle(float x, float y, float width, float height, unsigned char r, unsigned char g, unsigned char b, unsigned char a) = 0;
 
             /**
              * @brief load texture / sprite
