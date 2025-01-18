@@ -88,8 +88,8 @@ namespace Protocol {
 
         INPUT_KEYS, // PacketInputsKeysPacket, all inputs from clients
 
-        ASK_SCORE, // EmptyPacket, Ask for the scoreboard
-        ASK_SCORE_ID, // ScoreboardPacket, Ask for the scoreboard of a specific id
+        ASK_SCOREBOARD, // EmptyPacket, Ask for the scoreboard
+        ASK_SCOREBOARD_ID, // ScoreboardPacket, Ask for the scoreboard of a specific id
     };
 
     enum CommandIdServer : uint16_t {
@@ -180,5 +180,9 @@ namespace Protocol {
     struct ScoreboardIdPacket {
         char name[NAME_SIZE]; // name of the player
         std::size_t score; // score of the player
+    };
+
+    struct AskScoreboardIdPacket {
+        char name[NAME_SIZE]; // name of the player
     };
 }

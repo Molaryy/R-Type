@@ -236,7 +236,7 @@ void Server::initPacketHandling_() {
         });
 
     packetHandler_.setPacketCallback(
-        Protocol::ASK_SCORE,
+        Protocol::ASK_SCOREBOARD,
         [this]([[maybe_unused]] const Network::Packet &packet, const uint16_t client)
         {
             std::cout << "Client: " << client << " : Ask for scoreboard" << std::endl;

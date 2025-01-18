@@ -29,28 +29,8 @@ void leaderBoardCallback(Registry &r) {
     r.add_component(title, Components::RenderText("Leaderboard", 40, true));
     r.add_component(title, Position(50, 50));
     r.add_component(title, Components::ColorText({255, 255, 255, 255}));
-
-    // TODO retrieve scores from file
-    // TODO function to save scores when game ends
-
-    // std::vector<PlayerScore> scores = loadScores("scores.txt");
-    // int yPosition = 100;
-
-    // for (size_t i = 0; i < scores.size() && i < 10; ++i) {
-    //     entity_t scoreEntity = r.spawn_entity();
-    //     std::string entry = std::to_string(i + 1) + ". " + scores[i].name + " - " + std::to_string(scores[i].score);
-
-    //     r.add_component(scoreEntity, Components::RenderText(entry, 50, yPosition, 20, true));
-    //     r.add_component(scoreEntity, Components::ColorText({255, 255, 255, 255}));
-    //     yPosition += 30;
-    // }
-
-    // entity_t backButton = r.spawn_entity();
-    // r.add_component(backButton, Components::RenderText("Press SPACE to return to Menu", 50, yPosition + 50, 20, true));
-    // r.add_component(backButton, Components::ColorText({255, 255, 255, 255}));
-    // r.add_component(backButton, Components::ClickableText([](Registry &r) {
-    //     createMenuScene(r);
-    // }));
+    //go through "leaderboard" store data, display it
+    exitButtonCallback(r);
 }
 
 void creditsCallback(Registry &r) {
