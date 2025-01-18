@@ -54,7 +54,6 @@ namespace Systems {
         auto &positions = r.get_components<Position>();
         auto &colorsTexts = r.get_components<Components::ColorText>();
         auto &colorsOverText = r.get_components<Components::ColorOverText>();
-        Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
 
         for (auto &&[pos, text, colorText, colorOverText] : Zipper(positions, texts, colorsTexts, colorsOverText)) {
             if (colorOverText.isOver) {
@@ -99,8 +98,8 @@ namespace Systems {
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
 
         for (auto &&[drawable, position] : Zipper(drawables, positions)) {
-            //if (!drawable.can_draw)
-            //    continue;
+            if (!drawable.can_draw)
+                continue;
             renderer.drawTexture(drawable.textureID, position.x, position.y,
                                  drawable.width, drawable.height, drawable.text_x, drawable.text_y, drawable.text_width, drawable.text_height);
         }

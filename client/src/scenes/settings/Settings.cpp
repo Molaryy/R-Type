@@ -38,7 +38,7 @@ void settingsCallback(Registry &r)
     std::vector<std::function<void()>> actions = {
         [&renderer] {
             constexpr int maxFPSOptions[] = {30, 60, 120};
-            currentFPSIndex = (currentFPSIndex + 1) % (sizeof(maxFPSOptions) / sizeof(maxFPSOptions[0]));
+            currentFPSIndex = (currentFPSIndex + 1) % std::size(maxFPSOptions);
             renderer.setTargetFPS(maxFPSOptions[currentFPSIndex]);
             std::cout << "FPS set to: " << maxFPSOptions[currentFPSIndex] << std::endl;
         },

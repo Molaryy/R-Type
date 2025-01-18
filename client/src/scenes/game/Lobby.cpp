@@ -161,7 +161,7 @@ void lobbyPage(Registry &r, const std::size_t lobby_id) {
 
     e = r.spawn_entity();
     r.add_component(e, Components::RenderText("Lobbies list",  20, true));
-    r.add_component(e, Position(250, 550));
+    r.add_component(e, Position(50, 550));
     r.add_component(e, Components::ColorText(white));
     r.add_component(e, Components::ClickableText([](Registry &reg) {
         leaveLobby();

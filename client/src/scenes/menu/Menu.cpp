@@ -5,28 +5,24 @@
 ** Settings scene
 */
 
-#include "Components.hpp"
-#include "Components.hh"
-#include "Scenes.hpp"
-#include "IRenderer.hpp"
 #include "Client.hpp"
-#include <fstream>
-#include <sstream>
+#include "Components.hh"
+#include "Components.hpp"
+#include "IRenderer.hpp"
+#include "Scenes.hpp"
 
-void exitButtonCallback(Registry &r)
-{
-    entity_t backButton = r.spawn_entity();
-    r.add_component(backButton, Components::RenderText("Back to Menu",  20));
+void exitButtonCallback(Registry &r) {
+    const entity_t backButton = r.spawn_entity();
+    r.add_component(backButton, Components::RenderText("Back to Menu", 20));
     r.add_component(backButton, Position(50, 500));
     r.add_component(backButton, Components::ColorText({255, 255, 255, 255}));
-    r.add_component(backButton, Components::ClickableText([](Registry &r) {
-        createMenuScene(r);
+    r.add_component(backButton, Components::ClickableText([](Registry &reg) {
+        createMenuScene(reg);
     }));
     r.add_component(backButton, Components::ColorOverText({20, 82, 172, 255}, {255, 255, 255, 255}, false));
 }
 
-void leaderBoardCallback(Registry &r)
-{
+void leaderBoardCallback(Registry &r) {
     r.clear_entities();
 
     const entity_t title = r.spawn_entity();
@@ -74,11 +70,11 @@ void creditsCallback(Registry &r) {
         " - Mounia ARJDAL",
     };
 
-    int yPosition = 150;
+    float yPosition = 150;
 
     for (const auto &line : credits) {
         entity_t lineEntity = r.spawn_entity();
-        r.add_component(lineEntity, Components::RenderText(line,  20, true));
+        r.add_component(lineEntity, Components::RenderText(line, 20, true));
         r.add_component(lineEntity, Position(100, yPosition));
         r.add_component(lineEntity, Components::ColorText({255, 255, 255, 255}));
         yPosition += 30;
@@ -105,7 +101,6 @@ void createMenuScene(Registry &r) {
     r.add_component(e, Components::ColorText(white));
     const std::vector<std::string> titles = {"Play", "Leaderboard", "Settings", "Credits", "Exit"};
     const std::vector<std::function<void(Registry &r)>> callbacks = {lobbyCallback, leaderBoardCallback, settingsCallback, creditsCallback, exitCallback};
-    Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
 
 
     for (std::size_t i = 0; i < NB_MENU_BUTTONS; i++) {
@@ -117,8 +112,10 @@ void createMenuScene(Registry &r) {
         r.add_component(button, Components::ClickableText(callbacks[i]));
         r.add_component(button, Components::ColorOverText(darkBlue, grey, false));
     }
+
+    //Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
     //entity_t pop_up = r.spawn_entity();
-//
+    //
     //std::string text = "Enter your username:";
     //r.add_component(pop_up, Components::RenderText(text, 20, true));
     //int textSie = renderer.measureText(text, 20);
