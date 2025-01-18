@@ -198,6 +198,7 @@ namespace Graphic {
 
     float RaylibGraphic::getFrameTime() {
         return ::GetFrameTime();
+    }
 
     void RaylibGraphic::setTargetFps(size_t fps) {
         ::SetTargetFPS(fps);
