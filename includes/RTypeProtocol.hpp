@@ -41,6 +41,9 @@
 
 #define SERVER_TPS 30
 
+#define SCOREBOARD_SIZE 10
+#define NAME_SIZE 64
+
 namespace Protocol {
     enum InputKey : uint8_t {
         MOVE_UP,
@@ -84,6 +87,8 @@ namespace Protocol {
         ASK_START_GAME, // EmptyPacket, Ask for game start, will start game for the actual lobby
 
         INPUT_KEYS, // PacketInputsKeysPacket, all inputs from clients
+
+        ASK_SCORE, // EmptyPacket, Ask for the scoreboard
     };
 
     enum CommandIdServer : uint16_t {
@@ -102,6 +107,8 @@ namespace Protocol {
         POSITION_VELOCITY, // EntityPositionVelocityPacket, state of a new entity on screen
 
         SERVER_SHUTDOWN, // EmptyPacket, server death
+
+        SCOREBOARD, // ScoreboardPacket, send scoreboard
     };
 
     struct EmptyPacket {
@@ -161,5 +168,10 @@ namespace Protocol {
 
     struct InputsKeysPacket {
         bool input_keys[NB_INPUTS_KEYS]; // Array of boolean with each index representing if the key is pressed
+    };
+
+    struct ScoreboardPacket {
+        char names[SCOREBOARD_SIZE][NAME_SIZE]; // names in the scoreboard
+        std::size_t scores[SCOREBOARD_SIZE]; // Array of scores
     };
 }

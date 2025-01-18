@@ -9,18 +9,21 @@
 
 #include <iostream>
 #include <ranges>
+#include <map>
+#include <vector>
 
 #include "Components.hpp"
 #include "RTypeProtocol.hpp"
 #include "Systems.hh"
 
-Server::Server(const std::size_t port, const std::size_t max_lobby, const std::size_t max_client, const bool debug)
+Server::Server(const std::size_t port, const std::size_t max_lobby, const std::size_t max_client, const bool debug, const std::string &path)
     : networkLoader_("./", "asio_server"),
       port_(port),
       maxClient_(max_client), nbClient_(0),
       debug_(debug),
       maxLobby_(max_lobby),
-      serverRunning_(true) {
+      serverRunning_(true),
+      score_(path) {
     try {
         auto *create_network_lib = networkLoader_.get_function<Network::INetworkServer *()>("create_instance");
 
@@ -34,8 +37,8 @@ Server::~Server() {
     networkLib_->close();
 }
 
-Server &Server::createInstance(const std::size_t port, const std::size_t max_lobby, const std::size_t max_client, const bool debug) {
-    instance_.reset(new Server(port, max_lobby, max_client, debug));
+Server &Server::createInstance(const std::size_t port, const std::size_t max_lobby, const std::size_t max_client, const bool debug, const std::string &path) {
+    instance_.reset(new Server(port, max_lobby, max_client, debug, path));
     return *instance_;
 }
 
@@ -230,6 +233,22 @@ void Server::initPacketHandling_() {
                 return;
             }
             (*it)->leavePlayer(client);
+        });
+
+    packetHandler_.setPacketCallback(
+        Protocol::ASK_SCORE,
+        [this]([[maybe_unused]] const Network::Packet &packet, const uint16_t client)
+        {
+            std::cout << "Client: " << client << " : Ask for scoreboard" << std::endl;
+            std::vector<std::pair<std::string, std::size_t>> scores = score_.getTopTen();
+            Protocol::ScoreboardPacket scoreboardP {};
+            for (std::size_t i = 0; i < SCOREBOARD_SIZE; ++i)
+            {
+                std::strncpy(scoreboardP.names[i], scores[i].first.c_str(), NAME_SIZE - 1);
+                scoreboardP.scores[i] = scores[i].second;
+            }
+            Network::Packet response(scoreboardP, Protocol::SCOREBOARD);
+            networkLib_->send(client, response.serialize());
         });
 }
 

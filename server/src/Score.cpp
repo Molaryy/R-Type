@@ -9,8 +9,11 @@
 
 #include <fstream>
 #include <algorithm>
+#include <ranges>
+#include <vector>
+#include <iostream>
 
-int Score::getScore(const std::string &playerName) const
+std::size_t Score::getScore(const std::string &playerName) const
 {
     if (!scores_.contains(playerName))
         return 0;
@@ -22,7 +25,7 @@ void Score::loadScores(const std::string &filePath)
     std::ifstream file(filePath);
     std::string line;
     std::string playerName;
-    int score;
+    std::size_t score;
 
     if (!file.is_open())
         return;
@@ -43,7 +46,7 @@ void Score::loadScores(const std::string &filePath)
     file.close();
 }
 
-void Score::addScore(const std::string &playerName, int score)
+void Score::addScore(const std::string &playerName, std::size_t score)
 {
     scores_[playerName] = score;
 }
@@ -65,4 +68,18 @@ void Score::writeScores(const std::string &filePath)
     }
     file << "}" << std::endl;
     file.close();
+}
+
+std::vector<std::pair<std::string, std::size_t>> Score::getTopTen() const
+{
+    std::vector<std::pair<std::string, std::size_t>> entries(scores_.begin(), scores_.end());
+
+    std::ranges::sort(entries, [](auto &a, auto &b)
+    {
+        return a.second > b.second;
+    });
+
+    if (entries.size() > 10)
+        entries.resize(10);
+    return entries;
 }
