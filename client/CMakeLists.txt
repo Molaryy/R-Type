@@ -12,8 +12,6 @@ add_executable(${PROJECT_NAME}
         src/scenes/menu/LeaderBoard.cpp
         src/scenes/settings/Settings.cpp
         src/scenes/game/Lobby.cpp
-    includes/LeaderBoard.hpp
-    includes/LeaderBoard.hpp
 )
 
 target_include_directories(${PROJECT_NAME}
