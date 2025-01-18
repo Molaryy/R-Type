@@ -28,11 +28,9 @@ target_include_directories(${PROJECT_NAME}
         PRIVATE includes
         PRIVATE ${CMAKE_SOURCE_DIR}/ecs/includes
         PRIVATE ${CMAKE_SOURCE_DIR}/graphic/includes
-        PRIVATE ${CMAKE_SOURCE_DIR}/graphic/raylib_graphic
 )
 
 target_link_libraries(${PROJECT_NAME}
-        PRIVATE raylib
         PRIVATE dylib
 )
 
