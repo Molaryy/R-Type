@@ -56,6 +56,17 @@ namespace Graphic {
         DrawRectangleV({x, y}, {width, height}, Color(r, g, b, a));
     }
 
+    void RaylibGraphic::drawRoundedRectangle(int x, int y, int width, int height, float roundness, int segments, unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
+        ::Rectangle rec = {
+            static_cast<float>(x),
+            static_cast<float>(y),
+            static_cast<float>(width),
+            static_cast<float>(height)
+        };
+        Color col = { r, g, b, a };
+        ::DrawRectangleRounded(rec, roundness, segments, col);
+    }
+
     int RaylibGraphic::loadTexture(const std::string &path) {
         const Texture2D texture = LoadTexture(path.c_str());
         const int id = nextTextureID_++;
@@ -115,6 +126,10 @@ namespace Graphic {
             events.inputs.push_back(RightClick);
         }
         return events;
+    }
+
+    void RaylibGraphic::initAudioDevice() {
+        ::InitAudioDevice();
     }
 
     int RaylibGraphic::loadSound(const std::string &path) {
@@ -181,13 +196,17 @@ namespace Graphic {
         }
     }
 
+    float RaylibGraphic::getFrameTime() {
+        return ::GetFrameTime();
+    }
+
     void RaylibGraphic::setTargetFPS(int fps) {
-        SetTargetFPS(fps);
+        ::SetTargetFPS(fps);
     }
 
     extern "C" {
-    LIB_EXPORT IRenderer *create_instance() {
-        return new RaylibGraphic();
-    }
+        LIB_EXPORT IRenderer *create_instance() {
+            return new RaylibGraphic();
+        }
     }
 }

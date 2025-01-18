@@ -28,11 +28,13 @@ namespace Graphic {
             void endDrawing() override;
             void clearBackground(unsigned char r, unsigned char g, unsigned char b, unsigned char a) override;
             void drawRectangle(float x, float y, float width, float height, unsigned char r, unsigned char g, unsigned char b, unsigned char a) override;
+            void drawRoundedRectangle(int x, int y, int width, int height, float roundness, int segments, unsigned char r, unsigned char g, unsigned char b, unsigned char a) override;
             int loadTexture(const std::string &path) override;
             void unloadTexture(int textureID) override;
             void drawTexture(int textureID, float x, float y, float width, float height, float text_x, float text_y, float text_width, float text_height) override;
             void drawText(const std::string &text, int x, int y, int fontSize, unsigned char r, unsigned char g, unsigned char b, unsigned char a) override;
             event_t getEvents() override;
+            void initAudioDevice() override;
             int loadSound(const std::string &path) override;
             void unloadSound(int soundID) override;
             void playSound(int soundID) override;
@@ -41,6 +43,8 @@ namespace Graphic {
             void playMusic(int musicID) override;
             void stopMusic(int musicID) override;
             void updateMusic() override;
+            float getFrameTime() override;
+            void setTargetFPS(int fps) override;
             int measureText(const std::string &text, int fontSize) override;
 
         private:
