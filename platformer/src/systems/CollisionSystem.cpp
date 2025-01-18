@@ -11,10 +11,6 @@
 #include "Zipper.hh"
 #include "IndexedZipper.hh"
 
-#ifdef max
-  #undef max
-#endif
-
 void Platform::collisionSystem(Registry &r) {
     auto &positions = r.get_components<Position>();
     auto &velocities = r.get_components<Velocity>();
@@ -47,7 +43,7 @@ void Platform::collisionSystem(Registry &r) {
                 }
             }
             {
-                float minDelta = std::numeric_limits<float>::max();
+                float minDelta = (std::numeric_limits<float>::max)();
                 size_t targetEntity = 0;
                 bool found = false;
                 float targetBTop = 0.f;
