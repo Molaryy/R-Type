@@ -35,16 +35,17 @@ namespace Systems {
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
 
         for (auto &&[pos, text, colorText] : Zipper(positions, texts, colorsTexts)) {
-            renderer.drawText(
-                text.text,
-                static_cast<int>(pos.x),
-                static_cast<int>(pos.y),
-                text.fontSize,
-                colorText.color.r,
-                colorText.color.g,
-                colorText.color.b,
-                colorText.color.a
-            );
+            if (text.isDrawable)
+                renderer.drawText(
+                    text.text,
+                    static_cast<int>(pos.x),
+                    static_cast<int>(pos.y),
+                    text.fontSize,
+                    colorText.color.r,
+                    colorText.color.g,
+                    colorText.color.b,
+                    colorText.color.a
+                );
         }
     }
 
