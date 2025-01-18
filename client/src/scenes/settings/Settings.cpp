@@ -13,7 +13,7 @@
 void settingsCallback(Registry &r)
 {
     r.clear_entities();
-    entity_t e = r.spawn_entity();
+    const entity_t e = r.spawn_entity();
 
     r.add_component(e, Components::RenderText("Settings", 40));
     r.add_component(e, Position(50, 50));

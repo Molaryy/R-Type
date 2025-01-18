@@ -256,7 +256,7 @@ void lobbyCallback(Registry &r) {
     }));
     r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
 
-    const std::unordered_map<Protocol::LobbyState, std::string> state_string{
+    const std::unordered_map<Protocol::LobbyState, std::string> state_string {
         {Protocol::OPEN, "Open"},
         {Protocol::FULL, "Full"},
         {Protocol::IN_GAME, "In game"},

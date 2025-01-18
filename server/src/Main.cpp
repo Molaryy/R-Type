@@ -18,7 +18,7 @@ int main(const int ac, char const *const *av) {
 
         args.verif_arg(ac, std::vector<std::string_view>(av, av + ac));
 
-        Server::createInstance(args.port, args.max_lobby, args.max_client, args.debug).run();
+        Server::createInstance(args.port, args.max_lobby, args.max_client, args.debug, "score.json").run();
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
         return 84;

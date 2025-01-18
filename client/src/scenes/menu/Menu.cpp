@@ -6,12 +6,15 @@
 */
 
 #include "Client.hpp"
+
 #include "Components.hh"
 #include "Components.hpp"
 #include "IRenderer.hpp"
 #include "Scenes.hpp"
+#include "LeaderBoard.hpp"
 
-void exitButtonCallback(Registry &r) {
+void exitButtonCallback(Registry &r)
+{
     const entity_t backButton = r.spawn_entity();
     r.add_component(backButton, Components::RenderText("Back to Menu", 20));
     r.add_component(backButton, Position(50, 500));
@@ -27,30 +30,28 @@ void leaderBoardCallback(Registry &r) {
 
     const entity_t title = r.spawn_entity();
     r.add_component(title, Components::RenderText("Leaderboard", 40, true));
-    r.add_component(title, Position(50, 50));
+    r.add_component(title, Position(250, 30));
     r.add_component(title, Components::ColorText({255, 255, 255, 255}));
 
-    // TODO retrieve scores from file
-    // TODO function to save scores when game ends
-
-    // std::vector<PlayerScore> scores = loadScores("scores.txt");
-    // int yPosition = 100;
-
-    // for (size_t i = 0; i < scores.size() && i < 10; ++i) {
-    //     entity_t scoreEntity = r.spawn_entity();
-    //     std::string entry = std::to_string(i + 1) + ". " + scores[i].name + " - " + std::to_string(scores[i].score);
-
-    //     r.add_component(scoreEntity, Components::RenderText(entry, 50, yPosition, 20, true));
-    //     r.add_component(scoreEntity, Components::ColorText({255, 255, 255, 255}));
-    //     yPosition += 30;
-    // }
-
-    // entity_t backButton = r.spawn_entity();
-    // r.add_component(backButton, Components::RenderText("Press SPACE to return to Menu", 50, yPosition + 50, 20, true));
-    // r.add_component(backButton, Components::ColorText({255, 255, 255, 255}));
-    // r.add_component(backButton, Components::ClickableText([](Registry &r) {
-    //     createMenuScene(r);
-    // }));
+    LeaderBoard leaderboard;
+    auto [names, scores] = leaderboard.getScoreboard();
+    for (std::size_t i = 0; i < SCOREBOARD_SIZE; ++i)
+    {
+        if (strlen(names[i]) == 0 && scores[i] == 0) {
+            break;
+        }
+        const entity_t nameEntity = r.spawn_entity();
+        const entity_t scoreEntity = r.spawn_entity();
+        const std::string scoreboard_name = names[i];
+        const std::size_t scoreboard_scores = scores[i];
+        r.add_component(nameEntity, Components::RenderText(scoreboard_name, 30, true));
+        r.add_component(nameEntity, Position(200, 100 + i * 40));
+        r.add_component(nameEntity, Components::ColorText({255, 255, 255, 255}));
+        r.add_component(scoreEntity, Components::RenderText(std::to_string(scoreboard_scores), 30, true));
+        r.add_component(scoreEntity, Position(500, 100 + i * 40));
+        r.add_component(scoreEntity, Components::ColorText({255, 255, 255, 255}));
+    }
+    exitButtonCallback(r);
 }
 
 void creditsCallback(Registry &r) {

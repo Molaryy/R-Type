@@ -9,6 +9,7 @@ add_executable(${PROJECT_NAME}
         src/ArgHandler.cpp
         src/Server.cpp
         src/Lobby.cpp
+        src/Score.cpp
         src/entities/Player.cpp
         src/entities/Shoot.cpp
 )
