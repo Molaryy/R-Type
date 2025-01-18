@@ -24,8 +24,12 @@ void Score::loadScores(const std::string &filePath)
     std::ifstream file(filePath);
     std::string line;
 
-    if (!file.is_open())
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file " << filePath << std::endl;
         return;
+    } else {
+        std::cout << "Loading scores from " << filePath << std::endl;
+    }
 
     while (std::getline(file, line))
     {
