@@ -77,7 +77,7 @@ void Platform::createPlatform(float x, float y, int w, int h) {
 
 void Platform::run() {
     renderer_->initWindow(800, 600, "Platformer");
-    renderer_->setTargetFps(60);
+    renderer_->setTargetFPS(60);
 
     initEntities();
     reg_.add_system(inputSystem);
