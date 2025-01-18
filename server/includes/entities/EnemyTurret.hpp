@@ -14,7 +14,7 @@
 #define TURRET_BULLET_RATE 40
 
 #define TURRET_HEALTH 4
-#define TURRET_SIZE 30
+#define TURRET_SIZE 40
 
 class EnemyTurret {
 public:

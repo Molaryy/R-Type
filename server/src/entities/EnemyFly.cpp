@@ -12,7 +12,7 @@
 #include "Packet.hpp"
 #include "Server.hpp"
 #include "Zipper.hh"
-#include "entities/Shoot.hpp"
+#include "entities/PlayerBullet.hpp"
 
 void EnemyFly::ArtificialIntelligence::operator()(Registry &r, const entity_t me) {
     tick++;
@@ -39,7 +39,7 @@ void EnemyFly::collision(Registry &r, const entity_t me, const entity_t other) {
         return;
 
     if (otherType->type == Protocol::PLAYER_BULLET)
-        life->takeDamage(BULLET_DAMAGE);
+        life->takeDamage(PLAYER_BULLET_DAMAGE);
     if (otherType->type == Protocol::PLAYER)
         life->current = 0;
     Network::Packet packet;

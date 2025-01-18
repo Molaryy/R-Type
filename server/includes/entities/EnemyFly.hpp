@@ -12,7 +12,7 @@
 #define FLY_SPEED_X (-1)
 #define FLY_SPEED_Y 2
 #define FLY_SIZE 30
-#define FLY_HEALTH 20
+#define FLY_HEALTH 40
 
 #define FLY_ZIGZAG_SIZE 60
 

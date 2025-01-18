@@ -7,19 +7,41 @@
 
 #include "entities/EnemyTurret.hpp"
 
+#include <cmath>
+#include <entities/EnemyBullet.hpp>
+
 #include "Components.hh"
 #include "Components.hpp"
+#include "IndexedZipper.hh"
 #include "Packet.hpp"
 #include "Server.hpp"
 #include "Zipper.hh"
-#include "entities/Shoot.hpp"
 
 void EnemyTurret::ArtificialIntelligence::operator()(Registry &r, const entity_t me) {
     tick++;
 
     if (tick % 100)
         return;
-    r.get_entity_component<Position>(me);
+    const SparseArray<Position> &positions = r.get_components<Position>();
+    const SparseArray<ComponentEntityType> &types = r.get_components<ComponentEntityType>();
+    const std::optional<Position> position = positions[me];
+    if (!position.has_value())
+        return;
+
+    Position direction{};
+    double shortest_distance = -1.0;
+    for (auto &&[id, type, pos] : IndexedZipper(types, positions)) {
+        if (type.type != Protocol::PLAYER)
+            continue;
+        double distance = std::sqrt(std::pow(pos.x - position->x, 2) + std::pow(pos.y - position->y, 2));
+        if (shortest_distance > distance) {
+            shortest_distance = distance;
+            direction = pos;
+        }
+    }
+    if (shortest_distance == -1.0)
+        return;
+
 }
 
 void EnemyTurret::collision(Registry &r, const entity_t me, const entity_t other) {
@@ -29,7 +51,7 @@ void EnemyTurret::collision(Registry &r, const entity_t me, const entity_t other
         return;
 
     if (otherType->type == Protocol::PLAYER_BULLET)
-        life->takeDamage(BULLET_DAMAGE);
+        life->takeDamage(ENEMY_BULLET_DAMAGE);
     if (otherType->type == Protocol::PLAYER)
         life->current = 0;
     Network::Packet packet;
@@ -55,7 +77,7 @@ entity_t EnemyTurret::create(Registry &r) {
 
     Position pos(WIDTH, static_cast<float>(std::rand() % (HEIGHT - TURRET_SIZE)));
 
-    r.add_component(entity, ComponentEntityType(Protocol::ENEMY_FLY));
+    r.add_component(entity, ComponentEntityType(Protocol::ENEMY_TURRET));
     r.add_component(entity, Position(pos));
     r.add_component(entity, Velocity(CAMERA_SPEED, 0));
     r.add_component(entity, Life(TURRET_HEALTH, TURRET_HEALTH));
@@ -65,7 +87,7 @@ entity_t EnemyTurret::create(Registry &r) {
     Network::Packet packet(
         Protocol::SpawnEntityPacket(
             entity,
-            Protocol::ENEMY_FLY,
+            Protocol::ENEMY_TURRET,
             Protocol::Vector2f(pos.x, pos.y),
             Protocol::Vector2f(TURRET_SIZE, TURRET_SIZE),
             Protocol::Vector2f(CAMERA_SPEED, 0),

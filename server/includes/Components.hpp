@@ -97,6 +97,6 @@ struct ArtificialIntelligence {
     }
 
     void log() const {
-        std::cout << "ArtificalIntelligence,";
+        std::cout << "ArtificalIntelligence";
     }
 };

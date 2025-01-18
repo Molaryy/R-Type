@@ -103,7 +103,7 @@ void Client::setupPacketHandler_() {
 
         const entity_t e = registry_.spawn_entity();
 
-        registry_.add_component(e, Components::Drawable(BACKGROUND_ID, WIDTH, HEIGHT, 0, 0, WIDTH / (HEIGHT / 189.0), 189, [](Components::Drawable &drawable) {
+        registry_.add_component(e, Components::Drawable(BACKGROUND, WIDTH, HEIGHT, 0, 0, WIDTH / (HEIGHT / 189.0), 189, [](Components::Drawable &drawable) {
             drawable.text_x += 3;
             if (drawable.text_x >= 1221)
                 drawable.text_x = 0;
@@ -141,7 +141,7 @@ void Client::setupPacketHandler_() {
         switch (type) {
         case Protocol::EntityType::PLAYER:
             registry_.add_component(e, Components::Drawable(
-                                        PLAYER_ID,
+                                        SPACESHIPS,
                                         size.x, size.y,
                                         0, static_cast<float>(17 * std::ranges::count_if(
                                             registry_.get_components<Components::ComponentEntityType>(),
@@ -162,7 +162,7 @@ void Client::setupPacketHandler_() {
             registry_.add_component(e, Life(health, health));
             break;
         case Protocol::EntityType::PLAYER_BULLET:
-            registry_.add_component(e, Components::Drawable(BULLET_ID, size.x, size.y, 0, 0, 82, 16, [frame = 0](Components::Drawable &drawable) mutable {
+            registry_.add_component(e, Components::Drawable(PLAYER_BULLET, size.x, size.y, 0, 0, 82, 16, [frame = 0](Components::Drawable &drawable) mutable {
                 if (frame++ < 3)
                     return;
                 frame = 0;
@@ -171,8 +171,18 @@ void Client::setupPacketHandler_() {
                     drawable.text_x = 0;
             }));
             break;
+        case Protocol::EntityType::ENEMY_BULLET:
+            registry_.add_component(e, Components::Drawable(ENNEMY_BULLET, size.x, size.y, 0, 0, 48, 48, [frame = 0](Components::Drawable &drawable) mutable {
+                if (frame++ < 3)
+                    return;
+                frame = 0;
+                drawable.text_x += drawable.text_width;
+                if (drawable.text_x > drawable.text_width * 3)
+                    drawable.text_x = 0;
+            }));
+            break;
         case Protocol::EntityType::ENEMY_FLY:
-            registry_.add_component(e, Components::Drawable(FLY_ID, size.x, size.y, 0, 0, 65, 49, [frame = 0](Components::Drawable &drawable) mutable {
+            registry_.add_component(e, Components::Drawable(FLY_ENEMY, size.x, size.y, 0, 0, 65, 49, [frame = 0](Components::Drawable &drawable) mutable {
                 if (frame++ < 3)
                     return;
                 frame = 0;
@@ -183,27 +193,24 @@ void Client::setupPacketHandler_() {
             registry_.add_component(e, Life(health, health));
             break;
         case Protocol::EntityType::ENEMY_TURRET:
-            registry_.add_component(e, Components::Drawable(FLY_ID, size.x, size.y, 0, 0, 65, 49, [frame = 0](Components::Drawable &drawable) mutable {
+            registry_.add_component(e, Components::Drawable(SHOOTER_ENEMY, size.x, size.y, 0, 0, 65, 65, [frame = 0](Components::Drawable &drawable) mutable {
                 if (frame++ < 3)
                     return;
                 frame = 0;
                 drawable.text_x += drawable.text_width;
-                if (drawable.text_x > drawable.text_width * 2)
+                if (drawable.text_x > drawable.text_width * 5)
                     drawable.text_x = 0;
             }));
             registry_.add_component(e, Life(health, health));
             break;
-            default:
+        default:
             std::cerr << "Unknown entity type: " << type << std::endl;
             break;
         }
-
         registry_.add_component(e, Position(position.x, position.y));
         registry_.add_component(e, Components::ServerId(entity_id));
         registry_.add_component(e, Components::ComponentEntityType(type));
         registry_.add_component(e, Velocity(velocity.x, velocity.y));
-        registry_.add_component(e, Components::RenderText(std::to_string(entity_id), static_cast<int>(position.x), static_cast<int>(position.y), 12));
-        registry_.add_component(e, Components::ColorText(COLOR_WHITE));
     });
     packet_handler_.setPacketCallback(Protocol::HIT, [this](const Network::Packet &packet) {
         auto [network_id, health] = packet.getPayload<Protocol::HitPacket>();
@@ -244,7 +251,7 @@ void Client::setupPacketHandler_() {
             const entity_t e = registry_.spawn_entity();
 
             registry_.add_component(e, Position(pos->x, pos->y));
-            registry_.add_component(e, Components::Drawable(EXPLOSION_ID, draw->width, draw->height, 0, 0, 65, 66,
+            registry_.add_component(e, Components::Drawable(EXPLOSION_1, draw->width, draw->height, 0, 0, 65, 66,
                                                             [frame = 0](Components::Drawable &drawable) mutable {
                                                                 if (frame++ < 3)
                                                                     return;
@@ -291,11 +298,8 @@ void Client::run() {
 
     createMenuScene(registry_);
 
-    renderer_->loadTexture("assets/spaceship.gif");
-    renderer_->loadTexture("assets/enemies2.gif");
-    renderer_->loadTexture("assets/missiles.gif");
-    renderer_->loadTexture("assets/maps/space.png");
-    renderer_->loadTexture("assets/damage.gif");
+    for (const std::string &path : textures_paths)
+        renderer_->loadTexture(path);
 
     while (!renderer_->windowShouldClose()) {
         renderer_->beginDrawing();
