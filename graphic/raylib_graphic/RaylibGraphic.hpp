@@ -21,7 +21,6 @@ namespace Graphic {
 
             void initWindow(int width, int height, const std::string &title) override;
             void setWindowSize(const int width, const int height) override;
-            void setTargetFPS(int fps) override;
             void closeWindow() override;
             bool windowShouldClose() const override;
             void beginDrawing() override;
