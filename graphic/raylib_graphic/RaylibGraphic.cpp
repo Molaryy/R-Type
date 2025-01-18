@@ -86,6 +86,10 @@ namespace Graphic {
         DrawText(text.c_str(), x, y, fontSize, Color(r, g, b, a));
     }
 
+    int RaylibGraphic::measureText(const std::string &text, int fontSize) {
+        return MeasureText(text.c_str(), fontSize);
+    }
+
     event_t RaylibGraphic::getEvents() {
         event_t events;
 

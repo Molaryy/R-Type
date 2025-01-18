@@ -48,7 +48,7 @@ namespace Systems {
         }
     }
 
-    inline void drawOverText(Registry &r) {
+    inline void changeColorOverText(Registry &r) {
         auto &texts = r.get_components<Components::RenderText>();
         auto &positions = r.get_components<Position>();
         auto &colorsTexts = r.get_components<Components::ColorText>();
@@ -61,16 +61,6 @@ namespace Systems {
             } else {
                 colorText.color = colorOverText.defaultColor;
             }
-            renderer.drawText(
-                text.text,
-                static_cast<int>(pos.x),
-                static_cast<int>(pos.y),
-                text.fontSize,
-                colorText.color.r,
-                colorText.color.g,
-                colorText.color.b,
-                colorText.color.a
-            );
         }
     }
 
@@ -107,9 +97,12 @@ namespace Systems {
         auto &drawables = r.get_components<Components::Drawable>();
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
 
-        for (auto &&[drawable, position] : Zipper(drawables, positions))
+        for (auto &&[drawable, position] : Zipper(drawables, positions)) {
+            if (!drawable.can_draw)
+                continue;
             renderer.drawTexture(drawable.textureID, position.x, position.y,
                                  drawable.width, drawable.height, drawable.text_x, drawable.text_y, drawable.text_width, drawable.text_height);
+        }
     }
 
     inline void handleInputs([[maybe_unused]] Registry &r) {

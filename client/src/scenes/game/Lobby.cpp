@@ -134,12 +134,12 @@ void lobbyPage(Registry &r, const std::size_t lobby_id) {
     constexpr Color darkBlue = COLOR_DARK_BLUE;
 
     entity_t e = r.spawn_entity();
-    r.add_component(e, Components::RenderText(std::string("Lobby ") + std::to_string(lobby_id), 40));
+    r.add_component(e, Components::RenderText(std::string("Lobby ") + std::to_string(lobby_id), 40, true));
     r.add_component(e, Position(50, 50));
     r.add_component(e, Components::ColorText(white));
 
     e = r.spawn_entity();
-    r.add_component(e, Components::RenderText("Reload",  40));
+    r.add_component(e, Components::RenderText("Reload",  40, true));
     r.add_component(e, Position(600, 50));
     r.add_component(e, Components::ColorText(white));
     r.add_component(e, Components::ClickableText([lobby_id](Registry &reg) {
@@ -148,19 +148,19 @@ void lobbyPage(Registry &r, const std::size_t lobby_id) {
     r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
 
     e = r.spawn_entity();
-    r.add_component(e, Components::RenderText(std::string("Players ") + std::to_string(lobby.nb_players), 40));
+    r.add_component(e, Components::RenderText(std::string("Players ") + std::to_string(lobby.nb_players), 40, true));
     r.add_component(e, Position(300, 200));
     r.add_component(e, Components::ColorText(white));
 
     e = r.spawn_entity();
-    r.add_component(e, Components::RenderText("Start Game", 60));
+    r.add_component(e, Components::RenderText("Start Game", 60, true));
     r.add_component(e, Position(230, 350));
     r.add_component(e, Components::ColorText(white));
     r.add_component(e, Components::ClickableText(startLobby));
     r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
 
     e = r.spawn_entity();
-    r.add_component(e, Components::RenderText("Lobbies list",  20));
+    r.add_component(e, Components::RenderText("Lobbies list",  20, true));
     r.add_component(e, Position(250, 550));
     r.add_component(e, Components::ColorText(white));
     r.add_component(e, Components::ClickableText([](Registry &reg) {

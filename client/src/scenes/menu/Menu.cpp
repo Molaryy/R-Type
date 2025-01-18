@@ -9,6 +9,7 @@
 #include "Components.hpp"
 #include "Components.hh"
 #include "Scenes.hpp"
+#include "IRenderer.hpp"
 
 struct PlayerScore {
     std::string name;
@@ -123,6 +124,8 @@ void createMenuScene(Registry &r) {
     r.add_component(e, Components::ColorText(white));
     const std::vector<std::string> titles = {"Play", "Leaderboard", "Settings", "Credits", "Exit"};
     const std::vector<std::function<void(Registry &r)>> callbacks = {lobbyCallback, leaderBoardCallback, settingsCallback, creditsCallback, exitCallback};
+    Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
+
 
     for (std::size_t i = 0; i < NB_MENU_BUTTONS; i++) {
         entity_t button = r.spawn_entity();
@@ -135,7 +138,13 @@ void createMenuScene(Registry &r) {
     }
     entity_t pop_up = r.spawn_entity();
 
-    r.add_component(pop_up, Components::RenderText("Enter your username:", 20));
-    r.add_component(pop_up, Position(100, 500));
+    std::string text = "Enter your username:";
+    r.add_component(pop_up, Components::RenderText(text, 20));
+    int textSie = renderer.measureText(text, 20);
+    int x = (WIDTH - renderer.measureText(text, 20)) / 3;
+    int y = (HEIGHT - renderer.measureText(text, 20)) / 2;
+    std::cout << "X: " << x << " Y: " << y << std::endl;
+    r.add_component(pop_up, Position(x, y));
     r.add_component(pop_up, Components::ColorText(white));
+    r.add_component(pop_up, Components::ColorOverText(darkBlue, grey, false));
 }

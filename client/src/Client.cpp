@@ -171,7 +171,7 @@ void Client::setupSystems_() {
     registry_.add_system(Systems::networkReceiver);
     registry_.add_system(Systems::position_velocity);
     registry_.add_system(Systems::drawAllTexts);
-    registry_.add_system(Systems::drawOverText);
+    registry_.add_system(Systems::changeColorOverText);
     registry_.add_system(Systems::handleMouse);
     registry_.add_system(Systems::drawEntities);
     registry_.add_system(Systems::handleInputs);

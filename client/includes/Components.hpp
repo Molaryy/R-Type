@@ -20,11 +20,13 @@ namespace Components {
     struct RenderText {
         std::string text;
         int fontSize;
+        bool isDrawable;
 
         void log() const {
             std::cout << "RenderText = { " "text = " << text << ", " <<
                 "fontSize = " << fontSize << "} ";
         }
+
     };
 
     struct ColorText {
@@ -132,6 +134,8 @@ namespace Components {
         float text_y;
         float text_width;
         float text_height;
+
+        bool can_draw;
 
         void log() const {
             std::cout << "Drawable = { textureID = " << textureID << " }";
