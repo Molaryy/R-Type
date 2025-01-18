@@ -6,6 +6,7 @@
 */
 
 #include "entities/Shoot.hpp"
+
 #include "Components.hh"
 #include "Components.hpp"
 #include "Packet.hpp"
@@ -29,23 +30,22 @@ void Shoot::collision(Registry &r, const entity_t me, const entity_t other) {
         network.send(network_id.id, packet.serialize());
 }
 
-entity_t Shoot::create(Registry &r, const Position &position) {
+entity_t Shoot::create(Registry &r, const Position position, const Protocol::EntityType type) {
     const entity_t entity = r.spawn_entity();
 
-    Position pos(position.x + PLAYER_SIZE, static_cast<float>(position.y + PLAYER_SIZE / 2.0));
-    r.add_component(entity, Position(pos));
-    r.add_component(entity, Velocity(PLAYER_BULLET_SPEED, 0));
-    r.add_component(entity, ComponentEntityType(Protocol::PLAYER_BULLET));
+    r.add_component(entity, Position(position));
+    r.add_component(entity, Velocity(BULLET_SPEED, 0));
+    r.add_component(entity, ComponentEntityType(type));
     r.add_component(entity, Life(1, 1));
-    r.add_component(entity, Collision(PLAYER_BULLET_SIZE, PLAYER_BULLET_SIZE, collision));
+    r.add_component(entity, Collision(BULLET_SIZE, BULLET_SIZE, collision));
 
     Network::Packet packet(
         Protocol::SpawnEntityPacket(
             entity,
-            Protocol::PLAYER_BULLET,
-            Protocol::Vector2f(pos.x, pos.y),
-            Protocol::Vector2f(PLAYER_BULLET_SIZE, PLAYER_BULLET_SIZE),
-            Protocol::Vector2f(PLAYER_BULLET_SPEED, 0),
+            type,
+            Protocol::Vector2f(position.x, position.y),
+            Protocol::Vector2f(BULLET_SIZE, BULLET_SIZE),
+            Protocol::Vector2f(BULLET_SPEED, 0),
             1
         ),
         Protocol::SPAWN

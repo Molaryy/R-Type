@@ -12,6 +12,7 @@ add_executable(${PROJECT_NAME}
         src/Score.cpp
         src/entities/Player.cpp
         src/entities/EnemyFly.cpp
+        src/entities/EnemyTurret.cpp
         src/entities/Shoot.cpp
 )
 

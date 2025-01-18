@@ -10,28 +10,6 @@
 #include <cstddef>
 #include <cstdint>
 
-#define TILE_SIZE 50
-
-#define PLAYER_SPEED 6
-#define PLAYER_SIZE 30
-#define PLAYER_HEALTH 100
-
-#define PLAYER_BULLET_RATE 15
-#define PLAYER_BULLET_DAMAGE 10
-#define PLAYER_BULLET_SPEED 15
-#define PLAYER_BULLET_SIZE 15
-
-#define TURRET_BULLET_SPEED 1
-#define TURRET_BULLET_SIZE 15
-#define TURRET_BULLET_RATE 40
-
-#define TURRET_HEALTH 4
-#define TURRET_SIZE 30
-
-#define FLY_SPEED 1
-#define FLY_SIZE 50
-#define FLY_HEALTH 20
-
 #define BOSS_HEART_SIZE 50
 #define BOSS_HEART_HEALTH 5
 #define BOSS_HEART_BULLET_RATE 60
@@ -42,6 +20,8 @@
 
 #define WIDTH 800
 #define HEIGHT 600
+
+#define CAMERA_SPEED (-1)
 
 #define SERVER_TPS 30
 

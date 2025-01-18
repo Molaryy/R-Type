@@ -40,7 +40,7 @@ entity_t Player::create(Registry &r, const std::uint16_t client_id) {
     r.add_component(entity, Delay(PLAYER_BULLET_RATE, PLAYER_BULLET_RATE));
     r.add_component(entity, Life(PLAYER_HEALTH, PLAYER_HEALTH));
     r.add_component(entity, ComponentEntityType(Protocol::PLAYER));
-    r.add_component(entity, Collision(PLAYER_SIZE, PLAYER_SIZE, collision));
+    r.add_component(entity, Collision(PLAYER_SIZE_X, PLAYER_SIZE_Y, collision));
 
     return entity;
 }

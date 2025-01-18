@@ -133,7 +133,7 @@ void Lobby::startGame() {
                         pla,
                         Protocol::PLAYER,
                         Protocol::Vector2f(0, 0),
-                        Protocol::Vector2f(PLAYER_SIZE, PLAYER_SIZE),
+                        Protocol::Vector2f(PLAYER_SIZE_X, PLAYER_SIZE_Y),
                         Protocol::Vector2f(0, 0),
                         PLAYER_HEALTH),
                     Protocol::SPAWN
@@ -146,6 +146,7 @@ void Lobby::startGame() {
                 executeNetworkSystem_(r, *this);
             });
             registry_.add_system(Systems::handleClientInputs);
+            registry_.add_system(Systems::runArtificialIntelligence);
             registry_.add_system(Systems::position_velocity);
 
             if (game_mode_)

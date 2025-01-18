@@ -172,7 +172,7 @@ void Client::setupPacketHandler_() {
             }));
             break;
         case Protocol::EntityType::ENEMY_FLY:
-            registry_.add_component(e, Components::Drawable(ENNEMY_ID, size.x, size.y, 0, 0, 65, 49, [frame = 0](Components::Drawable &drawable) mutable {
+            registry_.add_component(e, Components::Drawable(FLY_ID, size.x, size.y, 0, 0, 65, 49, [frame = 0](Components::Drawable &drawable) mutable {
                 if (frame++ < 3)
                     return;
                 frame = 0;
@@ -182,7 +182,18 @@ void Client::setupPacketHandler_() {
             }));
             registry_.add_component(e, Life(health, health));
             break;
-        default:
+        case Protocol::EntityType::ENEMY_TURRET:
+            registry_.add_component(e, Components::Drawable(FLY_ID, size.x, size.y, 0, 0, 65, 49, [frame = 0](Components::Drawable &drawable) mutable {
+                if (frame++ < 3)
+                    return;
+                frame = 0;
+                drawable.text_x += drawable.text_width;
+                if (drawable.text_x > drawable.text_width * 2)
+                    drawable.text_x = 0;
+            }));
+            registry_.add_component(e, Life(health, health));
+            break;
+            default:
             std::cerr << "Unknown entity type: " << type << std::endl;
             break;
         }
@@ -281,7 +292,7 @@ void Client::run() {
     createMenuScene(registry_);
 
     renderer_->loadTexture("assets/spaceship.gif");
-    renderer_->loadTexture("assets/enemies.gif");
+    renderer_->loadTexture("assets/enemies2.gif");
     renderer_->loadTexture("assets/missiles.gif");
     renderer_->loadTexture("assets/maps/space.png");
     renderer_->loadTexture("assets/damage.gif");
