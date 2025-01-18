@@ -6,10 +6,13 @@
 */
 
 #include "ArgHandler.hpp"
+#include <ranges>
 
 #include <iostream>
 #include <optional>
 #include <string>
+#include <algorithm>
+
 
 ArgHandler::ArgHandler(const std::size_t max_args) : max_args_(max_args) {
 }

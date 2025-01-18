@@ -19,15 +19,14 @@
 namespace Components {
     struct RenderText {
         std::string text;
-        int x;
-        int y;
         int fontSize;
+        bool isDrawable = true;
 
         void log() const {
             std::cout << "RenderText = { " "text = " << text << ", " <<
-                "x = " << x << ", " << "y = " << y << ", " <<
                 "fontSize = " << fontSize << "} ";
         }
+
     };
 
     struct ColorText {
@@ -63,6 +62,28 @@ namespace Components {
                 "b = " << static_cast<unsigned int>(newColor.b) << ", " <<
                 "a = " << static_cast<unsigned int>(newColor.a) << ", " <<
                 "}";
+        }
+    };
+
+
+    struct Rect {
+        Color color;
+
+        void log() const {
+            std::cout << "Rect = { "
+                "r = " << static_cast<unsigned int>(color.r) << ", " <<
+                "g = " << static_cast<unsigned int>(color.g) << ", " <<
+                "b = " << static_cast<unsigned int>(color.b) << ", " <<
+                "a = " << static_cast<unsigned int>(color.a) << ", " <<
+                "}";
+        }
+    };
+
+    struct InputRect {
+        std::string text;
+
+        void log() const {
+            std::cout << "InputText = { text = " << text << "}";
         }
     };
 
@@ -113,6 +134,8 @@ namespace Components {
         float text_y;
         float text_width;
         float text_height;
+
+        bool can_draw = true;
 
         void log() const {
             std::cout << "Drawable = { textureID = " << textureID << " }";

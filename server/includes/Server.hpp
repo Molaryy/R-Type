@@ -13,14 +13,14 @@
 #include "INetworkServer.hpp"
 #include "Lobby.hpp"
 #include "PacketHandler.hpp"
+#include "Score.hpp"
 
 class Server {
 public:
     Server(const Server &ref) = delete;
     void operator=(const Server &ref) = delete;
     ~Server();
-
-    static Server &createInstance(std::size_t port, std::size_t max_lobby, std::size_t max_client, bool debug);
+    static Server &createInstance(std::size_t port, std::size_t max_lobby, std::size_t max_client, bool debug, const std::string &path);
     [[nodiscard]] static Server &getInstance();
     [[nodiscard]] Network::PacketHandler &getPacketHandler();
     [[nodiscard]] Network::INetworkServer &getNetwork() const;
@@ -28,7 +28,7 @@ public:
     void run();
 
 private:
-    Server(std::size_t port, std::size_t max_lobby, std::size_t max_client, bool debug);
+    Server(std::size_t port, std::size_t max_lobby, std::size_t max_client, bool debug, const std::string &path);
 
     void gameLoop_();
     void initPacketHandling_();
@@ -47,4 +47,6 @@ private:
     std::vector<std::unique_ptr<Lobby>> lobbies_;
 
     bool serverRunning_;
+
+    Score score_;
 };

@@ -9,6 +9,7 @@ add_executable(${PROJECT_NAME}
         src/Client.cpp
         src/ArgHandler.cpp
         src/scenes/menu/Menu.cpp
+        src/scenes/menu/LeaderBoard.cpp
         src/scenes/settings/Settings.cpp
         src/scenes/game/Lobby.cpp
 )
@@ -22,7 +23,7 @@ target_include_directories(${PROJECT_NAME}
         PRIVATE ${CMAKE_SOURCE_DIR}/includes
 )
 
-target_link_libraries(${PROJECT_NAME} 
+target_link_libraries(${PROJECT_NAME}
     PRIVATE packet_network
     PRIVATE dylib
 )

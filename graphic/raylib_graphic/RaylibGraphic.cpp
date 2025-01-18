@@ -27,6 +27,10 @@ namespace Graphic {
         InitAudioDevice();
     }
 
+    void RaylibGraphic::setWindowSize(const int width, const int height) {
+        SetWindowSize(width, height);
+    }
+
     void RaylibGraphic::closeWindow() {
         ::CloseWindow();
     }
@@ -95,6 +99,10 @@ namespace Graphic {
     void RaylibGraphic::drawText(const std::string &text, const int x, const int y, const int fontSize, const unsigned char r, const unsigned char g,
                                  const unsigned char b, const unsigned char a) {
         DrawText(text.c_str(), x, y, fontSize, Color(r, g, b, a));
+    }
+
+    int RaylibGraphic::measureText(const std::string &text, int fontSize) {
+        return MeasureText(text.c_str(), fontSize);
     }
 
     event_t RaylibGraphic::getEvents() {
@@ -190,7 +198,6 @@ namespace Graphic {
 
     float RaylibGraphic::getFrameTime() {
         return ::GetFrameTime();
-    }
 
     void RaylibGraphic::setTargetFps(size_t fps) {
         ::SetTargetFPS(fps);

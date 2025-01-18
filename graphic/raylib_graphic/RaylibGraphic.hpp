@@ -20,6 +20,8 @@ namespace Graphic {
             ~RaylibGraphic() override;
 
             void initWindow(int width, int height, const std::string &title) override;
+            void setWindowSize(const int width, const int height) override;
+            void setTargetFPS(int fps) override;
             void closeWindow() override;
             bool windowShouldClose() const override;
             void beginDrawing() override;
@@ -43,6 +45,7 @@ namespace Graphic {
             void updateMusic() override;
             float getFrameTime() override;
             void setTargetFps(size_t fps) override;
+            int measureText(const std::string &text, int fontSize) override;
 
         private:
             std::unordered_map<int, Texture2D> textures_;

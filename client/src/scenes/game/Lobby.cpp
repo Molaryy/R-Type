@@ -9,6 +9,7 @@
 
 #include "Client.hpp"
 #include "Components.hpp"
+#include "Components.hh"
 #include "RTypeProtocol.hpp"
 #include "Scenes.hpp"
 
@@ -133,11 +134,13 @@ void lobbyPage(Registry &r, const std::size_t lobby_id) {
     constexpr Color darkBlue = COLOR_DARK_BLUE;
 
     entity_t e = r.spawn_entity();
-    r.add_component(e, Components::RenderText(std::string("Lobby ") + std::to_string(lobby_id), 50, 50, 40));
+    r.add_component(e, Components::RenderText(std::string("Lobby ") + std::to_string(lobby_id), 40, true));
+    r.add_component(e, Position(50, 50));
     r.add_component(e, Components::ColorText(white));
 
     e = r.spawn_entity();
-    r.add_component(e, Components::RenderText("Reload", 600, 50, 40));
+    r.add_component(e, Components::RenderText("Reload",  40, true));
+    r.add_component(e, Position(600, 50));
     r.add_component(e, Components::ColorText(white));
     r.add_component(e, Components::ClickableText([lobby_id](Registry &reg) {
         lobbyPage(reg, lobby_id);
@@ -145,17 +148,20 @@ void lobbyPage(Registry &r, const std::size_t lobby_id) {
     r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
 
     e = r.spawn_entity();
-    r.add_component(e, Components::RenderText(std::string("Players ") + std::to_string(lobby.nb_players), 300, 200, 40));
+    r.add_component(e, Components::RenderText(std::string("Players ") + std::to_string(lobby.nb_players), 40, true));
+    r.add_component(e, Position(300, 200));
     r.add_component(e, Components::ColorText(white));
 
     e = r.spawn_entity();
-    r.add_component(e, Components::RenderText("Start Game", 230, 350, 60));
+    r.add_component(e, Components::RenderText("Start Game", 60, true));
+    r.add_component(e, Position(230, 350));
     r.add_component(e, Components::ColorText(white));
     r.add_component(e, Components::ClickableText(startLobby));
     r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
 
     e = r.spawn_entity();
-    r.add_component(e, Components::RenderText("Lobbies list", 50, 550, 20));
+    r.add_component(e, Components::RenderText("Lobbies list",  20, true));
+    r.add_component(e, Position(50, 550));
     r.add_component(e, Components::ColorText(white));
     r.add_component(e, Components::ClickableText([](Registry &reg) {
         leaveLobby();
@@ -208,23 +214,27 @@ void lobbyCallback(Registry &r) {
     constexpr Color grey = COLOR_GREY;
     constexpr Color darkBlue = COLOR_DARK_BLUE;
 
-    r.add_component(e, Components::RenderText("Lobbies", 50, 50, 40));
+    r.add_component(e, Components::RenderText("Lobbies", 40, true));
+    r.add_component(e, Position(50, 50));
     r.add_component(e, Components::ColorText(white));
 
     e = r.spawn_entity();
-    r.add_component(e, Components::RenderText("Reload", 600, 50, 40));
+    r.add_component(e, Components::RenderText("Reload", 40, true));
+    r.add_component(e, Position(600, 50));
     r.add_component(e, Components::ColorText(white));
     r.add_component(e, Components::ClickableText(lobbyCallback));
     r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
 
     e = r.spawn_entity();
-    r.add_component(e, Components::RenderText("Menu", 50, 550, 20));
+    r.add_component(e, Components::RenderText("Menu", 20, true));
+    r.add_component(e, Position(50, 550));
     r.add_component(e, Components::ColorText(white));
     r.add_component(e, Components::ClickableText(createMenuScene));
     r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
 
     e = r.spawn_entity();
-    r.add_component(e, Components::RenderText("Join Random Lobby", 150, 550, 20));
+    r.add_component(e, Components::RenderText("Join Random Lobby",  20, true));
+    r.add_component(e, Position(150, 550));
     r.add_component(e, Components::ColorText(white));
     r.add_component(e, Components::ClickableText([&network]([[maybe_unused]] Registry &registry) {
         joinLobby(registry, [&network] {
@@ -235,7 +245,8 @@ void lobbyCallback(Registry &r) {
     r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
 
     e = r.spawn_entity();
-    r.add_component(e, Components::RenderText("Join New Lobby", 550, 550, 20));
+    r.add_component(e, Components::RenderText("Join New Lobby", 20, true));
+    r.add_component(e, Position(550, 550));
     r.add_component(e, Components::ColorText(white));
     r.add_component(e, Components::ClickableText([&network]([[maybe_unused]] Registry &registry) {
         joinLobby(registry, [&network] {
@@ -245,7 +256,7 @@ void lobbyCallback(Registry &r) {
     }));
     r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
 
-    const std::unordered_map<Protocol::LobbyState, std::string> state_string{
+    const std::unordered_map<Protocol::LobbyState, std::string> state_string {
         {Protocol::OPEN, "Open"},
         {Protocol::FULL, "Full"},
         {Protocol::IN_GAME, "In game"},
@@ -258,7 +269,8 @@ void lobbyCallback(Registry &r) {
         i++;
         r.add_component(button, Components::RenderText(std::string("Lobby ") + std::to_string(lobby.lobby_id)
                                                        + ": " + std::to_string(lobby.nb_players) + " player" + (lobby.nb_players > 1 ? "s " : " ") + ": Status "
-                                                       + state_string.at(lobby.lobby_state), 100, 150 + i * 40, 20));
+                                                       + state_string.at(lobby.lobby_state), 20, true));
+        r.add_component(button, Position(100, 150 + i * 40));
         r.add_component(button, Components::ColorText(grey));
         r.add_component(button, Components::ClickableText([lobby, &network]([[maybe_unused]] Registry &registry) {
             joinLobby(registry, [lobby, &network] {

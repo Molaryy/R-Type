@@ -141,6 +141,9 @@ namespace Graphic {
              */
             virtual void closeWindow() = 0;
 
+
+            virtual void setWindowSize(int width, int height) = 0;
+
             /**
              * @brief 
              * 
@@ -244,6 +247,16 @@ namespace Graphic {
              * @param a Color transparency
              */
             virtual void drawText(const std::string &text, int x, int y, int fontSize, unsigned char r, unsigned char g, unsigned char b, unsigned char a) = 0;
+
+
+            /**
+             * @brief measure text
+             * 
+             * @param text 
+             * @param fontSize 
+             * @return int 
+             */
+            virtual int measureText(const std::string &text, int fontSize) = 0;
 
             /**
              * @brief Get the Events object
