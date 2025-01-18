@@ -10,7 +10,9 @@
 #include <iostream>
 #include <unordered_map>
 #include <vector>
+#include <functional>
 
+#include "Registry.hh"
 #include "RTypeProtocol.hpp"
 
 class ComponentEntityType {
@@ -104,5 +106,20 @@ struct ArtificialIntelligence {
 
     void log() const {
         std::cout << "ArtificalIntelligence";
+    }
+};
+
+struct Bonus {
+    enum BonusType {
+        None,
+        Damage,
+        TripleShot,
+    };
+
+    BonusType type;
+    entity_t id;
+
+    void log() const {
+        std::cout << "Bonus = { " << id << " : " << type << " }";
     }
 };

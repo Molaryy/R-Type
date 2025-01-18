@@ -26,11 +26,12 @@ namespace Systems {
         SparseArray<Position> &positions = r.get_components<Position>();
         SparseArray<Velocity> &velocities = r.get_components<Velocity>();
         SparseArray<Delay> &clocks = r.get_components<Delay>();
+        const SparseArray<Bonus> &bonuses = r.get_components<Bonus>();
         const SparseArray<Life> &lifes = r.get_components<Life>();
         const SparseArray<NetworkId> &network_ids = r.get_components<NetworkId>();
         std::queue<std::function<void()>> callbacks;
 
-        for (auto &&[entity, input, velocity, position, clock, life] : IndexedZipper(inputs, velocities, positions, clocks, lifes)) {
+        for (auto &&[entity, input, velocity, position, clock, life, bonus] : IndexedZipper(inputs, velocities, positions, clocks, lifes, bonuses)) {
             if (!life.is_alive())
                 return;
             velocity.x = 0;
@@ -48,19 +49,27 @@ namespace Systems {
                 if (std::ranges::find(input.input_keys, Protocol::SHOOT) != input.input_keys.end() && clock.delay <= clock.last) {
                     clock.last = 0;
                     callbacks.emplace([&] {
-                        PlayerBullet::create(r, Position(position.x + PLAYER_SIZE_X, position.y + PLAYER_SIZE_Y / 2.0f));
+                        PlayerBullet::create(r, Position(position.x + PLAYER_SIZE_X, position.y + PLAYER_SIZE_Y / 2.0f), bonus);
                     });
                 }
             }
+            Protocol::EntityPositionVelocityPacket pos_vel(
+                entity,
+                {position.x, position.y},
+                {velocity.x, velocity.y});
             Network::Packet packet(
-                Protocol::EntityPositionVelocityPacket(
-                    entity,
-                    {position.x, position.y},
-                    {velocity.x, velocity.y}),
+                pos_vel,
                 Protocol::POSITION_VELOCITY
             );
-            for (auto &&[network_id] : Zipper(network_ids))
+            for (auto &&[network_id] : Zipper(network_ids)) {
                 network.send(network_id.id, packet.serialize());
+                if (bonus.type == Bonus::None)
+                    continue;
+                pos_vel.entity_id = bonus.id;
+                pos_vel.position = {position.x + PLAYER_SIZE_X, position.y + PLAYER_SIZE_Y / 2.0f};
+                packet = Network::Packet(pos_vel, Protocol::POSITION_VELOCITY);
+                network.send(network_id.id, packet.serialize());
+            }
         }
         while (!callbacks.empty()) {
             callbacks.front()();

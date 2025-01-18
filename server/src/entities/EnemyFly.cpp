@@ -1,4 +1,4 @@
-    /*
+/*
 ** EPITECH PROJECT, 2025
 ** R-Type
 ** File description:
@@ -7,8 +7,9 @@
 
 #include "entities/EnemyFly.hpp"
 
-#include <entities/BonusHealth.hpp>
-
+#include "entities/BonusTripleShot.hpp"
+#include "entities/BonusForce.hpp"
+#include "entities/BonusHealth.hpp"
 #include "Components.hh"
 #include "Components.hpp"
 #include "Packet.hpp"
@@ -24,7 +25,7 @@ void EnemyFly::ArtificialIntelligence::operator()(Registry &r, const entity_t me
     if (pos.has_value() && vel.has_value()) {
         const std::size_t atm = tick % FLY_ZIGZAG_SIZE;
         if (atm == 0 || atm == FLY_ZIGZAG_SIZE / 2) {
-             vel->y = -vel->y;
+            vel->y = -vel->y;
             Network::Packet packet(Protocol::EntityPositionVelocityPacket(me, {pos->x, pos->y}, {vel->x, vel->y}),
                                    Protocol::POSITION_VELOCITY);
             Network::INetworkServer &network = Server::getInstance().getNetwork();
@@ -36,12 +37,13 @@ void EnemyFly::ArtificialIntelligence::operator()(Registry &r, const entity_t me
 
 void EnemyFly::collision(Registry &r, const entity_t me, const entity_t other) {
     const std::optional<ComponentEntityType> &otherType = r.get_entity_component<ComponentEntityType>(other);
+    const std::optional<Bonus> &otherBonus = r.get_entity_component<Bonus>(other);
     std::optional<Life> &life = r.get_entity_component<Life>(me);
     if (!otherType.has_value() || !life.has_value() || !life->is_alive() || otherType->side != ComponentEntityType::Ally)
         return;
 
     if (otherType->type == Protocol::PLAYER_BULLET)
-        life->takeDamage(PLAYER_BULLET_DAMAGE);
+        life->takeDamage(PLAYER_BULLET_DAMAGE + (otherBonus->type == Bonus::Damage ? BONUS_FORCE_DAMAGE_BOOST : 0));
     if (otherType->type == Protocol::PLAYER)
         life->current = 0;
     Network::Packet packet;
@@ -56,8 +58,15 @@ void EnemyFly::collision(Registry &r, const entity_t me, const entity_t other) {
             Protocol::KILL
         );
         const std::optional<Position> &pos = r.get_entity_component<Position>(me);
-        if (pos && rand() % 10 == 0)
-            BonusHealth::create(r, pos.value());
+        const int bon = rand() % 10;
+        if (pos) {
+            if (bon == 0)
+                BonusHealth::create(r, pos.value());
+            if (bon == 1)
+                BonusForce::create(r, pos.value());
+            if (bon == 2)
+                BonusTripleShot::create(r, pos.value());
+        }
     }
 
     Network::INetworkServer &network = Server::getInstance().getNetwork();

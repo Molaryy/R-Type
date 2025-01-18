@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <Components.hpp>
+
 #include "Components.hh"
 #include "Registry.hh"
 
@@ -19,5 +21,5 @@ public:
     PlayerBullet() = delete;
 
     static void collision(Registry &r, entity_t me, entity_t other);
-    static entity_t create(Registry &r, Position position);
+    static entity_t create(Registry &r, Position position, Bonus bonus);
 };

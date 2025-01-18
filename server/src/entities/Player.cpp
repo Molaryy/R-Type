@@ -18,7 +18,8 @@
 void Player::collision(Registry &r, const entity_t me, const entity_t other) {
     const std::optional<ComponentEntityType> otherType = r.get_components<ComponentEntityType>()[other];
     std::optional<Life> &life = r.get_components<Life>()[me];
-    if (!otherType.has_value() || !life.has_value() || !life->is_alive() || otherType.value().side == ComponentEntityType::Ally)
+    if (!otherType.has_value() || !life.has_value() || !life->is_alive() || otherType.value().side == ComponentEntityType::Ally || otherType->type ==
+        Protocol::BONUS_DAMAGE || otherType->type == Protocol::BONUS_TRIPLE_SHOT)
         return;
 
     if (otherType->side == ComponentEntityType::Enemy)
@@ -46,6 +47,7 @@ entity_t Player::create(Registry &r, const std::uint16_t client_id) {
     r.add_component(entity, Life(PLAYER_HEALTH, PLAYER_HEALTH));
     r.add_component(entity, ComponentEntityType(Protocol::PLAYER));
     r.add_component(entity, Collision(PLAYER_SIZE_X, PLAYER_SIZE_Y, collision));
+    r.add_component(entity, Bonus());
 
     return entity;
 }

@@ -16,6 +16,8 @@ add_executable(${PROJECT_NAME}
         src/entities/PlayerBullet.cpp
         src/entities/EnemyBullet.cpp
         src/entities/BonusHealth.cpp
+        src/entities/BonusForce.cpp
+        src/entities/BonusTripleShot.cpp
 )
 
 target_include_directories(${PROJECT_NAME}

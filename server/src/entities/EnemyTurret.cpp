@@ -9,6 +9,7 @@
 
 #include <cmath>
 
+#include "entities/BonusForce.hpp"
 #include "Components.hh"
 #include "Components.hpp"
 #include "IndexedZipper.hh"
@@ -48,11 +49,12 @@ void EnemyTurret::ArtificialIntelligence::operator()(Registry &r, const entity_t
 void EnemyTurret::collision(Registry &r, const entity_t me, const entity_t other) {
     const std::optional<ComponentEntityType> &otherType = r.get_components<ComponentEntityType>()[other];
     std::optional<Life> &life = r.get_components<Life>()[me];
+    const std::optional<Bonus> &otherBonus = r.get_entity_component<Bonus>(other);
     if (!otherType.has_value() || !life.has_value() || !life->is_alive() || otherType->side != ComponentEntityType::Ally)
         return;
 
     if (otherType->type == Protocol::PLAYER_BULLET)
-        life->takeDamage(PLAYER_BULLET_DAMAGE);
+        life->takeDamage(PLAYER_BULLET_DAMAGE + (otherBonus->type == Bonus::Damage ? BONUS_FORCE_DAMAGE_BOOST : 0));
     if (otherType->type == Protocol::PLAYER)
         life->current = 0;
     Network::Packet packet;
