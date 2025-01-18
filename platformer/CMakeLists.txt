@@ -4,8 +4,6 @@ project(platformGame)
 
 set(CMAKE_CXX_STANDARD 23)
 
-include(../cmake/CPM.cmake)
-
 add_executable(${PROJECT_NAME}
         main.cpp
         src/Platformer.cpp
