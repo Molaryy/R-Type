@@ -6,13 +6,6 @@ set(CMAKE_CXX_STANDARD 23)
 
 include(../cmake/CPM.cmake)
 
-CPMAddPackage(
-        NAME raylib
-        GITHUB_REPOSITORY raysan5/raylib
-        GIT_TAG 5.0
-        OPTIONS "BUILD_EXAMPLES OFF" "BUILD_GAMES OFF" "BUILD_SHARED_LIBS OFF" "CMAKE_POSITION_INDEPENDENT_CODE ON" "raylib_USE_STATIC_LIBS ON"
-)
-
 add_executable(${PROJECT_NAME}
         main.cpp
         src/Platformer.cpp
