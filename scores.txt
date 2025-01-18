@@ -1,7 +1,0 @@
-Savefile for RTYPE best scores
-FORMAT : <player> <score> 
-
-PLAYER1 100
-PLAYER2 10
-PLAYER3 250
-PLAYER5 6
