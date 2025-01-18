@@ -7,6 +7,8 @@
 
 #include "entities/Player.hpp"
 
+#include <entities/BonusHealth.hpp>
+
 #include "Zipper.hh"
 #include "Components.hh"
 #include "Components.hpp"
@@ -19,7 +21,10 @@ void Player::collision(Registry &r, const entity_t me, const entity_t other) {
     if (!otherType.has_value() || !life.has_value() || !life->is_alive() || otherType.value().side == ComponentEntityType::Ally)
         return;
 
-    life->takeDamage(10);
+    if (otherType->side == ComponentEntityType::Enemy)
+        life->takeDamage(10);
+    else if (otherType->type == Protocol::BONUS_HEALTH)
+        life->heal(BONUS_HEALTH_HEALING);
 
     Network::Packet packet(
         Protocol::HitPacket(me, life->current),

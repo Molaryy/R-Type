@@ -47,6 +47,9 @@ namespace Protocol {
         BOSS_HEART,
         BOSS,
         WALL,
+        BONUS_HEALTH,
+        BONUS_DAMAGE,
+        BONUS_TRIPLE_SHOT,
     };
 
     enum LobbyState : uint8_t {

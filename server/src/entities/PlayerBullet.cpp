@@ -17,7 +17,8 @@
 void PlayerBullet::collision(Registry &r, const entity_t me, const entity_t other) {
     const std::optional<ComponentEntityType> otherType = r.get_components<ComponentEntityType>()[other];
     std::optional<Life> &life = r.get_components<Life>()[me];
-    if (!otherType.has_value() || !life.has_value() || !life->is_alive() || otherType.value().side == ComponentEntityType::Ally)
+    if (!otherType.has_value() || !life.has_value() || !life->is_alive() || otherType.value().side == ComponentEntityType::Ally
+        || otherType->type == Protocol::ENEMY_BULLET)
         return;
 
     life->current = 0;

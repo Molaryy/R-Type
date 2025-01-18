@@ -1,4 +1,4 @@
-/*
+    /*
 ** EPITECH PROJECT, 2025
 ** R-Type
 ** File description:
@@ -6,6 +6,8 @@
 */
 
 #include "entities/EnemyFly.hpp"
+
+#include <entities/BonusHealth.hpp>
 
 #include "Components.hh"
 #include "Components.hpp"
@@ -33,8 +35,8 @@ void EnemyFly::ArtificialIntelligence::operator()(Registry &r, const entity_t me
 }
 
 void EnemyFly::collision(Registry &r, const entity_t me, const entity_t other) {
-    const std::optional<ComponentEntityType> &otherType = r.get_components<ComponentEntityType>()[other];
-    std::optional<Life> &life = r.get_components<Life>()[me];
+    const std::optional<ComponentEntityType> &otherType = r.get_entity_component<ComponentEntityType>(other);
+    std::optional<Life> &life = r.get_entity_component<Life>(me);
     if (!otherType.has_value() || !life.has_value() || !life->is_alive() || otherType->side != ComponentEntityType::Ally)
         return;
 
@@ -53,6 +55,9 @@ void EnemyFly::collision(Registry &r, const entity_t me, const entity_t other) {
             Protocol::DeadPacket(me, true),
             Protocol::KILL
         );
+        const std::optional<Position> &pos = r.get_entity_component<Position>(me);
+        if (pos && rand() % 10 == 0)
+            BonusHealth::create(r, pos.value());
     }
 
     Network::INetworkServer &network = Server::getInstance().getNetwork();
