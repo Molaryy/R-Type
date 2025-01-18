@@ -18,7 +18,7 @@ env:
 
 jobs:
   commits:
-    if: "B-CPP-500-PAR-5-2-rtype-nicolas.gillard" == github.event.repository.name
+    if: 'B-CPP-500-PAR-5-2-rtype-nicolas.gillard' != github.event.repository.name
 
     name: Checking for Conventional Commits
     runs-on: ubuntu-latest
