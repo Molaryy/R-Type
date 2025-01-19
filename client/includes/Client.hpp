@@ -38,6 +38,18 @@ public:
 
     Registry &getRegistry();
 
+    // methods for settings
+    void toggleMusic();
+    void playMusic();
+    void stopMusic();
+
+    void toggleSoundEffects();
+    void playSoundEffect(int soundID);
+
+    void toggleColorBlindMode();
+    void changeFPS();
+    void changeResolution();
+
 private:
     Client(const std::string &ip, std::size_t port, bool debug);
 
@@ -56,4 +68,16 @@ private:
     bool debug_;
     static std::unique_ptr<Client> instance_;
     std::size_t my_server_id_{};
+
+    // config for settings
+    int musicID_ = -1;
+    bool musicEnabled_ = true;
+
+    bool soundEffectsEnabled_ = true;
+    int currentResolutionIndex_ = 0;
+    int currentFPSIndex_ = 1;
+    bool colorBlindModeEnabled_ = false;
+
+    const std::vector<std::pair<int, int>> resolutions_ = {{800, 600}, {1280, 720}, {1920, 1080}};
+    const std::vector<int> fpsOptions_ = {30, 60, 120};
 };

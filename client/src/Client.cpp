@@ -154,6 +154,7 @@ void Client::setupPacketHandler_() {
         }
     });
     packet_handler_.setPacketCallback(Protocol::HIT, [](Network::Packet &) {
+        // here TODO RECUP HIT AND DISPLAY IT
         std::cout << "HIT received\n";
     });
     packet_handler_.setPacketCallback(Protocol::KILL, [](Network::Packet &) {
@@ -184,10 +185,64 @@ void Client::setupSystems_() {
 
 std::unique_ptr<Client> Client::instance_ = nullptr;
 
+void Client::changeResolution() {
+    currentResolutionIndex_ = (currentResolutionIndex_ + 1) % resolutions_.size();
+    auto [width, height] = resolutions_[currentResolutionIndex_];
+    renderer_->setWindowSize(width, height);
+    std::cout << "Resolution changed to: " << width << "x" << height << std::endl;
+}
+
+void Client::toggleColorBlindMode() {
+    colorBlindModeEnabled_ = !colorBlindModeEnabled_;
+    std::cout << "Colorblind mode " << (colorBlindModeEnabled_ ? "enabled" : "disabled") << std::endl;
+}
+
+void Client::changeFPS() {
+    currentFPSIndex_ = (currentFPSIndex_ + 1) % fpsOptions_.size();
+    int fps = fpsOptions_[currentFPSIndex_];
+    renderer_->setTargetFPS(fps);
+    std::cout << "FPS changed to: " << fps << std::endl;
+}
+
+void Client::toggleSoundEffects() {
+    soundEffectsEnabled_ = !soundEffectsEnabled_;
+    std::cout << "Sound Effects " << (soundEffectsEnabled_ ? "enabled" : "disabled") << std::endl;
+}
+
+void Client::toggleMusic() {
+    musicEnabled_ = !musicEnabled_;
+    if (musicEnabled_) {
+        renderer_->playMusic(musicID_);
+    } else {
+        renderer_->stopMusic(musicID_);
+    }
+    std::cout << "Music " << (musicEnabled_ ? "enabled" : "disabled") << std::endl;
+}
+
+void Client::playMusic() {
+    if (musicEnabled_ && musicID_ != -1) {
+        renderer_->playMusic(musicID_);
+    }
+}
+
+void Client::stopMusic() {
+    if (musicID_ != -1) {
+        renderer_->stopMusic(musicID_);
+    }
+}
+
+void Client::playSoundEffect(int soundID) {
+    if (soundEffectsEnabled_) {
+        renderer_->playSound(soundID);
+    }
+}
+
 void Client::run() {
     setupSystems_();
 
     renderer_->initWindow(WIDTH, HEIGHT, "rtype");
+    musicID_ = renderer_->loadMusic("assets/sounds/Music/space-asteroids.mp3");
+    playMusic();
 
     createMenuScene(registry_);
 
@@ -197,11 +252,13 @@ void Client::run() {
     renderer_->loadTexture("assets/maps/space.png");
 
     while (!renderer_->windowShouldClose()) {
+        renderer_->updateMusic();
         renderer_->beginDrawing();
         renderer_->clearBackground(0, 0, 0, 0);
 
         registry_.run_systems();
         renderer_->endDrawing();
     }
+    renderer_->unloadMusic(musicID_);
     renderer_->closeWindow();
 }

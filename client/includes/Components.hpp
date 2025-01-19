@@ -66,9 +66,6 @@ namespace Components {
         }
     };
 
-    struct ScrollableText {
-    };
-
     struct ServerId {
         std::size_t id;
 
