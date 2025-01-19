@@ -221,7 +221,8 @@ namespace Systems {
         }
     }
 
-    inline void handleInputs([[maybe_unused]] Registry &r) {
+    inline void handleInputs([[maybe_unused]] Registry &r)
+    {
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
         Graphic::event_t events = renderer.getEvents();
         static Protocol::InputsKeysPacket last_inputs{};

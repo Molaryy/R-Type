@@ -12,17 +12,27 @@
 #include "Components.hh"
 #include "RTypeProtocol.hpp"
 #include "Scenes.hpp"
+#include "IRenderer.hpp"
 
-void Lobby::timeOut(const std::chrono::system_clock::time_point time_out_clock, Network::INetworkClient &network)
+bool Lobby::timeOut(const std::chrono::system_clock::time_point time_out_clock, Network::INetworkClient &network)
 {
+    Registry &r = Client::getInstance().getRegistry();
     const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
     if (const std::chrono::duration<double> elapsed_seconds = now - time_out_clock; elapsed_seconds.count() > 3.0)
+    {
         std::cerr << "Couldn't receive packet: time out" << std::endl;
+        const entity_t popup = r.spawn_entity();
+        r.add_component(popup, Components::RenderText("Connection to server timed out. Try again.", 20, true));
+        r.add_component(popup, Position(200, 250));
+        r.add_component(popup, Components::ColorText({255, 0, 0, 255}));
+        return true;
+    }
     std::vector<uint8_t> oldest_packet = network.getOldestPacket();
     if (oldest_packet.empty())
-        return;
+        return false;
     Network::Packet deserialized_packet(oldest_packet);
     Client::getInstance().getPacketHandler()(deserialized_packet);
+    return false;
 }
 
 void Lobby::leaveLobby()
@@ -39,8 +49,7 @@ void Lobby::leaveLobby()
     network.send(packetSended.serialize());
 
     const std::chrono::system_clock::time_point time_out_clock = std::chrono::system_clock::now();
-    while (!received)
-        timeOut(time_out_clock, network);
+    while (!received && !timeOut(time_out_clock, network));
 }
 
 std::vector<Protocol::LobbyDataPacket> Lobby::getLobbyList(Network::INetworkClient &network, Network::PacketHandler &packet_handler)
@@ -74,10 +83,8 @@ std::vector<Protocol::LobbyDataPacket> Lobby::getLobbyList(Network::INetworkClie
 
     const std::chrono::system_clock::time_point time_out_clock = std::chrono::system_clock::now();
 
-    while (!get_lobby_list)
-        timeOut(time_out_clock, network);
-    while (lobby_data.size() < nb_lobby)
-        timeOut(time_out_clock, network);
+    while (!get_lobby_list && !timeOut(time_out_clock, network))
+    while (lobby_data.size() < nb_lobby && !timeOut(time_out_clock, network));
     return lobby_data;
 }
 
@@ -99,8 +106,7 @@ Protocol::LobbyDataPacket Lobby::getLobbyData(const std::size_t lobby_id)
 
     const std::chrono::system_clock::time_point time_out_clock = std::chrono::system_clock::now();
 
-    while (!received_lobby_data)
-        timeOut(time_out_clock, network);
+    while (!received_lobby_data && !timeOut(time_out_clock, network));
     return lobby_data;
 }
 
@@ -169,16 +175,7 @@ r.add_component(e, Components::ColorOverText(darkBlue, grey));
 
         const std::chrono::system_clock::time_point time_out_clock = std::chrono::system_clock::now();
 
-        while (!received_lobby_data) {
-            const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
-            if (const std::chrono::duration<double> elapsed_seconds = now - time_out_clock; elapsed_seconds.count() > 3.0)
-                throw std::runtime_error("Can't get lobby list: time out");
-            std::vector<uint8_t> oldest_packet = network.getOldestPacket();
-            if (oldest_packet.empty())
-                continue;
-            Network::Packet deserialized_packet(oldest_packet);
-            packet_handler(deserialized_packet);
-        }
+        while (!received_lobby_data && !timeOut(time_out_clock, network));
         lobbyPage(reg, lobby_id);
     }));
     r.add_component(e, Components::ColorOverText(darkBlue, grey));
