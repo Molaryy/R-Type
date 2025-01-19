@@ -14,11 +14,9 @@ env:
   USER: molaryy35
   IMAGE: doc-docusaurus
   VERSION: latest
-
-env:
-  # All binaries separated by ' '
   EXECUTABLES: "r-type_client r-type_server"
   MIRROR_URL: git@github.com:EpitechPromo2027/B-CPP-500-PAR-5-2-rtype-nicolas.gillard.git
+
 
 jobs:
   commits:
