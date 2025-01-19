@@ -115,9 +115,7 @@ namespace Graphic {
             events.inputs.push_back(CloseWindow);
 
         for (auto const &[raylibKey, customKey] : inputMap_) {
-            if (IsKeyDown(raylibKey) && (customKey == UpArrow || customKey == DownArrow || customKey == LeftArrow || customKey == RightArrow)) {
-                events.inputs.push_back(customKey);
-            } else if (IsKeyPressed(raylibKey)) {
+            if (IsKeyDown(raylibKey)) {
                 events.inputs.push_back(customKey);
             }
         }
@@ -129,6 +127,7 @@ namespace Graphic {
         }
         return events;
     }
+
 
     void RaylibGraphic::initAudioDevice() {
         ::InitAudioDevice();

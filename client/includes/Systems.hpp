@@ -49,41 +49,6 @@ namespace Systems {
         }
     }
 
-    inline void handleInputBox(Registry &r) {
-        Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
-        Graphic::event_t events = renderer.getEvents();
-        auto &inputTexts = r.get_components<Components::InputText>();
-        auto &positions = r.get_components<Position>();
-        auto &inputs = r.get_components<Components::Input>();
-        auto &rects = r.get_components<Components::Rect>();
-        auto &colorsTexts = r.get_components<Components::ColorText>();
-
-        for (auto &&[inputText, pos, input, colorText] : Zipper(inputTexts,  positions, inputs, colorsTexts)) {
-            for (auto &&[rect, inputRect] : Zipper(rects, inputs)) {
-                if (inputRect.inputTextTitle == input.inputTextTitle) {
-                    for (auto key : events.inputs) {
-                        if (key >= Graphic::Keys::A && key <= Graphic::Keys::Z) {
-                            key = static_cast<Graphic::Keys>(key + 65);
-                            if (inputText.text.text.size() < NAME_SIZE) {
-                                inputText.text.text += static_cast<char>(key);
-                            }
-                        } else if (key >= Graphic::Keys::Num0 && key <= Graphic::Keys::Num9) {
-                            key = static_cast<Graphic::Keys>(key + 22);
-                            if (inputText.text.text.size() < NAME_SIZE) {
-                                inputText.text.text += static_cast<char>(key);
-                            }
-                        } else if (key == Graphic::Keys::Backspace) {
-                            if (!inputText.text.text.empty()) {
-                                inputText.text.text.pop_back();
-                            }
-                        }
-                    }
-                }
-            renderer.drawText(inputText.text.text, pos.x, pos.y + 30, inputText.text.fontSize, colorText.color.r, colorText.color.g, colorText.color.b, colorText.color.a);
-            }
-        }
-    }
-
     inline void drawRectangles(Registry &r) {
         auto &positions = r.get_components<Position>();
         auto &rects = r.get_components<Components::Rect>();
@@ -119,6 +84,7 @@ namespace Systems {
 
         for (auto &&[clickable, mouseOverText] : Zipper(clickableTexts, mouseOverTexts)) {
             if (mouseOverText.isOver) {
+                std::cout << "MouseOverTextSound" << std::endl;
                 secureCallback = clickable.callback;
                 soundID = clickable.soundID;
                 break;
@@ -200,6 +166,58 @@ namespace Systems {
         }
     }
 
+    inline void handleInputBox(Registry &r) {
+        Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
+        Graphic::event_t events = renderer.getEvents();
+        auto &inputTexts = r.get_components<Components::InputText>();
+        auto &positions = r.get_components<Position>();
+        auto &inputs = r.get_components<Components::Input>();
+        auto &rects = r.get_components<Components::Rect>();
+        auto &colorsTexts = r.get_components<Components::ColorText>();
+        static std::vector<Graphic::Keys> last_inputs;
+        bool canUpdate = true;
+
+
+        if (events.inputs.size() != last_inputs.size()) {
+            last_inputs = events.inputs;
+            canUpdate = false;
+        }
+
+        for (std::size_t i = 0; i < events.inputs.size(); ++i) {
+            if (events.inputs[i] != last_inputs[i]) {
+                last_inputs = events.inputs;
+                canUpdate = false;
+                break;
+            }
+        }
+        
+
+        for (auto &&[inputText, pos, input, colorText] : Zipper(inputTexts,  positions, inputs, colorsTexts)) {
+            for (auto &&[rect, inputRect] : Zipper(rects, inputs)) {
+                if (inputRect.inputTextTitle == input.inputTextTitle && canUpdate) {
+                    for (auto key : events.inputs) {
+                        if (key >= Graphic::Keys::A && key <= Graphic::Keys::Z) {
+                            key = static_cast<Graphic::Keys>(key + 65);
+                            if (inputText.text.text.size() < NAME_SIZE) {
+                                inputText.text.text += static_cast<char>(key);
+                            }
+                        } else if (key >= Graphic::Keys::Num0 && key <= Graphic::Keys::Num9) {
+                            key = static_cast<Graphic::Keys>(key + 22);
+                            if (inputText.text.text.size() < NAME_SIZE) {
+                                inputText.text.text += static_cast<char>(key);
+                            }
+                        } else if (key == Graphic::Keys::Backspace) {
+                            if (!inputText.text.text.empty()) {
+                                inputText.text.text.pop_back();
+                            }
+                        }
+                    }
+                }
+            renderer.drawText(inputText.text.text, pos.x, pos.y + 30, inputText.text.fontSize, colorText.color.r, colorText.color.g, colorText.color.b, colorText.color.a);
+            }
+        }
+    }
+
     inline void handleInputs([[maybe_unused]] Registry &r) {
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
         Graphic::event_t events = renderer.getEvents();
@@ -222,5 +240,5 @@ namespace Systems {
                 return;
             }
         }
-    }
+    } 
 }

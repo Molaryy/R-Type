@@ -373,6 +373,8 @@ void Client::run() {
 
     for (const std::string &path : textures_paths)
         renderer_->loadTexture(path);
+    for (const std::string &path : sounds_paths)
+        renderer_->loadSound(path);
 
     while (!renderer_->windowShouldClose()) {
         renderer_->beginDrawing();

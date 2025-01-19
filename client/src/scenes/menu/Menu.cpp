@@ -197,6 +197,7 @@ void createSignForm(Registry &r) {
 
 std::function<void(int)> makeSound(int soundID) {
     return [soundID](int passedSoundID) {
+        std::cout << "Playing sound with id: " << soundID << std::endl;
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
         renderer.playSound(soundID);
     };
