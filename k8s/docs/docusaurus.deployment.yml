@@ -4,6 +4,7 @@ metadata:
   name: docusaurus
   labels:
     app: docusaurus
+  namespace: ingress-nginx
 spec:
   replicas: 1
   selector:

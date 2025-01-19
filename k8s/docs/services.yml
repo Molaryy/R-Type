@@ -4,6 +4,7 @@ metadata:
   name: docusaurus
   labels:
     app: docusaurus
+  namespace: ingress-nginx
 spec:
   selector:
     app: docusaurus
@@ -19,6 +20,7 @@ metadata:
   name: doxygen
   labels:
     app: doxygen
+  namespace: ingress-nginx
 spec:
   selector:
     app: doxygen
@@ -34,6 +36,7 @@ metadata:
   name: rfc
   labels:
     app: rfc
+  namespace: ingress-nginx
 spec:
   selector:
     app: rfc

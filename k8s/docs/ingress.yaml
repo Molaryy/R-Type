@@ -2,24 +2,31 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: app-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+  namespace: ingress-nginx
 spec:
+  ingressClassName: nginx
   rules:
-    - host: r-type.fr
+    - host: r-type.molaryy.fr
       http:
         paths:
-          - path: /docusaurus
+          - path: /
             pathType: Prefix
             backend:
               service:
                 name: docusaurus
                 port:
                   number: 3000
-          - path: /doxygen
-            pathType: Prefix
-            backend:
-              service:
-                name: doxygen
-                port:
-                  number: 8080
+          #- path: /doxygen
+          #  pathType: Prefix
+          #  backend:
+          #    service:
+          #      name: doxygen
+          #      port:
+          #        number: 8080
+          #- path: /rfc
+          #  pathType: Prefix
+          #  backend:
+          #    service:
+          #      name: rfc
+          #      port:
+          #        number: 8081

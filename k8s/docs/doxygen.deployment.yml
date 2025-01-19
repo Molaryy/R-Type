@@ -4,6 +4,7 @@ metadata:
   name: doxygen
   labels:
     app: doxygen
+  namespace: ingress-nginx
 spec:
   replicas: 1
   selector:
