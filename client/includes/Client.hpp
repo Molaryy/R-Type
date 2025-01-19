@@ -15,9 +15,6 @@
 #include "PacketHandler.hpp"
 #include "Registry.hh"
 
-#define WIDTH 800
-#define HEIGHT 600
-
 class Client
 {
 public:
@@ -37,6 +34,9 @@ public:
     Network::PacketHandler &getPacketHandler();
 
     Registry &getRegistry();
+
+    std::size_t my_server_id{};
+    std::size_t lobby_id{};
 
     // methods for settings
     void toggleMusic();
@@ -67,7 +67,6 @@ private:
     Registry registry_;
     bool debug_;
     static std::unique_ptr<Client> instance_;
-    std::size_t my_server_id_{};
 
     // config for settings
     int musicID_ = -1;
