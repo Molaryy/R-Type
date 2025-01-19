@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docusaurus
+  labels:
+    app: docusaurus
+  namespace: ingress-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: docusaurus
+  template:
+    metadata:
+      labels:
+        app: docusaurus
+    spec:
+      containers:
+        - name: docusaurus
+          image: molaryy35/doc-docusaurus
+          ports:
+            - containerPort: 3000
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 500m
+              memory: 256Mi

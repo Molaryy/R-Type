@@ -199,10 +199,10 @@ void createSignForm(Registry &r) {
 
 
 std::function<void(int)> makeSound(int soundID) {
-    std::cout << "Playing sound with ID: " << soundID << std::endl;
-    Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
-    renderer.playSound(soundID);
-    return [soundID](int passedSoundID) {};
+    return [soundID](int passedSoundID) {
+        Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
+        renderer.playSound(soundID);
+    };
 }
 
 void createMenuScene(Registry &r) {
@@ -212,6 +212,7 @@ void createMenuScene(Registry &r) {
     constexpr Color white = COLOR_WHITE;
     constexpr Color grey = COLOR_GREY;
     constexpr Color darkBlue = COLOR_DARK_BLUE;
+
 
     r.add_component(e, Components::RenderText("R-TYPE", 40, true));
     r.add_component(e, Position(50, 50));

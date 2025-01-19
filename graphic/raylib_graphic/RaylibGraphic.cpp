@@ -138,9 +138,12 @@ namespace Graphic {
         auto it = sounds_.find(soundID);
 
         if (it != sounds_.end()) {
-            PlaySound(it->second);
+            if (!IsSoundPlaying(it->second)) { // Check if the sound is already playing
+                PlaySound(it->second);
+            }
         }
     }
+
 
     int RaylibGraphic::loadMusic(const std::string &path) {
         Music music = LoadMusicStream(path.c_str());
