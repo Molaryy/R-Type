@@ -89,10 +89,16 @@ namespace Systems {
             {EnemyTurret::create, 1},
             {EnemyTank::create, 0.3}
         };
-        const double difficulty = static_cast<double>(pos_in_level) / 300.0 * (0.8 + static_cast<double>(std::rand()) / RAND_MAX * (1.2 - 0.8));
+        double difficulty = static_cast<double>(pos_in_level) / 300.0 * (0.8 + static_cast<double>(std::rand()) / RAND_MAX * (1.2 - 0.8));
+        if (difficulty > 1)
+            difficulty = 1 + (difficulty - 1) * 0.5;
+        if (difficulty > 3)
+            difficulty = 3 + (difficulty - 3) * 0.5;
+        if (difficulty > 4)
+            difficulty = 4;
         std::cout << difficulty << std::endl;
         for (auto &&[spawn, rate] : spawn_rates) {
-            for (size_t _ : std::ranges::iota_view{static_cast<size_t>(0), static_cast<size_t>(difficulty * rate)})
+            for ([[maybe_unused]] std::size_t _ : std::ranges::iota_view{static_cast<std::size_t>(0), static_cast<std::size_t>(difficulty * rate)})
                 spawn(r);
         }
     }

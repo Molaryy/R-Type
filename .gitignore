@@ -48,11 +48,6 @@ platformGame
 .idea/**/dictionaries
 .idea/**/shelf
 .idea/*.iml
-.idea/.name
-.idea/modules.xml
-.idea/vcs.xml
-.idea/misc.xml
-.idea/inspectionProfiles/Project_Default.xml
 
 # AWS User-specific
 .idea/**/aws.xml
@@ -61,7 +56,13 @@ platformGame
 .idea/**/contentModel.xml
 
 # Sensitive or high-churn files
-.idea/
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+.idea/**/dbnavigator.xml
 
 # Gradle
 .idea/**/gradle.xml
