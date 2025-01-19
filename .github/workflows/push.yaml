@@ -142,7 +142,7 @@ jobs:
       - name: "Push the image"
         working-directory: ./docs/docusaurus
         run: |
-          docker build --platform linux/arm64 -t ${{ env.USER }}/${{ env.IMAGE_DOCUSAURUS }} .
+          docker build --platform linux/amd64 -t ${{ env.USER }}/${{ env.IMAGE_DOCUSAURUS }} .
           docker image tag ${{ env.USER }}/${{ env.IMAGE_DOCUSAURUS }} ${{ env.USER }}/${{ env.IMAGE_DOCUSAURUS }}:${{ env.VERSION }}
           docker push ${{ env.USER }}/${{ env.IMAGE_DOCUSAURUS }}:${{ env.VERSION }}
   doxygen-image:
@@ -165,7 +165,7 @@ jobs:
       - name: "Push the image"
         working-directory: ./docs/doxygen
         run: |
-          docker build --platform linux/arm64 -t ${{ env.USER }}/${{ env.IMAGE_DOXYGEN }} .
+          docker build --platform linux/amd64 -t ${{ env.USER }}/${{ env.IMAGE_DOXYGEN }} .
           docker image tag ${{ env.USER }}/${{ env.IMAGE_DOXYGEN }} ${{ env.USER }}/${{ env.IMAGE_DOXYGEN }}:${{ env.VERSION }}
           docker push ${{ env.USER }}/${{ env.IMAGE_DOXYGEN }}:${{ env.VERSION }}
   rfc-image:
@@ -188,6 +188,6 @@ jobs:
       - name: "Push the image"
         working-directory: ./docs/rfc
         run: |
-          docker build --platform linux/arm64 -t ${{ env.USER }}/${{ env.IMAGE_RFC }} .
+          docker build --platform linux/amd64 -t ${{ env.USER }}/${{ env.IMAGE_RFC }} .
           docker image tag ${{ env.USER }}/${{ env.IMAGE_RFC }} ${{ env.USER }}/${{ env.IMAGE_RFC }}:${{ env.VERSION }}
           docker push ${{ env.USER }}/${{ env.IMAGE_RFC }}:${{ env.VERSION }}
