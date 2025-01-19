@@ -49,7 +49,6 @@ namespace Systems {
         }
     }
 
-    #define NAME_SIZE 30
     inline void handleInputBox(Registry &r) {
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
         Graphic::event_t events = renderer.getEvents();
@@ -172,16 +171,32 @@ namespace Systems {
         }
     }
 
+    inline void spriteSheetHandler(Registry &r) {
+        SparseArray<Components::Drawable> &drawables = r.get_components<Components::Drawable>();
+
+        for (auto &&[drawable] : Zipper(drawables))
+            drawable.next_frame(drawable);
+    }
+
     inline void drawEntities(Registry &r) {
         auto &positions = r.get_components<Position>();
+        auto &lifes = r.get_components<Life>();
         auto &drawables = r.get_components<Components::Drawable>();
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
 
         for (auto &&[drawable, position] : Zipper(drawables, positions)) {
-            //if (!drawable.can_draw)
-            //    continue;
-            renderer.drawTexture(drawable.textureID, position.x, position.y,
-                                 drawable.width, drawable.height, drawable.text_x, drawable.text_y, drawable.text_width, drawable.text_height);
+            if (!drawable.can_draw)
+                continue;
+            renderer.drawTexture(drawable.textureID, position.x, position.y, drawable.width, drawable.height, drawable.text_x, drawable.text_y,
+                                 drawable.text_width, drawable.text_height);
+        }
+
+        for (auto &&[life, drawable, position] : Zipper(lifes, drawables, positions)) {
+            if (!drawable.can_draw)
+                continue;
+            const float life_ratio = static_cast<float>(life.current) / static_cast<float>(life.max);
+            renderer.drawRectangle(position.x, position.y - 10.f, drawable.width, 5.f, 255, 0, 0, 255);
+            renderer.drawRectangle(position.x, position.y - 10.f, drawable.width * life_ratio, 5.f, 0, 128, 0, 255);
         }
     }
 

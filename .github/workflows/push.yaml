@@ -57,12 +57,59 @@ jobs:
               exit 1
             fi
           done
+  build_windows:
+    name: Build on Windows
+    runs-on: windows-latest
+    needs: commits
 
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [Release]
+        cpp_compiler: [cl]
+        c_compiler: [cl]
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+
+      - name: Set reusable strings
+        id: strings
+        shell: bash
+        run: |
+          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
+      - name: Configure CMake
+        shell: cmd
+        run: |
+          cmake -B ${{ steps.strings.outputs.build-output-dir }} -S ${{ github.workspace }} ^
+            -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} ^
+            -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} ^
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+
+      - name: Build
+        shell: cmd
+        run: |
+          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+
+      - name: Check if all files exist
+        shell: bash
+        run: |
+          for file in $EXECUTABLES; do
+            if test -f "$file"; then
+              echo "File $file exists"
+            else
+              echo "File $file does not exist"
+              exit 1
+            fi
+          done
   push_to_mirror:
     name: "Pushing To The Mirror Repository"
     runs-on: ubuntu-latest
 
-    needs: build
+    needs:
+     - build
+     - build_windows
 
     steps:
       - name: Checkout's a repository
@@ -74,53 +121,6 @@ jobs:
         with:
           target_repo_url: ${{ env.MIRROR_URL }}
           ssh_private_key: ${{ secrets.GIT_SSH_PRIVATE_KEY }}
-
-  build_windows:
-      name: Build on Windows
-      runs-on: windows-latest
-      needs: commits
-
-      strategy:
-        fail-fast: false
-        matrix:
-          build_type: [Release]
-          cpp_compiler: [cl]
-          c_compiler: [cl]
-
-      steps:
-        - name: Checkout the repository
-          uses: actions/checkout@v4
-
-        - name: Set reusable strings
-          id: strings
-          shell: bash
-          run: |
-            echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-
-        - name: Configure CMake
-          shell: cmd
-          run: |
-            cmake -B ${{ steps.strings.outputs.build-output-dir }} -S ${{ github.workspace }} ^
-              -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} ^
-              -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} ^
-              -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-
-        - name: Build
-          shell: cmd
-          run: |
-            cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
-
-        - name: Check if all files exist
-          shell: bash
-          run: |
-            for file in $EXECUTABLES; do
-              if test -f "$file"; then
-                echo "File $file exists"
-              else
-                echo "File $file does not exist"
-                exit 1
-              fi
-            done
 
   docusaurus-image:
     name: Create docusaurus documentation image

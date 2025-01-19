@@ -19,7 +19,7 @@ namespace Components {
     struct RenderText {
         std::string text;
         int fontSize;
-        bool isDrawable;
+        bool isDrawable = true;
 
         void log() const {
             std::cout << "RenderText = { " "text = " << text << ", " <<
@@ -164,7 +164,9 @@ namespace Components {
         float text_width;
         float text_height;
 
-        bool can_draw;
+        std::function<void(Drawable &)> next_frame;
+
+        bool can_draw = true;
 
         void log() const {
             std::cout << "Drawable = { textureID = " << textureID << " }";

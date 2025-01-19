@@ -20,16 +20,18 @@ Lobby::Lobby(const std::size_t maxClient, const bool debug)
     : networkLib_(Server::getInstance().getNetwork()),
       maxClient_(maxClient),
       debug_(debug),
-      state_(Protocol::OPEN) {
+      game_mode_(true),
+      state_(Protocol::OPEN),
+      pos_in_level_(0) {
     static std::size_t next_lobby = 0;
-    lobbyId_ = next_lobby++;
+    lobby_id_ = next_lobby++;
     thread_ = std::thread(&Lobby::run_, this);
 }
 
 Lobby::~Lobby() = default;
 
 std::size_t Lobby::getId() const {
-    return lobbyId_;
+    return lobby_id_;
 }
 
 Protocol::LobbyState Lobby::getState() const {
@@ -75,7 +77,7 @@ void Lobby::addPlayer(const uint16_t client) {
             const entity_t entity = Player::create(registry_, client);
             players_.emplace(client, entity);
 
-            Network::Packet response(Protocol::AcceptLobbyJoinPacket(lobbyId_, entity), Protocol::ACCEPT_LOBBY_JOIN);
+            Network::Packet response(Protocol::AcceptLobbyJoinPacket(lobby_id_, entity), Protocol::ACCEPT_LOBBY_JOIN);
             networkLib_.send(client, response.serialize());
         });
     }
@@ -131,21 +133,40 @@ void Lobby::startGame() {
                         pla,
                         Protocol::PLAYER,
                         Protocol::Vector2f(0, 0),
-                        Protocol::Vector2f(0, 0)),
+                        Protocol::Vector2f(PLAYER_SIZE_X, PLAYER_SIZE_Y),
+                        Protocol::Vector2f(0, 0),
+                        PLAYER_HEALTH),
                     Protocol::SPAWN
                 );
                 networkLib_.sendAll(new_player_packet.serialize());
             }
+            pos_in_level_ = 0;
             registry_.clear_systems();
 
             registry_.add_system([this]([[maybe_unused]] const Registry &r) {
                 executeNetworkSystem_(r, *this);
             });
             registry_.add_system(Systems::handleClientInputs);
+            registry_.add_system(Systems::runArtificialIntelligence);
             registry_.add_system(Systems::position_velocity);
-            registry_.add_system(Systems::levelHandler);
+            registry_.add_system(Systems::killOutOfScreenEntity);
+
+            if (game_mode_)
+                registry_.add_system([this](Registry &r) {
+                    Systems::levelEndlessHandler(r, pos_in_level_);
+                });
+            else
+                registry_.add_system([this](Registry &r) {
+                    Systems::levelCampaignHandler(r, pos_in_level_);
+                });
+
             registry_.add_system(Systems::generic_collide);
-            registry_.add_system(Systems::sendGameState);
+            registry_.add_system(Systems::killNoHealthEntitys);
+            registry_.add_system([&](Registry &r) {
+                Systems::gameOver(r, [this] {
+                    this->gameOverCallback_();
+                });
+            });
             if (debug_)
                 registry_.add_system(Systems::log);
             registry_.add_system([](Registry &r) {
@@ -173,6 +194,28 @@ void Lobby::setInputKeys(std::vector<Protocol::InputKey> key_pressed, const uint
     }
 }
 
+void Lobby::swapGameMode(uint16_t client) {
+    {
+        std::unique_lock lock(networkMutex_);
+
+        networkTasks_.emplace([this, client] {
+            game_mode_ = !game_mode_;
+            const Protocol::LobbyDataPacket lobbyDataPacket(lobby_id_, state_, static_cast<uint8_t>(players_.size()), game_mode_);
+
+            Network::Packet lobbyData(lobbyDataPacket, Protocol::CommandIdServer::LOBBY_DATA);
+            networkLib_.send(client, lobbyData.serialize());
+        });
+    }
+}
+
+bool Lobby::getGameMode() const {
+    return game_mode_;
+}
+
+std::size_t Lobby::getScore() const {
+    return pos_in_level_;
+}
+
 void Lobby::executeNetworkSystem_([[maybe_unused]] const Registry &r, Lobby &lobby) {
     {
         std::unique_lock lock(lobby.networkMutex_);
@@ -185,7 +228,9 @@ void Lobby::executeNetworkSystem_([[maybe_unused]] const Registry &r, Lobby &lob
     }
 }
 
-void Lobby::run_() {
+void Lobby::registerLobbySystems_() {
+    registry_.clear_systems();
+
     registry_.add_system([this]([[maybe_unused]] const Registry &r) {
         executeNetworkSystem_(r, *this);
     });
@@ -194,6 +239,24 @@ void Lobby::run_() {
     registry_.add_system([](Registry &r) {
         Systems::limit_framerate(r, SERVER_TPS);
     });
+}
+
+void Lobby::gameOverCallback_() {
+    registry_.clear_entities();
+    registry_.clear_systems();
+
+    for (const auto &client : players_ | std::views::keys) {
+        const entity_t entity = Player::create(registry_, client);
+        players_[client] = entity;
+        Network::Packet packet(Protocol::EndGamePacket(pos_in_level_, entity), Protocol::END_GAME);
+        networkLib_.send(client, packet.serialize());
+    }
+    registerLobbySystems_();
+    state_ = Protocol::OPEN;
+}
+
+void Lobby::run_() {
+    registerLobbySystems_();
 
     while (true) {
         registry_.run_systems();

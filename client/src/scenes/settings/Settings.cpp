@@ -13,7 +13,7 @@
 void settingsCallback(Registry &r)
 {
     r.clear_entities();
-    entity_t e = r.spawn_entity();
+    const entity_t e = r.spawn_entity();
 
     r.add_component(e, Components::RenderText("Settings", 40));
     r.add_component(e, Position(50, 50));
@@ -38,7 +38,7 @@ void settingsCallback(Registry &r)
     std::vector<std::function<void()>> actions = {
         [&renderer] {
             constexpr int maxFPSOptions[] = {30, 60, 120};
-            currentFPSIndex = (currentFPSIndex + 1) % (sizeof(maxFPSOptions) / sizeof(maxFPSOptions[0]));
+            currentFPSIndex = (currentFPSIndex + 1) % std::size(maxFPSOptions);
             renderer.setTargetFPS(maxFPSOptions[currentFPSIndex]);
             std::cout << "FPS set to: " << maxFPSOptions[currentFPSIndex] << std::endl;
         },
