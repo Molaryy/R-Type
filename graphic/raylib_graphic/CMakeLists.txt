@@ -17,12 +17,12 @@ target_include_directories(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME}
         PRIVATE "${CMAKE_SOURCE_DIR}/includes"
 )
- 
+
 CPMAddPackage(
         NAME raylib
         GITHUB_REPOSITORY raysan5/raylib
         GIT_TAG 5.0
-        OPTIONS "BUILD_EXAMPLES OFF" "BUILD_GAMES OFF" "BUILD_SHARED_LIBS OFF" "CMAKE_POSITION_INDEPENDENT_CODE ON" "raylib_USE_STATIC_LIBS ON"
+        OPTIONS "BUILD_EXAMPLES OFF" "BUILD_GAMES OFF" "BUILD_SHARED_LIBS OFF" "CMAKE_POSITION_INDEPENDENT_CODE ON" "raylib_USE_STATIC_LIBS ON" "BUILD_AUDIO ON"
 )
 
 target_link_libraries(${PROJECT_NAME}

@@ -9,8 +9,16 @@ add_executable(${PROJECT_NAME}
         src/ArgHandler.cpp
         src/Server.cpp
         src/Lobby.cpp
+        src/Score.cpp
         src/entities/Player.cpp
-        src/entities/Shoot.cpp
+        src/entities/EnemyFly.cpp
+        src/entities/EnemyTank.cpp
+        src/entities/EnemyTurret.cpp
+        src/entities/PlayerBullet.cpp
+        src/entities/EnemyBullet.cpp
+        src/entities/BonusHealth.cpp
+        src/entities/BonusForce.cpp
+        src/entities/BonusTripleShot.cpp
 )
 
 target_include_directories(${PROJECT_NAME}

@@ -17,6 +17,15 @@ An explanation of the menu:
 
 ![menu](./assets/menu.png)
 
+## The lobby
+An explanation of the lobby:
+
+- **Menu**: return to the menu
+- **Join Random Lobby**: join a random lobby
+- **Join New Lobby**: create a new lobby
+- **Reload**: reload lobby's page to see new lobbies created
+
+![lobby](./assets/lobby.png)
 
 ## The gameplay
 
@@ -24,7 +33,7 @@ Here you will find the `Score` & the `Health` of the actual player. And also the
 
 And you also have the boss.
 
-![game](./assets/game.png)
+![game](./assets/gameplay.png)
 
 ## Be ready to die, it's really difficult
 ![game_over](./assets/game_over.png)

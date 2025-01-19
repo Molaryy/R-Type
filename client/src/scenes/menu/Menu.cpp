@@ -5,74 +5,65 @@
 ** Settings scene
 */
 
-
+#include "Client.hpp"
+#include "Zipper.hh"
+#include <fstream>
+#include <sstream>
+#include <fstream>
+#include "Components.hh"
 #include "Components.hpp"
+#include "IRenderer.hpp"
 #include "Scenes.hpp"
+#include "LeaderBoard.hpp"
 
-struct PlayerScore {
-    std::string name;
-    int score;
-};
-
-std::vector<PlayerScore> loadScores(const std::string &filename) {
-    // std::vector<PlayerScore> scores;
-    // std::ifstream file(filename);
-
-    // if (!file.is_open())
-    //     return scores;
-
-    // std::string line;
-    // while (std::getline(file, line)) {
-    //     std::istringstream iss(line);
-    //     PlayerScore ps;
-    //     if (iss >> ps.name >> ps.score) {
-    //         scores.push_back(ps);
-    //     }
-    // }
-
-    // file.close();
-    // std::sort(scores.begin(), scores.end(), [](const PlayerScore &a, const PlayerScore &b) {
-    //     return a.score > b.score;
-    // });
-    // return scores;
-    return {};
+void exitButtonCallback(Registry &r)
+{
+    const entity_t backButton = r.spawn_entity();
+    r.add_component(backButton, Components::RenderText("Back to Menu", 20));
+    r.add_component(backButton, Position(50, 500));
+    r.add_component(backButton, Components::ColorText({255, 255, 255, 255}));
+    r.add_component(backButton, Components::ClickableText([](Registry &reg) {
+        createMenuScene(reg);
+    }));
+    r.add_component(backButton, Components::ColorOverText({20, 82, 172, 255}, {255, 255, 255, 255}));
+    r.add_component(backButton, Components::MouseOverText(false));
 }
 
 void leaderBoardCallback(Registry &r) {
     r.clear_entities();
 
     const entity_t title = r.spawn_entity();
-    r.add_component(title, Components::RenderText("Leaderboard", 50, 50, 40));
+    r.add_component(title, Components::RenderText("Leaderboard", 40, true));
+    r.add_component(title, Position(250, 30));
     r.add_component(title, Components::ColorText({255, 255, 255, 255}));
 
-    // TODO retrieve scores from file
-    // TODO function to save scores when game ends
-
-    // std::vector<PlayerScore> scores = loadScores("scores.txt");
-    // int yPosition = 100;
-
-    // for (size_t i = 0; i < scores.size() && i < 10; ++i) {
-    //     entity_t scoreEntity = r.spawn_entity();
-    //     std::string entry = std::to_string(i + 1) + ". " + scores[i].name + " - " + std::to_string(scores[i].score);
-
-    //     r.add_component(scoreEntity, Components::RenderText(entry, 50, yPosition, 20));
-    //     r.add_component(scoreEntity, Components::ColorText({255, 255, 255, 255}));
-    //     yPosition += 30;
-    // }
-
-    // entity_t backButton = r.spawn_entity();
-    // r.add_component(backButton, Components::RenderText("Press SPACE to return to Menu", 50, yPosition + 50, 20));
-    // r.add_component(backButton, Components::ColorText({255, 255, 255, 255}));
-    // r.add_component(backButton, Components::ClickableText([](Registry &r) {
-    //     createMenuScene(r);
-    // }));
+    LeaderBoard leaderboard;
+    auto [names, scores] = leaderboard.getScoreboard();
+    for (std::size_t i = 0; i < SCOREBOARD_SIZE; ++i)
+    {
+        if (std::strlen(names[i]) == 0 && scores[i] == 0) {
+            break;
+        }
+        const entity_t nameEntity = r.spawn_entity();
+        const entity_t scoreEntity = r.spawn_entity();
+        const std::string scoreboard_name = names[i];
+        const std::size_t scoreboard_scores = scores[i];
+        r.add_component(nameEntity, Components::RenderText(scoreboard_name, 30, true));
+        r.add_component(nameEntity, Position(200, static_cast<float>(100 + i * 40)));
+        r.add_component(nameEntity, Components::ColorText({255, 255, 255, 255}));
+        r.add_component(scoreEntity, Components::RenderText(std::to_string(scoreboard_scores), 30, true));
+        r.add_component(scoreEntity, Position(500, static_cast<float>(100 + i * 40)));
+        r.add_component(scoreEntity, Components::ColorText({255, 255, 255, 255}));
+    }
+    exitButtonCallback(r);
 }
 
 void creditsCallback(Registry &r) {
     r.clear_entities();
 
     const entity_t titleEntity = r.spawn_entity();
-    r.add_component(titleEntity, Components::RenderText("CREDITS", 100, 50, 40));
+    r.add_component(titleEntity, Components::RenderText("CREDITS", 40, true));
+    r.add_component(titleEntity, Position(100, 50));
     r.add_component(titleEntity, Components::ColorText({255, 255, 255, 255}));
 
     const std::vector<std::string> credits = {
@@ -84,47 +75,167 @@ void creditsCallback(Registry &r) {
         " - Mounia ARJDAL",
     };
 
-    int yPosition = 150;
+    float yPosition = 150;
+
     for (const auto &line : credits) {
         entity_t lineEntity = r.spawn_entity();
-        r.add_component(lineEntity, Components::RenderText(line, 100, yPosition, 20));
+        r.add_component(lineEntity, Components::RenderText(line, 20, true));
+        r.add_component(lineEntity, Position(100, yPosition));
         r.add_component(lineEntity, Components::ColorText({255, 255, 255, 255}));
         yPosition += 30;
     }
-
-    // entity_t backButton = r.spawn_entity();
-    // r.add_component(backButton, Components::RenderText("Press SPACE to return to Menu", 100, yPosition + 20, 20));
-    // r.add_component(backButton, Components::ColorText({255, 255, 255, 255}));
-    // r.add_component(backButton, Components::ClickableText([](Registry &r) {
-    //     createMenuScene(r);
-    // }));
+    exitButtonCallback(r);
 }
 
+void storeLocalUsername(const std::string &username) {
+    std::ofstream file(USER_CONFIG_FILEPATH);
+
+    if (file.is_open()) {
+        file << "username=" << username;
+        file.close();
+    }
+}
+
+void logoutCallback(Registry &r) {
+    storeLocalUsername("");
+    r.clear_entities();
+    createSignForm(r);
+}
 
 void exitCallback(Registry &r) {
     r.clear_entities();
+    exit(0); // TODO handle it properly
+}
+
+std::string getLocalUsername() {
+    std::ifstream file(USER_CONFIG_FILEPATH);
+
+    if (file.is_open()) {
+        std::string line;
+        while (std::getline(file, line)) {
+            std::istringstream iss(line);
+            std::string key;
+            if (std::getline(iss, key, '=')) {
+                std::string value;
+                if (std::getline(iss, value)) {
+                    if (key == "username" && !value.empty()) {
+                        std::cout << "Username found: " << value << std::endl;
+                        file.close();
+                        return value;
+                    }
+                }
+            }
+        }
+        file.close();
+    }
+    return "";
+}
+
+
+
+void createSignForm(Registry &r) {
+    entity_t inputTextTitle = r.spawn_entity();
+    constexpr Color white = COLOR_WHITE;
+    constexpr Color grey = COLOR_GREY;
+    constexpr Color darkBlue = COLOR_DARK_BLUE;
+    Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
+    std::string enterUsernameText = "Enter your username:";
+
+
+    // Enter username title
+    int textWidth = renderer.measureText(enterUsernameText, 20);
+    int x = (WIDTH - renderer.measureText(enterUsernameText, 20)) / 2;
+    int y = (HEIGHT - renderer.measureText(enterUsernameText, 20)) / 2;
+
+    r.add_component(inputTextTitle, Components::RenderText(enterUsernameText, 20, true));
+    r.add_component(inputTextTitle, Position(x, y));
+    r.add_component(inputTextTitle, Components::ColorText(white));
+    r.add_component(inputTextTitle, Components::Input(enterUsernameText));
+    r.add_component(inputTextTitle, Components::ColorOverText(darkBlue, grey));
+    r.add_component(inputTextTitle, Components::MouseOverText(false));
+
+
+    float inputX = x - textWidth / 2;
+    // Input rectangle
+    entity_t inputRectangle = r.spawn_entity();
+    r.add_component(inputRectangle, Components::Rect(white, textWidth * 2 + 10, 40));
+    r.add_component(inputRectangle, Position(inputX, y + 30));
+    r.add_component(inputRectangle, Components::Input(enterUsernameText));
+
+    // Input Text
+    entity_t inputText = r.spawn_entity();
+    r.add_component(inputText, Components::InputText({"", 20, true}));
+    r.add_component(inputText, Position(inputX + 10, y +10));
+    r.add_component(inputText, Components::Input(enterUsernameText));
+    r.add_component(inputText, Components::ColorText(darkBlue));
+
+    // Sign in text button
+    const std::string signInText = "Start";
+    entity_t signIntButton = r.spawn_entity();
+    r.add_component(signIntButton, Components::RenderText(signInText, 20, true));
+    r.add_component(signIntButton, Position(WIDTH / 2 - 40, y + 100));
+    r.add_component(signIntButton, Components::ColorText(white));
+    r.add_component(signIntButton, Components::ColorOverText(darkBlue, grey));
+    r.add_component(signIntButton, Components::MouseOverText(false));
+    r.add_component(signIntButton, Components::Input(enterUsernameText));
+    r.add_component(signIntButton, Components::ClickableText([signInText, enterUsernameText](Registry &r) {
+        auto &inputTexts = r.get_components<Components::InputText>();
+        auto &inputs = r.get_components<Components::Input>();
+
+        for (auto &&[inputText, input] : Zipper(inputTexts, inputs)) {
+            if (input.inputTextTitle == enterUsernameText && !inputText.text.text.empty()) {
+                storeLocalUsername(inputText.text.text);
+                r.clear_entities();
+                createMenuScene(r);
+
+                
+            }
+        }
+    }));
+}
+
+
+std::function<void(int)> makeSound(int soundID) {
+    return [soundID](int passedSoundID) {
+        std::cout << "Playing sound with id: " << soundID << std::endl;
+        Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
+        renderer.playSound(soundID);
+    };
 }
 
 void createMenuScene(Registry &r) {
     r.clear_entities();
 
     const entity_t e = r.spawn_entity();
-
     constexpr Color white = COLOR_WHITE;
     constexpr Color grey = COLOR_GREY;
     constexpr Color darkBlue = COLOR_DARK_BLUE;
 
-    r.add_component(e, Components::RenderText("R-TYPE", 50, 50, 40));
+
+    r.add_component(e, Components::RenderText("R-TYPE", 40, true));
+    r.add_component(e, Position(50, 50));
     r.add_component(e, Components::ColorText(white));
-    const std::vector<std::string> titles = {"Play", "Leaderboard", "Settings", "Credits", "Exit"};
-    const std::vector<std::function<void(Registry &r)>> callbacks = {lobbyCallback, leaderBoardCallback, settingsCallback, creditsCallback, exitCallback};
+    const std::vector<std::string> titles = MENU_BUTTONS_TITLES;
+    const std::vector<std::function<void(Registry &r)>> callbacks = {lobbyCallback, leaderBoardCallback, settingsCallback, creditsCallback, logoutCallback, exitCallback};
+    const std::vector<int> soundIDS = {PLAY_SOUND_ID, LEADERBOARD_SOUND_ID, SETTINGS_SOUND_ID, CREDITS_SOUND_ID, LOGOUT_SOUND_ID, EXIT_SOUND_ID};
+
 
     for (std::size_t i = 0; i < NB_MENU_BUTTONS; i++) {
         entity_t button = r.spawn_entity();
 
-        r.add_component(button, Components::RenderText(titles[i], 100, static_cast<int>(150 + i * 50), 20));
+        r.add_component(button, Components::RenderText(titles[i], 20, true));
+        r.add_component(button, Position(100.0f, static_cast<float>(150 + i * 50)));
         r.add_component(button, Components::ColorText(grey));
         r.add_component(button, Components::ClickableText(callbacks[i]));
-        r.add_component(button, Components::ColorOverText(darkBlue, grey, false));
+        r.add_component(button, Components::ColorOverText(darkBlue, grey));
+        r.add_component(button, Components::MouseOverText(false));
+        r.add_component(button, Components::MouseOverTextSound(true, makeSound(soundIDS[i]), soundIDS[i]));
     }
+
+    const std::string username = getLocalUsername();
+    entity_t usernameEntity = r.spawn_entity();
+    r.add_component(usernameEntity, Components::RenderText("Welcome " + username, 20, true));
+    r.add_component(usernameEntity, Position(50, 100));
+    r.add_component(usernameEntity, Components::ColorText(white));
+    r.add_component(usernameEntity, Components::MouseOverText(false));
 }

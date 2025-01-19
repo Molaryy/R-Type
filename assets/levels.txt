@@ -1,0 +1,63 @@
+#number before level = size of level WIDTH HEIGHT, with a scale of 1 for 20 pixels, P = player, F = fly ennemy, T = turret enemy, B = boss, H, boss heart
+100 30
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXX            XXXXXX                XXXXXXXX                 XXX           XX             XXXXXXX
+X                                                                 T
+X
+X
+X
+X  P
+X                                                                           F F F  F
+X                            F F F  F
+X
+X                                                                           K
+X  P
+X
+X                                    F F F                             F F F F
+X
+X
+X
+X  P
+X
+X                                                F  F F
+X
+X  P
+X
+X
+X
+X
+X                                             T T                                     T
+X                                            XXXXX                                    XX
+XXXXXXXXXXX                      XXXX X X XXXXXXXXX              XXX                XXXX     XXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+211 30
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXX            XXXXXX                XXXXXXXX                 XXX                 XX             XXXXXXXXXXX            XXXXXX                XXXXXXXX                 XXX                 XX             XXXXXX
+X                                          X                      T                  T               T T T T                T  T                  T  T T                  T
+X
+X
+X
+X                                                                                                        H
+X  P                                                                                                                                         F F F F
+X
+X
+X                                                                                                   H
+X                                                        F F F F
+X  P                                                                                                                              F F F F F
+X
+X                                   F F F F                         3
+X
+X                                                                                                        B                     F F F F F
+X  P
+X                                                         F F F F                                                                   F F F F F
+X
+X                                                                                                   H
+X  P                                F F F F
+X                                                                                   F F F F                                                  F F F F
+X                                                                                                        H
+X
+X
+X                                             T T                                        T
+X                                            XXXXX                 T                     XX                                                  T           T T
+XXXXXXXXXXXX                      XXXX X X XXXXXXXXX              XXX                   XXXX     XXXXXX    XXXXXXXXXXX                      XXXX X X XXXXXXXXX              XXX                   XXXX     XXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX

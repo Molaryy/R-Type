@@ -126,7 +126,7 @@ public:
      */
     void erase(size_type pos) {
         if (pos < data_.size())
-            data_.erase(data_.begin() + pos);
+            data_[pos].reset();
     }
 
     /**

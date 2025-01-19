@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rfc
+  labels:
+    app: rfc
+  namespace: ingress-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rfc
+  template:
+    metadata:
+      labels:
+        app: rfc
+    spec:
+      containers:
+        - name: rfc
+          image: molaryy35/doc-rfc
+          ports:
+            - containerPort: 8081
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 500m
+              memory: 256Mi

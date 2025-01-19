@@ -7,6 +7,9 @@
 
 #include "entities/Player.hpp"
 
+#include <entities/BonusHealth.hpp>
+
+#include "Zipper.hh"
 #include "Components.hh"
 #include "Components.hpp"
 #include "Packet.hpp"
@@ -14,18 +17,23 @@
 
 void Player::collision(Registry &r, const entity_t me, const entity_t other) {
     const std::optional<ComponentEntityType> otherType = r.get_components<ComponentEntityType>()[other];
-    std::optional<Life> &optLife = r.get_components<Life>()[me];
-    if (!otherType.has_value() || !optLife.has_value() || otherType.value().side == ComponentEntityType::Ally)
+    std::optional<Life> &life = r.get_components<Life>()[me];
+    if (!otherType.has_value() || !life.has_value() || !life->is_alive() || otherType.value().side == ComponentEntityType::Ally || otherType->type ==
+        Protocol::BONUS_DAMAGE || otherType->type == Protocol::BONUS_TRIPLE_SHOT)
         return;
 
-    Life &life = optLife.value();
-    life.takeDamage(10);
+    if (otherType->side == ComponentEntityType::Enemy)
+        life->takeDamage(10);
+    else if (otherType->type == Protocol::BONUS_HEALTH)
+        life->heal(BONUS_HEALTH_HEALING);
 
     Network::Packet packet(
-        Protocol::HitPacket(me, life.current),
+        Protocol::HitPacket(me, life->current),
         Protocol::HIT
     );
-    Server::getInstance().getNetwork().sendAll(packet.serialize());
+    Network::INetworkServer &network = Server::getInstance().getNetwork();
+    for (auto &&[network_id] : Zipper(r.get_components<NetworkId>()))
+        network.send(network_id.id, packet.serialize());
 }
 
 entity_t Player::create(Registry &r, const std::uint16_t client_id) {
@@ -38,7 +46,8 @@ entity_t Player::create(Registry &r, const std::uint16_t client_id) {
     r.add_component(entity, Delay(PLAYER_BULLET_RATE, PLAYER_BULLET_RATE));
     r.add_component(entity, Life(PLAYER_HEALTH, PLAYER_HEALTH));
     r.add_component(entity, ComponentEntityType(Protocol::PLAYER));
-    r.add_component(entity, Collision(PLAYER_SIZE, PLAYER_SIZE, collision));
+    r.add_component(entity, Collision(PLAYER_SIZE_X, PLAYER_SIZE_Y, collision));
+    r.add_component(entity, Bonus());
 
     return entity;
 }

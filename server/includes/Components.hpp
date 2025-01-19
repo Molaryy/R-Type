@@ -10,14 +10,16 @@
 #include <iostream>
 #include <unordered_map>
 #include <vector>
+#include <functional>
 
+#include "Registry.hh"
 #include "RTypeProtocol.hpp"
 
 class ComponentEntityType {
 public:
     enum Side {
         Ally,
-        Ennemy,
+        Enemy,
         Neutral
     };
 
@@ -37,11 +39,14 @@ private:
     std::unordered_map<Protocol::EntityType, Side> typeSides_{
         {Protocol::PLAYER, Ally},
         {Protocol::PLAYER_BULLET, Ally},
-        {Protocol::ENEMY_FLY, Ennemy},
-        {Protocol::ENEMY_TURRET, Ennemy},
-        {Protocol::ENEMY_BULLET, Ennemy},
-        {Protocol::BOSS_HEART, Ennemy},
+        {Protocol::ENEMY_FLY, Enemy},
+        {Protocol::ENEMY_TURRET, Enemy},
+        {Protocol::ENEMY_BULLET, Enemy},
+        {Protocol::BOSS_HEART, Enemy},
         {Protocol::WALL, Neutral},
+        {Protocol::BONUS_HEALTH, Neutral},
+        {Protocol::BONUS_DAMAGE, Neutral},
+        {Protocol::BONUS_TRIPLE_SHOT, Neutral},
     };
 
     std::unordered_map<Protocol::EntityType, std::string> typeName_{
@@ -52,6 +57,9 @@ private:
         {Protocol::ENEMY_BULLET, "Enemy Bullet"},
         {Protocol::BOSS_HEART, "Boss Heart"},
         {Protocol::WALL, "Wall"},
+        {Protocol::BONUS_HEALTH, "Bonus Health"},
+        {Protocol::BONUS_DAMAGE, "Bonus Damage"},
+        {Protocol::BONUS_TRIPLE_SHOT, "Bonus Triple_shot"},
     };
 };
 
@@ -87,4 +95,31 @@ public:
     }
 
     std::vector<Protocol::InputKey> input_keys;
+};
+
+struct ArtificialIntelligence {
+    std::function<void (Registry &, entity_t)> ia;
+
+    void operator()(Registry &r, const entity_t me) const {
+        ia(r, me);
+    }
+
+    void log() const {
+        std::cout << "ArtificalIntelligence";
+    }
+};
+
+struct Bonus {
+    enum BonusType {
+        None,
+        Damage,
+        TripleShot,
+    };
+
+    BonusType type;
+    entity_t id;
+
+    void log() const {
+        std::cout << "Bonus = { " << id << " : " << type << " }";
+    }
 };

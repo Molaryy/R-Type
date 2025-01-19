@@ -141,6 +141,9 @@ namespace Graphic {
              */
             virtual void closeWindow() = 0;
 
+
+            virtual void setWindowSize(int width, int height) = 0;
+
             /**
              * @brief 
              * 
@@ -183,7 +186,23 @@ namespace Graphic {
              * @param b blue
              * @param a alpha
              */
-            virtual void drawRectangle(int x, int y, int width, int height, unsigned char r, unsigned char g, unsigned char b, unsigned char a) = 0;
+            virtual void drawRectangle(float x, float y, float width, float height, unsigned char r, unsigned char g, unsigned char b, unsigned char a) = 0;
+
+            /**
+             * @brief draw a rounded rectangle
+             * 
+             * @param x 
+             * @param y 
+             * @param width 
+             * @param height 
+             * @param roundness 
+             * @param segments 
+             * @param r 
+             * @param g 
+             * @param b 
+             * @param a 
+             */
+            virtual void drawRoundedRectangle(int x, int y, int width, int height, float roundness, int segments, unsigned char r, unsigned char g, unsigned char b, unsigned char a) = 0;
 
             /**
              * @brief load texture / sprite
@@ -229,12 +248,28 @@ namespace Graphic {
              */
             virtual void drawText(const std::string &text, int x, int y, int fontSize, unsigned char r, unsigned char g, unsigned char b, unsigned char a) = 0;
 
+
+            /**
+             * @brief measure text
+             * 
+             * @param text 
+             * @param fontSize 
+             * @return int 
+             */
+            virtual int measureText(const std::string &text, int fontSize) = 0;
+
             /**
              * @brief Get the Events object
              * 
              * @return event_t lis
              */
             virtual event_t getEvents() = 0;
+
+            /**
+             * @brief init sounds
+             * 
+             */
+            virtual void initAudioDevice() = 0;
 
             /**
              * @brief load sounds
@@ -292,5 +327,17 @@ namespace Graphic {
              * 
              */
             virtual void updateMusic() = 0;
+
+            /**
+             * @brief Get the Frame Time object
+             * 
+             */
+            virtual float getFrameTime() = 0;
+
+            /**
+             * @brief Set the Target Fps object
+             * 
+             */
+            virtual void setTargetFPS(int fps) = 0;
     };
 }

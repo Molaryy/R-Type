@@ -27,6 +27,10 @@ namespace Graphic {
         InitAudioDevice();
     }
 
+    void RaylibGraphic::setWindowSize(const int width, const int height) {
+        SetWindowSize(width, height);
+    }
+
     void RaylibGraphic::closeWindow() {
         ::CloseWindow();
     }
@@ -47,9 +51,20 @@ namespace Graphic {
         ClearBackground(Color(r, g, b, a));
     }
 
-    void RaylibGraphic::drawRectangle(const int x, const int y, const int width, const int height, const unsigned char r, const unsigned char g,
+    void RaylibGraphic::drawRectangle(const float x, const float y, const float width, const float height, const unsigned char r, const unsigned char g,
                                       const unsigned char b, const unsigned char a) {
-        DrawRectangle(x, y, width, height, Color(r, g, b, a));
+        DrawRectangleV({x, y}, {width, height}, Color(r, g, b, a));
+    }
+
+    void RaylibGraphic::drawRoundedRectangle(const int x, const int y, const int width, const int height, const float roundness, const int segments, const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a) {
+        const Rectangle rec = {
+            static_cast<float>(x),
+            static_cast<float>(y),
+            static_cast<float>(width),
+            static_cast<float>(height)
+        };
+        const Color col = { r, g, b, a };
+        DrawRectangleRounded(rec, roundness, segments, col);
     }
 
     int RaylibGraphic::loadTexture(const std::string &path) {
@@ -86,6 +101,10 @@ namespace Graphic {
         DrawText(text.c_str(), x, y, fontSize, Color(r, g, b, a));
     }
 
+    int RaylibGraphic::measureText(const std::string &text, const int fontSize) {
+        return MeasureText(text.c_str(), fontSize);
+    }
+
     event_t RaylibGraphic::getEvents() {
         event_t events;
 
@@ -109,6 +128,11 @@ namespace Graphic {
         return events;
     }
 
+
+    void RaylibGraphic::initAudioDevice() {
+        ::InitAudioDevice();
+    }
+
     int RaylibGraphic::loadSound(const std::string &path) {
         const Sound sound = LoadSound(path.c_str());
         const int id = nextSoundID_++;
@@ -126,24 +150,27 @@ namespace Graphic {
         }
     }
 
-    void RaylibGraphic::playSound(int soundID) {
-        auto it = sounds_.find(soundID);
+    void RaylibGraphic::playSound(const int soundID) {
+        const auto it = sounds_.find(soundID);
 
         if (it != sounds_.end()) {
-            PlaySound(it->second);
+            if (!IsSoundPlaying(it->second)) {
+                PlaySound(it->second);
+            }
         }
     }
 
+
     int RaylibGraphic::loadMusic(const std::string &path) {
-        Music music = LoadMusicStream(path.c_str());
-        int id = nextMusicID_++;
+        const Music music = LoadMusicStream(path.c_str());
+        const int id = nextMusicID_++;
 
         musics_[id] = music;
         return id;
     }
 
-    void RaylibGraphic::unloadMusic(int musicID) {
-        auto it = musics_.find(musicID);
+    void RaylibGraphic::unloadMusic(const int musicID) {
+        const auto it = musics_.find(musicID);
 
         if (it != musics_.end()) {
             UnloadMusicStream(it->second);
@@ -151,16 +178,16 @@ namespace Graphic {
         }
     }
 
-    void RaylibGraphic::playMusic(int musicID) {
-        auto it = musics_.find(musicID);
+    void RaylibGraphic::playMusic(const int musicID) {
+        const auto it = musics_.find(musicID);
 
         if (it != musics_.end()) {
             PlayMusicStream(it->second);
         }
     }
 
-    void RaylibGraphic::stopMusic(int musicID) {
-        auto it = musics_.find(musicID);
+    void RaylibGraphic::stopMusic(const int musicID) {
+        const auto it = musics_.find(musicID);
 
         if (it != musics_.end()) {
             StopMusicStream(it->second);
@@ -168,9 +195,17 @@ namespace Graphic {
     }
 
     void RaylibGraphic::updateMusic() {
-        for (auto &pair : musics_) {
-            UpdateMusicStream(pair.second);
+        for (const auto &val : musics_ | std::views::values) {
+            UpdateMusicStream(val);
         }
+    }
+
+    float RaylibGraphic::getFrameTime() {
+        return GetFrameTime();
+    }
+
+    void RaylibGraphic::setTargetFPS(const int fps) {
+        SetTargetFPS(fps);
     }
 
     extern "C" {

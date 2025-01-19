@@ -15,8 +15,10 @@
 #include "PacketHandler.hpp"
 #include "Registry.hh"
 
+
 #define WIDTH 800
 #define HEIGHT 600
+#define USER_CONFIG_FILEPATH ".config/client/user"
 
 class Client
 {
@@ -38,6 +40,9 @@ public:
 
     Registry &getRegistry();
 
+    std::size_t my_server_id{};
+    std::size_t lobby_id{};
+
 private:
     Client(const std::string &ip, std::size_t port, bool debug);
 
@@ -55,5 +60,4 @@ private:
     Registry registry_;
     bool debug_;
     static std::unique_ptr<Client> instance_;
-    std::size_t my_server_id_{};
 };

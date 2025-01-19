@@ -1,0 +1,8 @@
+{
+  "label": "Benchmark",
+  "position": 5,
+  "link": {
+    "type": "generated-index",
+    "description": "All of our benchmarks to prove our concepts"
+  }
+}
