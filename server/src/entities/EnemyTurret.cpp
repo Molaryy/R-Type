@@ -71,16 +71,14 @@ void EnemyTurret::collision(Registry &r, const entity_t me, const entity_t other
             Protocol::KILL
         );
         const std::optional<Position> &pos = r.get_entity_component<Position>(me);
-        const int bon = std::rand() % 30;
         if (pos) {
-            if (bon == 0)
+            if (Server::random(TURRET_DROP_BONUS_HEALTH_CHANCE))
                 BonusHealth::create(r, pos.value());
-            if (bon == 1)
+            else if (Server::random(TURRET_DROP_BONUS_DAMAGE_CHANCE))
                 BonusForce::create(r, pos.value());
-            if (bon == 2)
+            else if (Server::random(TURRET_DROP_BONUS_TRIPLE_CHANCE))
                 BonusTripleShot::create(r, pos.value());
         }
-
     }
 
     Network::INetworkServer &network = Server::getInstance().getNetwork();
@@ -89,9 +87,15 @@ void EnemyTurret::collision(Registry &r, const entity_t me, const entity_t other
 }
 
 entity_t EnemyTurret::create(Registry &r) {
-    const entity_t entity = r.spawn_entity();
+    const Position pos(WIDTH, static_cast<float>(std::rand() % (HEIGHT - TURRET_SIZE)));
 
-    Position pos(WIDTH, static_cast<float>(std::rand() % (HEIGHT - TURRET_SIZE)));
+    return createFromPos(r, pos);
+}
+
+entity_t EnemyTurret::createFromPos(Registry &r, const Position &position) {
+    Position pos(position);
+
+    const entity_t entity = r.spawn_entity();
 
     const float x = 0 - pos.x;
     const float y = static_cast<float>(std::rand() % (HEIGHT - TURRET_SIZE)) - pos.y;

@@ -44,6 +44,10 @@ Server &Server::createInstance(const std::size_t port, const std::size_t max_lob
     return *instance_;
 }
 
+bool Server::random(const double chance) {
+    return std::rand() / static_cast<double>(RAND_MAX) < chance;
+}
+
 Server &Server::getInstance() {
     return *instance_;
 }

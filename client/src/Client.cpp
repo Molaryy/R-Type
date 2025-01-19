@@ -138,7 +138,6 @@ void Client::setupPacketHandler_() {
         auto [entity_id, type, position, size, velocity, health] = packet.getPayload<Protocol::SpawnEntityPacket>();
         const entity_t e = registry_.spawn_entity();
 
-        std::cout << "SPAWN " << Components::ComponentEntityType::typeName[type] << std::endl;
         switch (type) {
             case Protocol::EntityType::PLAYER:
                 registry_.add_component(e, Components::Drawable(

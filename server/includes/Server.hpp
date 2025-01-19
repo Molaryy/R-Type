@@ -21,6 +21,7 @@ public:
     void operator=(const Server &ref) = delete;
     ~Server();
     static Server &createInstance(std::size_t port, std::size_t max_lobby, std::size_t max_client, bool debug, bool network_debug, const std::string &path);
+    static bool random(double chance);
     [[nodiscard]] static Server &getInstance();
     [[nodiscard]] Network::PacketHandler &getPacketHandler();
     [[nodiscard]] Network::INetworkServer &getNetwork() const;
