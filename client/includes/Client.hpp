@@ -15,6 +15,11 @@
 #include "PacketHandler.hpp"
 #include "Registry.hh"
 
+
+#define WIDTH 800
+#define HEIGHT 600
+#define USER_CONFIG_FILEPATH ".config/client/user"
+
 class Client
 {
 public:

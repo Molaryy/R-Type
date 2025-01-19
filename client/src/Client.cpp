@@ -20,6 +20,7 @@
 #include "Scenes.hpp"
 #include "Systems.hh"
 #include "Systems.hpp"
+#include "Scenes.hpp"
 
 Client::~Client() = default;
 
@@ -346,6 +347,10 @@ void Client::setupSystems_() {
     registry_.add_system(Systems::drawEntities);
     registry_.add_system(Systems::spriteSheetHandler);
     registry_.add_system(Systems::handleInputs);
+    registry_.add_system(Systems::drawRectangles);
+    registry_.add_system(Systems::handleInputBox);
+    registry_.add_system(Systems::handleClickable);
+    registry_.add_system(Systems::handleMouseOverSoundText);
     if (debug_)
         registry_.add_system(Systems::log);
     registry_.add_system([](Registry &r) {
@@ -360,10 +365,16 @@ void Client::run() {
 
     renderer_->initWindow(WIDTH, HEIGHT, "rtype");
 
-    createMenuScene(registry_);
+    if (getLocalUsername().empty()) {
+        createSignForm(registry_);
+    } else {
+        createMenuScene(registry_);
+    }
 
     for (const std::string &path : textures_paths)
         renderer_->loadTexture(path);
+    for (const std::string &path : sounds_paths)
+        renderer_->loadSound(path);
 
     while (!renderer_->windowShouldClose()) {
         renderer_->beginDrawing();

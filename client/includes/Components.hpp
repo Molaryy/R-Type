@@ -11,7 +11,6 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
-
 #include "Gameplay.hpp"
 #include "Registry.hh"
 #include "RTypeProtocol.hpp"
@@ -41,6 +40,16 @@ namespace Components {
         }
     };
 
+    struct MouseOverTextSound {
+        bool isActivated;
+        std::function<void(int soundID)> callback;
+        int soundID;
+
+        void log() const {
+            std::cout << "soundID = { " << soundID << " }";
+        }
+    };
+
     struct ClickableText {
         std::function<void(Registry &r)> callback;
 
@@ -49,10 +58,17 @@ namespace Components {
         }
     };
 
+    struct MouseOverText {
+        bool isOver;
+
+        void log() const {
+            std::cout << "MouseOverText = { " << isOver << " }";
+        }
+    };
+
     struct ColorOverText {
         Color newColor;
         Color defaultColor;
-        bool isOver;
 
         void log() const {
             std::cout << "ColorOverText = { "
@@ -67,6 +83,8 @@ namespace Components {
 
     struct Rect {
         Color color;
+        int width;
+        int height;
 
         void log() const {
             std::cout << "Rect = { "
@@ -78,15 +96,26 @@ namespace Components {
         }
     };
 
-    struct InputRect {
-        std::string text;
+    struct Input {
+        std::string inputTextTitle;
 
         void log() const {
-            std::cout << "InputText = { text = " << text << "}";
+            std::cout << "InputBox = { " << inputTextTitle << " }";
+        }
+    };
+
+    struct InputText {
+        RenderText text;
+
+        void log() const {
+            std::cout << "InputText = { text = " << text.text << "}";
         }
     };
 
     struct ScrollableText {
+         void log() const {
+            std::cout << "ScrollableText = {}";
+        }
     };
 
     struct ServerId {

@@ -28,7 +28,7 @@
 #define SERVER_TPS 30
 
 #define SCOREBOARD_SIZE 10
-#define NAME_SIZE 64
+#define NAME_SIZE 30
 
 namespace Protocol {
     enum InputKey : uint8_t {

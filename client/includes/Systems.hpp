@@ -49,14 +49,26 @@ namespace Systems {
         }
     }
 
+    inline void drawRectangles(Registry &r) {
+        auto &positions = r.get_components<Position>();
+        auto &rects = r.get_components<Components::Rect>();
+        Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
+
+        for (auto &&[pos, rect] : Zipper(positions, rects)) {
+            renderer.drawRectangle(pos.x, pos.y, rect.width, rect.height, rect.color.r, rect.color.g, rect.color.b, rect.color.a);
+        }
+    }
+
     inline void changeColorOverText(Registry &r) {
         auto &texts = r.get_components<Components::RenderText>();
-        auto &positions = r.get_components<Position>();
         auto &colorsTexts = r.get_components<Components::ColorText>();
         auto &colorsOverText = r.get_components<Components::ColorOverText>();
+        auto &mouseOverTexts = r.get_components<Components::MouseOverText>();
 
-        for (auto &&[pos, text, colorText, colorOverText] : Zipper(positions, texts, colorsTexts, colorsOverText)) {
-            if (colorOverText.isOver) {
+        for (auto &&[text, colorText, colorOverText, mouseOverText] : Zipper(texts, colorsTexts, colorsOverText, mouseOverTexts)) {
+            if (!text.isDrawable)
+                continue;
+            if (mouseOverText.isOver) {
                 colorText.color = colorOverText.newColor;
             } else {
                 colorText.color = colorOverText.defaultColor;
@@ -64,31 +76,64 @@ namespace Systems {
         }
     }
 
+    inline void handleMouseOverSoundText(Registry &r) {
+        auto &clickableTexts = r.get_components<Components::MouseOverTextSound>();
+        auto &mouseOverTexts = r.get_components<Components::MouseOverText>();
+        std::function<void(int soundID)> secureCallback;
+        int soundID = 0;
+
+        for (auto &&[clickable, mouseOverText] : Zipper(clickableTexts, mouseOverTexts)) {
+            if (mouseOverText.isOver) {
+                std::cout << "MouseOverTextSound" << std::endl;
+                secureCallback = clickable.callback;
+                soundID = clickable.soundID;
+                break;
+            }
+        }
+
+        if (secureCallback) {
+            secureCallback(soundID);
+        }
+    }
+
+    inline void handleClickable(Registry &r) {
+        auto &clickableTexts = r.get_components<Components::ClickableText>();
+        auto &mouseOverTexts = r.get_components<Components::MouseOverText>();
+        Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
+        Graphic::event_t events = renderer.getEvents();
+        std::function<void(Registry &r)> secureCallback;
+        const bool leftClicked = std::ranges::find(events.inputs, Graphic::Keys::LeftClick) != events.inputs.end();
+
+        for (auto &&[clickable, mouseOverText] : Zipper(clickableTexts, mouseOverTexts)) {
+            if (mouseOverText.isOver && leftClicked) {
+                secureCallback = clickable.callback;
+                break;
+            }
+        }
+
+        if (secureCallback) {
+            secureCallback(r);
+        }
+    }
+
     inline void handleMouse(Registry &r) {
         auto &texts = r.get_components<Components::RenderText>();
         auto &positions = r.get_components<Position>();
-        auto &clickables = r.get_components<Components::ClickableText>();
-        auto &colorsOverTexts = r.get_components<Components::ColorOverText>();
+        auto &mouseOverTexts = r.get_components<Components::MouseOverText>();
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
         Graphic::event_t events = renderer.getEvents();
-        const bool leftClicked = std::ranges::find(events.inputs, Graphic::Keys::LeftClick) != events.inputs.end();
         auto [mouse_x, mouse_y] = events.mouse_pos;
         std::function<void(Registry &r)> secureCallback;
 
-        for (auto &&[pos, clickable, text, colorsOverText] : Zipper(positions, clickables, texts, colorsOverTexts)) {
+        for (auto &&[pos, mouseOverText, text] : Zipper(positions, mouseOverTexts, texts)) {
+            if (!text.isDrawable)
+                continue;
             if (mouse_x >= static_cast<int>(pos.x) && mouse_x <= pos.x + static_cast<int>(text.text.size()) * text.fontSize &&
                 mouse_y >= static_cast<int>(pos.y) && mouse_y <= static_cast<int>(pos.y) + text.fontSize) {
-                if (leftClicked) {
-                    secureCallback = clickable.callback;
-                    break;
-                }
-                colorsOverText.isOver = true;
+                mouseOverText.isOver = true;
             } else {
-                colorsOverText.isOver = false;
+                mouseOverText.isOver = false;
             }
-        }
-        if (secureCallback) {
-            secureCallback(r);
         }
     }
 
@@ -121,6 +166,58 @@ namespace Systems {
         }
     }
 
+    inline void handleInputBox(Registry &r) {
+        Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
+        Graphic::event_t events = renderer.getEvents();
+        auto &inputTexts = r.get_components<Components::InputText>();
+        auto &positions = r.get_components<Position>();
+        auto &inputs = r.get_components<Components::Input>();
+        auto &rects = r.get_components<Components::Rect>();
+        auto &colorsTexts = r.get_components<Components::ColorText>();
+        static std::vector<Graphic::Keys> last_inputs;
+        bool canUpdate = true;
+
+
+        if (events.inputs.size() != last_inputs.size()) {
+            last_inputs = events.inputs;
+            canUpdate = false;
+        }
+
+        for (std::size_t i = 0; i < events.inputs.size(); ++i) {
+            if (events.inputs[i] != last_inputs[i]) {
+                last_inputs = events.inputs;
+                canUpdate = false;
+                break;
+            }
+        }
+        
+
+        for (auto &&[inputText, pos, input, colorText] : Zipper(inputTexts,  positions, inputs, colorsTexts)) {
+            for (auto &&[rect, inputRect] : Zipper(rects, inputs)) {
+                if (inputRect.inputTextTitle == input.inputTextTitle && canUpdate) {
+                    for (auto key : events.inputs) {
+                        if (key >= Graphic::Keys::A && key <= Graphic::Keys::Z) {
+                            key = static_cast<Graphic::Keys>(key + 65);
+                            if (inputText.text.text.size() < NAME_SIZE) {
+                                inputText.text.text += static_cast<char>(key);
+                            }
+                        } else if (key >= Graphic::Keys::Num0 && key <= Graphic::Keys::Num9) {
+                            key = static_cast<Graphic::Keys>(key + 22);
+                            if (inputText.text.text.size() < NAME_SIZE) {
+                                inputText.text.text += static_cast<char>(key);
+                            }
+                        } else if (key == Graphic::Keys::Backspace) {
+                            if (!inputText.text.text.empty()) {
+                                inputText.text.text.pop_back();
+                            }
+                        }
+                    }
+                }
+            renderer.drawText(inputText.text.text, pos.x, pos.y + 30, inputText.text.fontSize, colorText.color.r, colorText.color.g, colorText.color.b, colorText.color.a);
+            }
+        }
+    }
+
     inline void handleInputs([[maybe_unused]] Registry &r) {
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
         Graphic::event_t events = renderer.getEvents();
@@ -135,12 +232,13 @@ namespace Systems {
 
         for (uint8_t i = 0; i < Protocol::NB_INPUTS_KEYS; ++i) {
             if (last_inputs.input_keys[i] ^ inputs.input_keys[i]) {
-                for (uint8_t j = i; j < Protocol::NB_INPUTS_KEYS; ++j)
+                for (uint8_t j = i; j < Protocol::NB_INPUTS_KEYS; ++j) {
                     last_inputs.input_keys[j] = inputs.input_keys[j];
+                }
                 Network::Packet packet(inputs, Protocol::INPUT_KEYS);
                 Client::getInstance().getNetworkLib().send(packet.serialize());
                 return;
             }
         }
-    }
+    } 
 }

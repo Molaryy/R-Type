@@ -128,6 +128,7 @@ namespace Graphic {
         return events;
     }
 
+
     void RaylibGraphic::initAudioDevice() {
         ::InitAudioDevice();
     }
@@ -152,9 +153,13 @@ namespace Graphic {
     void RaylibGraphic::playSound(const int soundID) {
         const auto it = sounds_.find(soundID);
 
-        if (it != sounds_.end())
-            PlaySound(it->second);
+        if (it != sounds_.end()) {
+            if (!IsSoundPlaying(it->second)) {
+                PlaySound(it->second);
+            }
+        }
     }
+
 
     int RaylibGraphic::loadMusic(const std::string &path) {
         const Music music = LoadMusicStream(path.c_str());
