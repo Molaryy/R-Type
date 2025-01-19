@@ -20,13 +20,14 @@ namespace Graphic {
             ~RaylibGraphic() override;
 
             void initWindow(int width, int height, const std::string &title) override;
-            void setWindowSize(const int width, const int height) override;
+            void setWindowSize(int width, int height) override;
+            void setTargetFPS(int fps) override;
             void closeWindow() override;
             bool windowShouldClose() const override;
             void beginDrawing() override;
             void endDrawing() override;
             void clearBackground(unsigned char r, unsigned char g, unsigned char b, unsigned char a) override;
-            void drawRectangle(int x, int y, int width, int height, unsigned char r, unsigned char g, unsigned char b, unsigned char a) override;
+            void drawRectangle(float x, float y, float width, float height, unsigned char r, unsigned char g, unsigned char b, unsigned char a) override;
             void drawRoundedRectangle(int x, int y, int width, int height, float roundness, int segments, unsigned char r, unsigned char g, unsigned char b, unsigned char a) override;
             int loadTexture(const std::string &path) override;
             void unloadTexture(int textureID) override;
@@ -43,7 +44,6 @@ namespace Graphic {
             void stopMusic(int musicID) override;
             void updateMusic() override;
             float getFrameTime() override;
-            void setTargetFPS(int fps) override;
             int measureText(const std::string &text, int fontSize) override;
 
         private:

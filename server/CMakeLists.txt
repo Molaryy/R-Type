@@ -11,7 +11,10 @@ add_executable(${PROJECT_NAME}
         src/Lobby.cpp
         src/Score.cpp
         src/entities/Player.cpp
-        src/entities/Shoot.cpp
+        src/entities/EnemyFly.cpp
+        src/entities/EnemyTurret.cpp
+        src/entities/PlayerBullet.cpp
+        src/entities/EnemyBullet.cpp
 )
 
 target_include_directories(${PROJECT_NAME}

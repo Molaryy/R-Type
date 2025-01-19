@@ -17,6 +17,7 @@
 #define COLOR_WHITE {255, 255, 255, 255}
 
 void lobbyCallback(Registry &r);
+void lobbyPage(Registry &r, std::size_t lobby_id);
 void settingsCallback(Registry &r);
 void createMenuScene(Registry &r);
 void exitButtonCallback(Registry &r);

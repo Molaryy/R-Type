@@ -64,6 +64,24 @@ public:
         return std::any_cast<const SparseArray<Component> &>(components);
     }
 
+    template <class Component>
+    std::optional<Component> &get_entity_component(entity_t e) {
+        const std::type_index idx(typeid(Component));
+        if (!components_arrays_.contains(idx))
+            register_component<Component>();
+        std::any &components = components_arrays_[idx];
+        return std::any_cast<SparseArray<Component> &>(components)[e];
+    }
+
+    template <class Component>
+    std::optional<Component> const &get_entity_component(entity_t e) const {
+        const std::type_index idx(typeid(Component));
+        if (!components_arrays_.contains(idx))
+            throw std::runtime_error("Component array not registered");
+        const std::any &components = components_arrays_.find(idx)->second;
+        return std::any_cast<const SparseArray<Component> &>(components)[e];
+    }
+
     [[nodiscard]] entity_t spawn_entity() {
         if (!dead_entities_.empty()) {
             const entity_t entity = dead_entities_.back();

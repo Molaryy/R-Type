@@ -10,27 +10,6 @@
 #include <cstddef>
 #include <cstdint>
 
-#define TILE_SIZE 50
-
-#define PLAYER_SPEED 4
-#define PLAYER_SIZE 30
-#define PLAYER_HEALTH 100
-
-#define PLAYER_BULLET_RATE 15
-#define PLAYER_BULLET_SPEED 5
-#define PLAYER_BULLET_SIZE 15
-
-#define TURRET_BULLET_SPEED 1
-#define TURRET_BULLET_SIZE 15
-#define TURRET_BULLET_RATE 40
-
-#define TURRET_HEALTH 4
-#define TURRET_SIZE 30
-
-#define FLY_SPEED 1
-#define FLY_SIZE 20
-#define FLY_HEALTH 2
-
 #define BOSS_HEART_SIZE 50
 #define BOSS_HEART_HEALTH 5
 #define BOSS_HEART_BULLET_RATE 60
@@ -38,6 +17,11 @@
 #define BOSS_SIZE 50
 #define BOSS_HEALTH 10
 #define BOSS_BULLET_RATE 20
+
+#define WIDTH 800
+#define HEIGHT 600
+
+#define CAMERA_SPEED (-1)
 
 #define SERVER_TPS 30
 
@@ -73,18 +57,19 @@ namespace Protocol {
     };
 
     enum CommandIdClient : uint16_t {
-        CONNECT, // EmptyPacket, Client send this packet at startup
+        CONNECT, // EmptyPacket, Client send this packet at startup -> Server will respond with ACCEPT_CONNECTION
         DISCONNECT, // EmptyPacket, Disconnection
 
-        ASK_LOBBY_LIST, // EmptyPacket, Ask for number of lobby
-        ASK_LOBBY_DATA, // AskLobbyDataPacket, Ask for data of a lobby id
+        ASK_LOBBY_LIST, // EmptyPacket, Ask for number of lobby -> Server will respond with LOBBY_LIST
+        ASK_LOBBY_DATA, // AskLobbyDataPacket, Ask for data of a lobby id ->< Server will respond with LOBBY_DATA
 
         JOIN_LOBBY_BY_ID, // JoinLobbyPacket, Ask to join a lobby by id -> Server will respond with ACCEPT_LOBBY_JOIN if success
         JOIN_NEW_LOBBY, // EmptyPacket, Ask to join a newly created lobby -> Server will respond with ACCEPT_LOBBY_JOIN
         JOIN_RANDOM_LOBBY, // EmptyPacket, Join a random open lobby, or create a new one if all are closed -> Server will respond with ACCEPT_LOBBY_JOIN
+        CHANGE_GAME_MODE, // EmptyPacket, Change from infinite mode to campain mode -> Server will respond with LOBBY_DATA
         LEAVE_LOBBY, // EmptyPacket, Leave actual lobby
 
-        ASK_START_GAME, // EmptyPacket, Ask for game start, will start game for the actual lobby
+        ASK_START_GAME, // EmptyPacket, Ask for game start, will start game for the actual lobby -> Server will respond with START_GAME
 
         INPUT_KEYS, // PacketInputsKeysPacket, all inputs from clients
 
@@ -100,7 +85,7 @@ namespace Protocol {
         ACCEPT_LOBBY_JOIN, // AcceptLobbyJoinPacket, server send this after receiving JOIN_LOBBY_BY_ID, JOIN_NEW_LOBBY, JOIN_LOBBY_RANDOM
         ACCEPT_LEAVE_LOBBY, // EmptyPacket, server send this after receiving LEAVE_LOBBY
         START_GAME, // EmptyPacket, Game is starting, server will start sending game state
-        END_GAME, // EmptyPacket, Game is over
+        END_GAME, // EndGamePacket, Game is over
 
         SPAWN, // SpawnEntityPacket, data about a new entity to be displayed
         HIT, // HitPacket, entity got hit
@@ -126,7 +111,9 @@ namespace Protocol {
         std::size_t entity_id; // Server id for entity
         EntityType type; // Type of entity
         Vector2f position; // Position at creation
+        Vector2f size; // Size of the entity hitbox (a square with top corner at position)
         Vector2f velocity; // Velocity at creation
+        int health; // Health at creation
     };
 
     struct EntityPositionVelocityPacket {
@@ -162,10 +149,16 @@ namespace Protocol {
         std::size_t entity_id; // Server id of the new joined client
     };
 
+    struct EndGamePacket {
+        std::size_t score;
+        std::size_t new_entity_id; // Your new entity id in this lobby
+    };
+
     struct LobbyDataPacket {
         std::size_t lobby_id; // Lobby id of data
         LobbyState lobby_state; // State of lobby
         uint8_t nb_players; // Numbers of players in lobby
+        bool game_mode; // True for infinite, false for campaign
     };
 
     struct InputsKeysPacket {

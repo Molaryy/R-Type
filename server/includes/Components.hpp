@@ -88,3 +88,15 @@ public:
 
     std::vector<Protocol::InputKey> input_keys;
 };
+
+struct ArtificialIntelligence {
+    std::function<void (Registry &, entity_t)> ia;
+
+    void operator()(Registry &r, const entity_t me) const {
+        ia(r, me);
+    }
+
+    void log() const {
+        std::cout << "ArtificalIntelligence";
+    }
+};

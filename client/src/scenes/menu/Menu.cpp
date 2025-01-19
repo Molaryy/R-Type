@@ -37,7 +37,7 @@ void leaderBoardCallback(Registry &r) {
     auto [names, scores] = leaderboard.getScoreboard();
     for (std::size_t i = 0; i < SCOREBOARD_SIZE; ++i)
     {
-        if (strlen(names[i]) == 0 && scores[i] == 0) {
+        if (std::strlen(names[i]) == 0 && scores[i] == 0) {
             break;
         }
         const entity_t nameEntity = r.spawn_entity();
@@ -45,10 +45,10 @@ void leaderBoardCallback(Registry &r) {
         const std::string scoreboard_name = names[i];
         const std::size_t scoreboard_scores = scores[i];
         r.add_component(nameEntity, Components::RenderText(scoreboard_name, 30, true));
-        r.add_component(nameEntity, Position(200, 100 + i * 40));
+        r.add_component(nameEntity, Position(200, static_cast<float>(100 + i * 40)));
         r.add_component(nameEntity, Components::ColorText({255, 255, 255, 255}));
         r.add_component(scoreEntity, Components::RenderText(std::to_string(scoreboard_scores), 30, true));
-        r.add_component(scoreEntity, Position(500, 100 + i * 40));
+        r.add_component(scoreEntity, Position(500, static_cast<float>(100 + i * 40)));
         r.add_component(scoreEntity, Components::ColorText({255, 255, 255, 255}));
     }
     exitButtonCallback(r);
