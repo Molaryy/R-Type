@@ -14,6 +14,7 @@
 #include "Scenes.hpp"
 #include "IRenderer.hpp"
 
+//getLobbyData, if lobby open, callback
 bool Lobby::timeOut(const std::chrono::system_clock::time_point time_out_clock, Network::INetworkClient &network)
 {
     Registry &r = Client::getInstance().getRegistry();
@@ -23,8 +24,13 @@ bool Lobby::timeOut(const std::chrono::system_clock::time_point time_out_clock, 
         std::cerr << "Couldn't receive packet: time out" << std::endl;
         const entity_t popup = r.spawn_entity();
         r.add_component(popup, Components::RenderText("Connection to server timed out. Try again.", 20, true));
+
         r.add_component(popup, Position(200, 250));
         r.add_component(popup, Components::ColorText({255, 0, 0, 255}));
+        r.add_component(popup, Components::ColorOverText({255, 0, 0, 255}, {255, 0, 0, 255}, false));
+        r.add_component(popup, Components::ClickableText([](Registry &) {
+            exit(84);
+        }));
         return true;
     }
     std::vector<uint8_t> oldest_packet = network.getOldestPacket();
@@ -294,7 +300,8 @@ void Lobby::lobbyCallback(Registry &r)
     };
 
     int i = 0;
-    for (const auto &lobby : lobby_list) {
+    for (const auto &lobby : lobby_list)
+    {
         entity_t button = r.spawn_entity();
         i++;
         r.add_component(button, Components::RenderText(std::string("Lobby ") + std::to_string(lobby.lobby_id)
@@ -302,8 +309,18 @@ void Lobby::lobbyCallback(Registry &r)
                                                        + state_string.at(lobby.lobby_state), 20, true));
         r.add_component(button, Position(100, static_cast<float>(150 + i * 40)));
         r.add_component(button, Components::ColorText(grey));
-        r.add_component(button, Components::ClickableText([this, lobby, &network]([[maybe_unused]] Registry &registry) {
-            joinLobby(registry, [lobby, &network] {
+        //get the lobby id, getLobbyData of it, check if its open, if state is not open call LobbyCallback else call timeout
+
+        auto data = getLobbyData(lobby.lobby_id);
+        if (data.lobby_state != Protocol::OPEN)
+        {
+            lobbyCallback(r);
+        }
+
+        r.add_component(button, Components::ClickableText([this, lobby, &network]([[maybe_unused]] Registry &registry)
+        {
+            joinLobby(registry, [lobby, &network]
+            {
                 Network::Packet packetSended(Protocol::JoinLobbyPacket(lobby.lobby_id), Protocol::JOIN_LOBBY_BY_ID);
                 network.send(packetSended.serialize());
             });
