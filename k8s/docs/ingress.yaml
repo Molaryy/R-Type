@@ -16,17 +16,17 @@ spec:
                 name: docusaurus
                 port:
                   number: 3000
-          #- path: /doxygen
-          #  pathType: Prefix
-          #  backend:
-          #    service:
-          #      name: doxygen
-          #      port:
-          #        number: 8080
-          #- path: /rfc
-          #  pathType: Prefix
-          #  backend:
-          #    service:
-          #      name: rfc
-          #      port:
-          #        number: 8081
+          - path: /doxygen
+            pathType: Prefix
+            backend:
+              service:
+                name: doxygen
+                port:
+                  number: 8080
+          - path: /rfc
+            pathType: Prefix
+            backend:
+              service:
+                name: rfc
+                port:
+                  number: 8081
