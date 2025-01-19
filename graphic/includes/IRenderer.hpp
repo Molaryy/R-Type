@@ -348,5 +348,19 @@ namespace Graphic {
              * @return false 
              */
             virtual bool isKeyPressed(int key) const = 0;
+
+            /**
+             * @brief pause musics
+             * 
+             * @param musicID 
+             */
+            virtual void pauseMusic(const int musicID) = 0;
+
+            /**
+             * @brief resume musics
+             * 
+             * @param musicID 
+             */
+            virtual void resumeMusic(const int musicID) = 0;
     };
 }

@@ -339,7 +339,6 @@ default:
         registry_.add_component(e, Position(300, 80));
         registry_.add_component(e, Components::ColorText{COLOR_WHITE});
 
-        renderer_->unloadMusic(musicID_);
         renderer_->playSound(gameOverSoundID_);
     });
 }
