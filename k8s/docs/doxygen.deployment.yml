@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: doxygen
+  labels:
+    app: doxygen
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: doxygen
+  template:
+    metadata:
+      labels:
+        app: doxygen
+    spec:
+      containers:
+        - name: doxygen
+          image: molaryy35/doc-doxygen
+          ports:
+            - containerPort: 8080
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 500m
+              memory: 256Mi

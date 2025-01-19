@@ -12,7 +12,9 @@ on:
 
 env:
   USER: molaryy35
-  IMAGE: doc-docusaurus
+  IMAGE_DOCUSAURUS: doc-docusaurus
+  IMAGE_DOXYGEN: doc-doxygen
+  IMAGE_RFC: doc-rfc
   VERSION: 1.0
   EXECUTABLES: "r-type_client r-type_server"
   MIRROR_URL: git@github.com:EpitechPromo2027/B-CPP-500-PAR-5-2-rtype-nicolas.gillard.git
@@ -120,8 +122,8 @@ jobs:
               fi
             done
 
-  doc-image:
-    name: Create documentation image
+  docusaurus-image:
+    name: Create docusaurus documentation image
     runs-on: ubuntu-latest
     needs: commits
     permissions:
@@ -140,7 +142,52 @@ jobs:
       - name: "Push the image"
         working-directory: ./docs/docusaurus
         run: |
-          docker build --platform linux/amd64 -t ${{ env.USER }}/${{ env.IMAGE }} .
-          docker image tag ${{ env.USER }}/${{ env.IMAGE }} ${{ env.USER }}/${{ env.IMAGE }}:${{ env.VERSION }}
-          docker push ${{ env.USER }}/${{ env.IMAGE }}:${{ env.VERSION }}
-          
+          docker build --platform linux/amd64 -t ${{ env.USER }}/${{ env.IMAGE_DOCUSAURUS }} .
+          docker image tag ${{ env.USER }}/${{ env.IMAGE_DOCUSAURUS }} ${{ env.USER }}/${{ env.IMAGE_DOCUSAURUS }}:${{ env.VERSION }}
+          docker push ${{ env.USER }}/${{ env.IMAGE_DOCUSAURUS }}:${{ env.VERSION }}
+  doxygen-image:
+    name: Create doxygen documentation image
+    runs-on: ubuntu-latest
+    needs: commits
+    permissions:
+      packages: write
+      contents: read
+      attestations: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        name: Check out the repo
+      - uses: docker/login-action@v3
+        name: Log in to Docker Hub
+        with:
+          username: ${{ env.USER }}
+          password: ${{ secrets.DOCKER_PASSWORD_GIT }}
+      - name: "Push the image"
+        working-directory: ./docs/doxygen
+        run: |
+          docker build --platform linux/amd64 -t ${{ env.USER }}/${{ env.IMAGE_DOXYGEN }} .
+          docker image tag ${{ env.USER }}/${{ env.IMAGE_DOCUSAURUS }} ${{ env.USER }}/${{ env.IMAGE_DOXYGEN }}:${{ env.VERSION }}
+          docker push ${{ env.USER }}/${{ env.IMAGE_DOXYGEN }}:${{ env.VERSION }}
+  rfc-image:
+    name: Create RFC documentation image
+    runs-on: ubuntu-latest
+    needs: commits
+    permissions:
+      packages: write
+      contents: read
+      attestations: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        name: Check out the repo
+      - uses: docker/login-action@v3
+        name: Log in to Docker Hub
+        with:
+          username: ${{ env.USER }}
+          password: ${{ secrets.DOCKER_PASSWORD_GIT }}
+      - name: "Push the image"
+        working-directory: ./docs/rfc
+        run: |
+          docker build --platform linux/amd64 -t ${{ env.USER }}/${{ env.IMAGE_RFC }} .
+          docker image tag ${{ env.USER }}/${{ env.IMAGE_DOCUSAURUS }} ${{ env.USER }}/${{ env.IMAGE_RFC }}:${{ env.VERSION }}
+          docker push ${{ env.USER }}/${{ env.IMAGE_RFC }}:${{ env.VERSION }}

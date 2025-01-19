@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: docusaurus
+  name: rfc
   labels:
-    app: docusaurus
+    app: rfc
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      app: docusaurus
+      app: rfc
   template:
     metadata:
       labels:
-        app: docusaurus
+        app: rfc
     spec:
       containers:
-        - name: docusaurus
-          image: molaryy35/doc-docusaurus
+        - name: rfc
+          image: molaryy35/doc-rfc
           ports:
-            - containerPort: 3000
+            - containerPort: 8081
           imagePullPolicy: Always
           resources:
             limits:
