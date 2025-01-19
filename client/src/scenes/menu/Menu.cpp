@@ -14,6 +14,7 @@
 #include "Components.hpp"
 #include "IRenderer.hpp"
 #include "LeaderBoard.hpp"
+#include "Lobby.hpp"
 #include "Scenes.hpp"
 #include "Zipper.hh"
 
@@ -217,7 +218,7 @@ void accessibilityCallback(Registry &r) {
 
 void createMenuScene(Registry &r)
 {
-    Lobby lobby {};
+    Lobby lobby;
     r.clear_entities();
 
     const entity_t e = r.spawn_entity();

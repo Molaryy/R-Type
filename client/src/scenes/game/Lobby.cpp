@@ -155,7 +155,7 @@ r.add_component(e, Components::ColorOverText(darkBlue, grey));
     r.add_component(e, Position(265, 400));
 
     r.add_component(e, Components::ColorText(white));
-    r.add_component(e, Components::ClickableText([lobby_id](Registry &reg) {
+    r.add_component(e, Components::ClickableText([this, lobby_id](Registry &reg) {
         bool received_lobby_data = false;
         Network::INetworkClient &network = Client::getInstance().getNetworkLib();
         Network::PacketHandler &packet_handler = Client::getInstance().getPacketHandler();
@@ -204,7 +204,6 @@ void Lobby::joinLobby(Registry &r, const std::function<void()> &send_packet)
 
     bool joined = false;
     std::size_t lobby_id = 0;
-
 
     packet_handler.setPacketCallback(Protocol::ACCEPT_LOBBY_JOIN, [&joined, &lobby_id](const Network::Packet &packet)
     {
