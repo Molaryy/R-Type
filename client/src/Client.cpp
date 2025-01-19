@@ -289,10 +289,9 @@ default:
         }
         const entity_t entity_id = std::ranges::distance(server_ids.begin(), it);
 
-        if (!natural) {
-            playSoundEffect(explosionSoundID_);
+        if (!natural)
             return registry_.kill_entity(entity_id);
-        }
+
         const std::optional<Position> &pos = registry_.get_components<Position>()[entity_id];
         std::optional<Components::Drawable> &draw = registry_.get_components<Components::Drawable>()[entity_id];
 
@@ -318,6 +317,7 @@ default:
             draw->can_draw = false;
             return;
         }
+        playSoundEffect(explosionSoundID_);
         registry_.kill_entity(entity_id);
     });
     packet_handler_.setPacketCallback(Protocol::SERVER_SHUTDOWN, [](Network::Packet &) {
