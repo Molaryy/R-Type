@@ -219,8 +219,7 @@ void Lobby::joinLobby(Registry &r, const std::function<void()> &send_packet)
 
     const std::chrono::system_clock::time_point time_out_clock = std::chrono::system_clock::now();
 
-    while (!joined)
-        timeOut(time_out_clock, network);
+    while (!joined && !timeOut(time_out_clock, network))
     lobbyPage(r, lobby_id);
 }
 
@@ -309,16 +308,14 @@ void Lobby::lobbyCallback(Registry &r)
                                                        + state_string.at(lobby.lobby_state), 20, true));
         r.add_component(button, Position(100, static_cast<float>(150 + i * 40)));
         r.add_component(button, Components::ColorText(grey));
-        //get the lobby id, getLobbyData of it, check if its open, if state is not open call LobbyCallback else call timeout
-
-        auto data = getLobbyData(lobby.lobby_id);
-        if (data.lobby_state != Protocol::OPEN)
-        {
-            lobbyCallback(r);
-        }
 
         r.add_component(button, Components::ClickableText([this, lobby, &network]([[maybe_unused]] Registry &registry)
         {
+            auto data = getLobbyData(lobby.lobby_id);
+            if (data.lobby_state != Protocol::OPEN)
+            {
+                lobbyCallback(registry);
+            }
             joinLobby(registry, [lobby, &network]
             {
                 Network::Packet packetSended(Protocol::JoinLobbyPacket(lobby.lobby_id), Protocol::JOIN_LOBBY_BY_ID);
