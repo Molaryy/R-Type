@@ -151,6 +151,8 @@ namespace Systems {
     inline void menuNavSystem(Registry &r) {
         static auto lastNavigationTime = std::chrono::steady_clock::now();
         constexpr std::chrono::milliseconds navigationCooldown(200);
+        static bool prevUpPressed = false;
+        static bool prevDownPressed = false;
         auto &positions = r.get_components<Position>();
         auto &menuOptions = r.get_components<Components::MenuOption>();
         auto &rendererTexts = r.get_components<Components::RenderText>();
@@ -159,17 +161,26 @@ namespace Systems {
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
         Graphic::event_t events = renderer.getEvents();
 
+        bool currUpPressed = (std::find(events.inputs.begin(), events.inputs.end(), Graphic::Keys::UpArrow) != events.inputs.end());
+        bool currDownPressed = (std::find(events.inputs.begin(), events.inputs.end(), Graphic::Keys::DownArrow) != events.inputs.end());
+
         auto now = std::chrono::steady_clock::now();
 
         if (std::chrono::duration_cast<std::chrono::milliseconds>(now - lastNavigationTime) < navigationCooldown) {
+            prevUpPressed = currUpPressed;
+            prevDownPressed = currDownPressed;
             return;
         }
 
-        bool upPressed = (std::find(events.inputs.begin(), events.inputs.end(), Graphic::Keys::UpArrow) != events.inputs.end());
-        bool downPressed = (std::find(events.inputs.begin(), events.inputs.end(), Graphic::Keys::DownArrow) != events.inputs.end());
+        bool upTriggered = (currUpPressed && !prevUpPressed);
+        bool downTriggered = (currDownPressed && !prevDownPressed);
 
-        if (!upPressed && !downPressed)
+        prevUpPressed = currUpPressed;
+        prevDownPressed = currDownPressed;
+
+        if (!upTriggered && !downTriggered)
             return;
+
         std::vector<std::size_t> menuIndices;
         for (std::size_t i = 0; i < r.max_entities(); ++i) {
             if (menuOptions[i].has_value() && rendererTexts[i].has_value()) {
@@ -178,12 +189,13 @@ namespace Systems {
         }
         if (menuIndices.empty())
             return;
+
         std::sort(menuIndices.begin(), menuIndices.end(), [&](std::size_t a, std::size_t b) {
             return positions[a].value().y < positions[b].value().y;
         });
+
         std::size_t currentIndex = 0;
         bool found = false;
-
         for (std::size_t i = 0; i < menuIndices.size(); i++) {
             if (menuOptions[menuIndices[i]].value().isFocused) {
                 currentIndex = i;
@@ -200,9 +212,9 @@ namespace Systems {
         }
         menuOptions[menuIndices[currentIndex]].value().isFocused = false;
         colorOverTexts[menuIndices[currentIndex]].value().isOver = false;
-        if (upPressed) {
+        if (upTriggered) {
             currentIndex = (currentIndex == 0) ? menuIndices.size() - 1 : currentIndex - 1;
-        } else if (downPressed) {
+        } else if (downTriggered) {
             currentIndex = (currentIndex + 1) % menuIndices.size();
         }
         menuOptions[menuIndices[currentIndex]].value().isFocused = true;

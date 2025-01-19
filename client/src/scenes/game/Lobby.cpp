@@ -146,6 +146,7 @@ void lobbyPage(Registry &r, const std::size_t lobby_id) {
     r.add_component(e, Components::ClickableText([lobby_id](Registry &reg) {
         lobbyPage(reg, lobby_id);
     }));
+    r.add_component(e, Components::MenuOption());
     r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
 
     e = r.spawn_entity();
@@ -158,6 +159,7 @@ void lobbyPage(Registry &r, const std::size_t lobby_id) {
     r.add_component(e, Position(225, 300));
     r.add_component(e, Components::ColorText(white));
     r.add_component(e, Components::ClickableText(startLobby));
+    r.add_component(e, Components::MenuOption());
     r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
 
     e = r.spawn_entity();
@@ -201,6 +203,7 @@ void lobbyPage(Registry &r, const std::size_t lobby_id) {
         leaveLobby();
         lobbyCallback(reg);
     }));
+    r.add_component(e, Components::MenuOption());
     r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
 }
 
@@ -257,6 +260,7 @@ void lobbyCallback(Registry &r) {
     r.add_component(e, Position(600, 50));
     r.add_component(e, Components::ColorText(white));
     r.add_component(e, Components::ClickableText(lobbyCallback));
+    r.add_component(e, Components::MenuOption());
     r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
 
     e = r.spawn_entity();
@@ -264,6 +268,7 @@ void lobbyCallback(Registry &r) {
     r.add_component(e, Position(50, 550));
     r.add_component(e, Components::ColorText(white));
     r.add_component(e, Components::ClickableText(createMenuScene));
+    r.add_component(e, Components::MenuOption());
     r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
 
     e = r.spawn_entity();
@@ -276,6 +281,7 @@ void lobbyCallback(Registry &r) {
             network.send(packetSended.serialize());
         });
     }));
+    r.add_component(e, Components::MenuOption());
     r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
 
     e = r.spawn_entity();
@@ -288,6 +294,7 @@ void lobbyCallback(Registry &r) {
             network.send(packetSended.serialize());
         });
     }));
+    r.add_component(e, Components::MenuOption());
     r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
 
     const std::unordered_map<Protocol::LobbyState, std::string> state_string {
