@@ -340,8 +340,7 @@ default:
         registry_.add_component(e, Components::ColorText{COLOR_WHITE});
 
         renderer_->unloadMusic(musicID_);
-        musicID_ = renderer_->loadMusic("assets/sounds/Music/game-over.mp3");
-        renderer_->playMusic(musicID_); 
+        renderer_->playSound(gameOverSoundID_);
     });
 }
 
@@ -412,7 +411,7 @@ void Client::loadSounds() {
     gameOverSoundID_ = renderer_->loadSound(SOUND_GAME_OVER);
 
     if (playerBulletSoundID_ == -1 || enemyBulletSoundID_ == -1 || explosionSoundID_ == -1 || gameOverSoundID_ == -1) {
-        throw std::runtime_error("Failed to load one or more sound effects.");
+        throw std::runtime_error("ERROR: Failed to load sound effects");
     }
 
     std::cout << "Sound effects loaded successfully." << std::endl;

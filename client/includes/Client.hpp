@@ -82,7 +82,7 @@ private:
 
     bool musicEnabled_ = true;
     bool soundEffectsEnabled_ = true;
-    bool playGameOverMusic_ = false;
+    bool gameOverSoundPlayed_ = false;
 
     int currentResolutionIndex_ = 0;
     int currentFPSIndex_ = 1;
