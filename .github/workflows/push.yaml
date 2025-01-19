@@ -166,7 +166,7 @@ jobs:
         working-directory: ./docs/doxygen
         run: |
           docker build --platform linux/amd64 -t ${{ env.USER }}/${{ env.IMAGE_DOXYGEN }} .
-          docker image tag ${{ env.USER }}/${{ env.IMAGE_DOCUSAURUS }} ${{ env.USER }}/${{ env.IMAGE_DOXYGEN }}:${{ env.VERSION }}
+          docker image tag ${{ env.USER }}/${{ env.IMAGE_DOXYGEN }} ${{ env.USER }}/${{ env.IMAGE_DOXYGEN }}:${{ env.VERSION }}
           docker push ${{ env.USER }}/${{ env.IMAGE_DOXYGEN }}:${{ env.VERSION }}
   rfc-image:
     name: Create RFC documentation image
@@ -189,5 +189,5 @@ jobs:
         working-directory: ./docs/rfc
         run: |
           docker build --platform linux/amd64 -t ${{ env.USER }}/${{ env.IMAGE_RFC }} .
-          docker image tag ${{ env.USER }}/${{ env.IMAGE_DOCUSAURUS }} ${{ env.USER }}/${{ env.IMAGE_RFC }}:${{ env.VERSION }}
+          docker image tag ${{ env.USER }}/${{ env.IMAGE_RFC }} ${{ env.USER }}/${{ env.IMAGE_RFC }}:${{ env.VERSION }}
           docker push ${{ env.USER }}/${{ env.IMAGE_RFC }}:${{ env.VERSION }}
