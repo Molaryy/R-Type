@@ -5,16 +5,17 @@
 ** Settings scene
 */
 
-#include "Client.hpp"
-#include "Zipper.hh"
 #include <fstream>
+#include <Lobby.hpp>
 #include <sstream>
-#include <fstream>
+#include "Client.hpp"
+
 #include "Components.hh"
 #include "Components.hpp"
 #include "IRenderer.hpp"
-#include "Scenes.hpp"
 #include "LeaderBoard.hpp"
+#include "Scenes.hpp"
+#include "Zipper.hh"
 
 void exitButtonCallback(Registry &r)
 {
@@ -187,7 +188,7 @@ void createSignForm(Registry &r) {
                 r.clear_entities();
                 createMenuScene(r);
 
-                
+
             }
         }
     }));
@@ -214,7 +215,9 @@ void accessibilityCallback(Registry &r) {
     }
 }
 
-void createMenuScene(Registry &r) {
+void createMenuScene(Registry &r)
+{
+    Lobby lobby {};
     r.clear_entities();
 
     const entity_t e = r.spawn_entity();
@@ -226,7 +229,15 @@ void createMenuScene(Registry &r) {
     r.add_component(e, Components::RenderText("R-TYPE", 40, true));
     r.add_component(e, Position(50, 50));
     r.add_component(e, Components::ColorText(white));
-    const std::vector<std::function<void(Registry &r)>> callbacks = {lobbyCallback, leaderBoardCallback, settingsCallback, creditsCallback, logoutCallback, exitCallback, accessibilityCallback};
+    const std::vector<std::function<void(Registry &r)>> callbacks = {
+        [&lobby](Registry &r) { lobby.lobbyCallback(r); },
+        leaderBoardCallback,
+        settingsCallback,
+        creditsCallback,
+        logoutCallback,
+        exitCallback,
+        accessibilityCallback
+    };
 
     for (std::size_t i = 0; i < NB_MENU_BUTTONS; i++) {
         entity_t button = r.spawn_entity();
