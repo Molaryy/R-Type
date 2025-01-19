@@ -7,6 +7,9 @@
 
 #pragma once
 
+#include <chrono>
+#include <cmath>
+#include <limits>
 #include "Client.hpp"
 #include "Components.hh"
 #include "Components.hpp"
@@ -54,9 +57,10 @@ namespace Systems {
         auto &positions = r.get_components<Position>();
         auto &colorsTexts = r.get_components<Components::ColorText>();
         auto &colorsOverText = r.get_components<Components::ColorOverText>();
+        auto &menuOptions = r.get_components<Components::MenuOption>();
 
-        for (auto &&[pos, text, colorText, colorOverText] : Zipper(positions, texts, colorsTexts, colorsOverText)) {
-            if (colorOverText.isOver) {
+        for (auto &&[pos, text, colorText, colorOverText, menuOpt] : Zipper(positions, texts, colorsTexts, colorsOverText, menuOptions)) {
+            if (colorOverText.isOver || menuOpt.isFocused) {
                 colorText.color = colorOverText.newColor;
             } else {
                 colorText.color = colorOverText.defaultColor;
@@ -140,6 +144,87 @@ namespace Systems {
                 Network::Packet packet(inputs, Protocol::INPUT_KEYS);
                 Client::getInstance().getNetworkLib().send(packet.serialize());
                 return;
+            }
+        }
+    }
+
+    inline void menuNavSystem(Registry &r) {
+        static auto lastNavigationTime = std::chrono::steady_clock::now();
+        constexpr std::chrono::milliseconds navigationCooldown(200);
+        auto &positions = r.get_components<Position>();
+        auto &menuOptions = r.get_components<Components::MenuOption>();
+        auto &rendererTexts = r.get_components<Components::RenderText>();
+        auto &colorOverTexts = r.get_components<Components::ColorOverText>();
+
+        Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
+        Graphic::event_t events = renderer.getEvents();
+
+        auto now = std::chrono::steady_clock::now();
+
+        if (std::chrono::duration_cast<std::chrono::milliseconds>(now - lastNavigationTime) < navigationCooldown) {
+            return;
+        }
+
+        bool upPressed = (std::find(events.inputs.begin(), events.inputs.end(), Graphic::Keys::UpArrow) != events.inputs.end());
+        bool downPressed = (std::find(events.inputs.begin(), events.inputs.end(), Graphic::Keys::DownArrow) != events.inputs.end());
+
+        if (!upPressed && !downPressed)
+            return;
+        std::vector<std::size_t> menuIndices;
+        for (std::size_t i = 0; i < r.max_entities(); ++i) {
+            if (menuOptions[i].has_value() && rendererTexts[i].has_value()) {
+                menuIndices.push_back(i);
+            }
+        }
+        if (menuIndices.empty())
+            return;
+        std::sort(menuIndices.begin(), menuIndices.end(), [&](std::size_t a, std::size_t b) {
+            return positions[a].value().y < positions[b].value().y;
+        });
+        std::size_t currentIndex = 0;
+        bool found = false;
+
+        for (std::size_t i = 0; i < menuIndices.size(); i++) {
+            if (menuOptions[menuIndices[i]].value().isFocused) {
+                currentIndex = i;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            currentIndex = 0;
+            menuOptions[menuIndices[0]].value().isFocused = true;
+            colorOverTexts[menuIndices[0]].value().isOver = true;
+            lastNavigationTime = now;
+            return;
+        }
+        menuOptions[menuIndices[currentIndex]].value().isFocused = false;
+        colorOverTexts[menuIndices[currentIndex]].value().isOver = false;
+        if (upPressed) {
+            currentIndex = (currentIndex == 0) ? menuIndices.size() - 1 : currentIndex - 1;
+        } else if (downPressed) {
+            currentIndex = (currentIndex + 1) % menuIndices.size();
+        }
+        menuOptions[menuIndices[currentIndex]].value().isFocused = true;
+        colorOverTexts[menuIndices[currentIndex]].value().isOver = true;
+        lastNavigationTime = now;
+    }
+
+    inline void handleMenuEnter(Registry &r) {
+        Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
+        Graphic::event_t events = renderer.getEvents();
+        bool enterPressed = (std::find(events.inputs.begin(), events.inputs.end(), Graphic::Keys::Enter) != events.inputs.end());
+
+        if (!enterPressed)
+            return;
+
+        auto &menuOptions = r.get_components<Components::MenuOption>();
+        auto &clickables  = r.get_components<Components::ClickableText>();
+
+        for (auto &&[menuOption, clickable] : Zipper(menuOptions, clickables)) {
+            if (menuOption.isFocused) {
+                clickable.callback(r);
+                break;
             }
         }
     }

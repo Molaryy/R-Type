@@ -42,6 +42,14 @@ namespace Components {
         }
     };
 
+    struct MenuOption {
+        bool isFocused = false;
+
+        void log() const {
+            std::cout << "MenuOption";
+        }
+    };
+
     struct ClickableText {
         std::function<void(Registry &r)> callback;
 

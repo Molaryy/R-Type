@@ -112,6 +112,7 @@ void createMenuScene(Registry &r) {
         r.add_component(button, Components::ColorText(grey));
         r.add_component(button, Components::ClickableText(callbacks[i]));
         r.add_component(button, Components::ColorOverText(darkBlue, grey, false));
+        r.add_component(button, Components::MenuOption());
     }
 
     //Graphic::IRenderer &renderer = Client::getInstance().getRenderer();

@@ -346,6 +346,8 @@ void Client::setupSystems_() {
     registry_.add_system(Systems::drawEntities);
     registry_.add_system(Systems::spriteSheetHandler);
     registry_.add_system(Systems::handleInputs);
+    registry_.add_system(Systems::menuNavSystem);
+    registry_.add_system(Systems::handleMenuEnter);
     if (debug_)
         registry_.add_system(Systems::log);
     registry_.add_system([](Registry &r) {
