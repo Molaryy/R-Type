@@ -23,9 +23,6 @@ Platform::Platform()
 }
 
 Platform::~Platform() {
-    if (texturePlayer_ != -1) {
-        renderer_->unloadTexture(texturePlayer_);
-    }
 }
 
 void Platform::initEntities() {
