@@ -1,4 +1,4 @@
-FROM node:20.4.0-alpine
+FROM arm64v8/node
 
 WORKDIR /r-type/docs/
 
