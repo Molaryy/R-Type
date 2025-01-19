@@ -56,15 +56,14 @@ namespace Graphic {
         DrawRectangleV({x, y}, {width, height}, Color(r, g, b, a));
     }
 
-    void RaylibGraphic::drawRoundedRectangle(const int x, const int y, const int width, const int height, const float roundness, const int segments,
-                                             const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a) {
+    void RaylibGraphic::drawRoundedRectangle(const int x, const int y, const int width, const int height, const float roundness, const int segments, const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a) {
         const Rectangle rec = {
             static_cast<float>(x),
             static_cast<float>(y),
             static_cast<float>(width),
             static_cast<float>(height)
         };
-        const Color col = {r, g, b, a};
+        const Color col = { r, g, b, a };
         DrawRectangleRounded(rec, roundness, segments, col);
     }
 

@@ -140,6 +140,7 @@ void Lobby::startGame() {
                 );
                 networkLib_.sendAll(new_player_packet.serialize());
             }
+            pos_in_level_ = 0;
             registry_.clear_systems();
 
             registry_.add_system([this]([[maybe_unused]] const Registry &r) {

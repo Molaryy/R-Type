@@ -12,29 +12,29 @@
 #include "IndexedZipper.hh"
 
 void Platform::collisionSystem(Registry &r) {
-    auto &positions = r.get_components<Position>();
-    auto &velocities = r.get_components<Velocity>();
-    auto &collisions = r.get_components<Collision>();
-    auto &entityType = r.get_components<EntityType>();
+    SparseArray<Position> &positions = r.get_components<Position>();
+    SparseArray<Velocity> &velocities = r.get_components<Velocity>();
+    SparseArray<Collision> &collisions = r.get_components<Collision>();
+    SparseArray<EntityType> &entityType = r.get_components<EntityType>();
 
-    float dt = getInstance().dt_;
+    const float dt = getInstance().dt_;
     std::vector<entity_t> entitiesToKill;
 
     for (auto &&[pPos, pVel, pCol, player] : Zipper(positions, velocities, collisions, entityType)) {
         if (player.type == PlayerType) {
-            float left = pPos.x;
-            float right = pPos.x + pCol.width;
-            float newBottom = pPos.y + pCol.height;
-            float oldBottom = newBottom - pVel.y * dt;
+            const float left = pPos.x;
+            const float right = pPos.x + pCol.width;
+            const float newBottom = pPos.y + pCol.height;
+            const float oldBottom = newBottom - pVel.y * dt;
 
             for (auto &&[pos, vel, col, platform] : Zipper(positions, velocities, collisions, entityType)) {
                 if (platform.type == PlatformType) {
-                    float platLeft = pos.x;
-                    float platRight = pos.x + col.width;
-                    float platTop = pos.y;
+                    const float platLeft = pos.x;
+                    const float platRight = pos.x + col.width;
+                    const float platTop = pos.y;
 
-                    bool overLapX = (right > platLeft && left < platRight);
-                    bool crossingTop = (oldBottom <= platTop && newBottom >= platTop);
+                    const bool overLapX = right > platLeft && left < platRight;
+                    const bool crossingTop = oldBottom <= platTop && newBottom >= platTop;
 
                     if (overLapX && crossingTop) {
                         pPos.y = platTop - pCol.height;
@@ -52,15 +52,15 @@ void Platform::collisionSystem(Registry &r) {
                     if (breakable.type == BreakableType) {
                         if (breakable.broken)
                             continue;
-                        float bLeft = bPos.x;
-                        float bRight = bPos.x + bCol.width;
-                        float bTop = bPos.y;
+                        const float bLeft = bPos.x;
+                        const float bRight = bPos.x + bCol.width;
+                        const float bTop = bPos.y;
 
-                        bool overlapX = {right > bLeft && left < bRight};
-                        bool crossingTop = (oldBottom <= bTop && newBottom >= bTop);
+                        const bool overlapX = right > bLeft && left < bRight;
+                        const bool crossingTop = oldBottom <= bTop && newBottom >= bTop;
 
                         if (overlapX && crossingTop) {
-                            float deltaY = bTop - oldBottom;
+                            const float deltaY = bTop - oldBottom;
                             if (deltaY < minDelta) {
                                 minDelta = deltaY;
                                 targetEntity = entity;
@@ -79,12 +79,12 @@ void Platform::collisionSystem(Registry &r) {
             }
             for (auto &&[sprPos, sprCol, spring] : Zipper(positions, collisions, entityType)) {
                 if (spring.type == SpringType) {
-                    float sprLeft  = sprPos.x;
-                    float sprRight = sprPos.x + sprCol.width;
-                    float sprTop   = sprPos.y;
+                    const float sprLeft  = sprPos.x;
+                    const float sprRight = sprPos.x + sprCol.width;
+                    const float sprTop   = sprPos.y;
 
-                    bool overlapX = (right > sprLeft && left < sprRight);
-                    bool crossingTop = (oldBottom <= sprTop && newBottom >= sprTop);
+                    const bool overlapX = right > sprLeft && left < sprRight;
+                    const bool crossingTop = oldBottom <= sprTop && newBottom >= sprTop;
 
                     if (overlapX && crossingTop) {
                         pPos.y = sprTop - pCol.height;
@@ -94,7 +94,7 @@ void Platform::collisionSystem(Registry &r) {
             }
         }
     }
-    for (auto &entity : entitiesToKill) {
+    for (entity_t &entity : entitiesToKill) {
         r.kill_entity(entity);
     }
 }

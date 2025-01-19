@@ -42,11 +42,15 @@ namespace Protocol {
         PLAYER,
         PLAYER_BULLET,
         ENEMY_FLY,
+        ENEMY_TANK,
         ENEMY_TURRET,
         ENEMY_BULLET,
         BOSS_HEART,
         BOSS,
         WALL,
+        BONUS_HEALTH,
+        BONUS_DAMAGE,
+        BONUS_TRIPLE_SHOT,
     };
 
     enum LobbyState : uint8_t {

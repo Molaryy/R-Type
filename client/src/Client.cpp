@@ -139,73 +139,119 @@ void Client::setupPacketHandler_() {
         const entity_t e = registry_.spawn_entity();
 
         switch (type) {
-        case Protocol::EntityType::PLAYER:
-            registry_.add_component(e, Components::Drawable(
-                                        SPACESHIPS,
-                                        size.x, size.y,
-                                        0, static_cast<float>(17 * std::ranges::count_if(
-                                            registry_.get_components<Components::ComponentEntityType>(),
-                                            [](const std::optional<Components::ComponentEntityType> &ent_type) {
-                                                return ent_type.has_value() && ent_type->type == Protocol::EntityType::PLAYER;
-                                            })),
-                                        33, 17,
-                                        [increasing = true, frame = 0](Components::Drawable &drawable) mutable {
-                                            if (frame++ < 3)
-                                                return;
-                                            frame = 0;
-                                            if (drawable.text_x > drawable.text_width * 3)
-                                                increasing = false;
-                                            if (drawable.text_x <= 0)
-                                                increasing = true;
-                                            drawable.text_x += increasing ? drawable.text_width : -drawable.text_width;
-                                        }));
-            registry_.add_component(e, Life(health, health));
-            break;
-        case Protocol::EntityType::PLAYER_BULLET:
-            registry_.add_component(e, Components::Drawable(PLAYER_BULLET, size.x, size.y, 0, 0, 82, 16, [frame = 0](Components::Drawable &drawable) mutable {
-                if (frame++ < 3)
-                    return;
-                frame = 0;
-                drawable.text_x += drawable.text_width;
-                if (drawable.text_x > drawable.text_width)
-                    drawable.text_x = 0;
-            }));
-            break;
-        case Protocol::EntityType::ENEMY_BULLET:
-            registry_.add_component(e, Components::Drawable(ENNEMY_BULLET, size.x, size.y, 0, 0, 48, 48, [frame = 0](Components::Drawable &drawable) mutable {
-                if (frame++ < 3)
-                    return;
-                frame = 0;
-                drawable.text_x += drawable.text_width;
-                if (drawable.text_x > drawable.text_width * 3)
-                    drawable.text_x = 0;
-            }));
-            break;
-        case Protocol::EntityType::ENEMY_FLY:
-            registry_.add_component(e, Components::Drawable(FLY_ENEMY, size.x, size.y, 0, 0, 65, 49, [frame = 0](Components::Drawable &drawable) mutable {
-                if (frame++ < 3)
-                    return;
-                frame = 0;
-                drawable.text_x += drawable.text_width;
-                if (drawable.text_x > drawable.text_width * 2)
-                    drawable.text_x = 0;
-            }));
-            registry_.add_component(e, Life(health, health));
-            break;
-        case Protocol::EntityType::ENEMY_TURRET:
-            registry_.add_component(e, Components::Drawable(SHOOTER_ENEMY, size.x, size.y, 0, 0, 65, 65, [frame = 0](Components::Drawable &drawable) mutable {
-                if (frame++ < 3)
-                    return;
-                frame = 0;
-                drawable.text_x += drawable.text_width;
-                if (drawable.text_x > drawable.text_width * 5)
-                    drawable.text_x = 0;
-            }));
-            registry_.add_component(e, Life(health, health));
-            break;
-        default:
-            std::cerr << "Unknown entity type: " << type << std::endl;
-            break;
+            case Protocol::EntityType::PLAYER:
+                registry_.add_component(e, Components::Drawable(
+                                            SPACESHIPS,
+                                            size.x, size.y,
+                                            0, static_cast<float>(17 * std::ranges::count_if(
+                                                                      registry_.get_components<Components::ComponentEntityType>(),
+                                                                      [](const std::optional<Components::ComponentEntityType> &ent_type) {
+                                                                          return ent_type.has_value() && ent_type->type == Protocol::EntityType::PLAYER;
+                                                                      })),
+                                            33, 17,
+                                            [increasing = true, frame = 0](Components::Drawable &drawable) mutable {
+                                                if (frame++ < 3)
+                                                    return;
+                                                frame = 0;
+                                                if (drawable.text_x > drawable.text_width * 3)
+                                                    increasing = false;
+                                                if (drawable.text_x <= 0)
+                                                    increasing = true;
+                                                drawable.text_x += increasing ? drawable.text_width : -drawable.text_width;
+                                            }));
+                registry_.add_component(e, Life(health, health));
+                break;
+            case Protocol::EntityType::PLAYER_BULLET:
+                registry_.add_component(e, Components::Drawable(PLAYER_BULLET, size.x, size.y, 0, 0, 82, 16,
+                                                                [frame = 0](Components::Drawable &drawable) mutable {
+                                                                    if (frame++ < 3)
+                                                                        return;
+                                                                    frame = 0;
+                                                                    drawable.text_x += drawable.text_width;
+                                                                    if (drawable.text_x > drawable.text_width)
+                                                                        drawable.text_x = 0;
+                                                                }));
+                break;
+            case Protocol::EntityType::ENEMY_BULLET:
+                registry_.add_component(e, Components::Drawable(ENEMY_BULLET, size.x, size.y, 0, 0, 48, 48,
+                                                                [frame = 0](Components::Drawable &drawable) mutable {
+                                                                    if (frame++ < 3)
+                                                                        return;
+                                                                    frame = 0;
+                                                                    drawable.text_x += drawable.text_width;
+                                                                    if (drawable.text_x > drawable.text_width * 3)
+                                                                        drawable.text_x = 0;
+                                                                }));
+                break;
+            case Protocol::EntityType::ENEMY_FLY:
+                registry_.add_component(e, Components::Drawable(FLY_ENEMY, size.x, size.y, 0, 0, 33, 36, [frame = 0](Components::Drawable &drawable) mutable {
+                    if (frame++ < 3)
+                        return;
+                    frame = 0;
+                    drawable.text_x += drawable.text_width;
+                    if (drawable.text_x > drawable.text_width * 8)
+                        drawable.text_x = 0;
+                }));
+                registry_.add_component(e, Life(health, health));
+                break;
+            case Protocol::EntityType::ENEMY_TURRET:
+                registry_.add_component(e, Components::Drawable(SHOOTER_ENEMY, size.x, size.y, 0, 0, 65, 65,
+                                                                [frame = 0](Components::Drawable &drawable) mutable {
+                                                                    if (frame++ < 3)
+                                                                        return;
+                                                                    frame = 0;
+                                                                    drawable.text_x += drawable.text_width;
+                                                                    if (drawable.text_x > drawable.text_width * 5)
+                                                                        drawable.text_x = 0;
+                                                                }));
+                registry_.add_component(e, Life(health, health));
+                break;
+            case Protocol::BONUS_HEALTH:
+                registry_.add_component(e, Components::Drawable(BONUS_HEALTH, size.x, size.y, 0, 0, 24, 24,
+                                                                [frame = 0](Components::Drawable &drawable) mutable {
+                                                                    if (frame++ < 3)
+                                                                        return;
+                                                                    frame = 0;
+                                                                    drawable.text_x += drawable.text_width;
+                                                                    if (drawable.text_x > drawable.text_width * 4)
+                                                                        drawable.text_x = 0;
+                                                                }));
+                break;
+            case Protocol::BONUS_DAMAGE:
+                registry_.add_component(e, Components::Drawable(BONUS_FORCE, size.x, size.y, 0, 0, 32, 32, [frame = 0](Components::Drawable &drawable) mutable {
+                    if (frame++ < 3)
+                        return;
+                    frame = 0;
+                    drawable.text_x += drawable.text_width;
+                    if (drawable.text_x > drawable.text_width * 2)
+                        drawable.text_x = 0;
+                }));
+                break;
+            case Protocol::BONUS_TRIPLE_SHOT:
+                registry_.add_component(e, Components::Drawable(BONUS_TRIPLE_SHOT, size.x, size.y, 0, 0, 30, 22,
+                                                                [frame = 0](Components::Drawable &drawable) mutable {
+                                                                    if (frame++ < 3)
+                                                                        return;
+                                                                    frame = 0;
+                                                                    drawable.text_x += drawable.text_width;
+                                                                    if (drawable.text_x > drawable.text_width * 5)
+                                                                        drawable.text_x = 0;
+                                                                }));
+                break;
+            case Protocol::ENEMY_TANK:
+                registry_.add_component(e, Components::Drawable(TANK_ENEMY, size.x, size.y, 0, 0, 65, 50,
+                                                                [frame = 0](Components::Drawable &drawable) mutable {
+                                                                    if (frame++ < 3)
+                                                                        return;
+                                                                    frame = 0;
+                                                                    drawable.text_x += drawable.text_width;
+                                                                    if (drawable.text_x > drawable.text_width * 2)
+                                                                        drawable.text_x = 0;
+                                                                }));
+                break;
+default:
+                std::cerr << "Unknown entity type: " << type << std::endl;
+                break;
         }
         registry_.add_component(e, Position(position.x, position.y));
         registry_.add_component(e, Components::ServerId(entity_id));
@@ -232,7 +278,6 @@ void Client::setupPacketHandler_() {
     packet_handler_.setPacketCallback(Protocol::KILL, [this](const Network::Packet &packet) {
         auto [network_id, natural] = packet.getPayload<Protocol::DeadPacket>();
         SparseArray<Components::ServerId> server_ids = registry_.get_components<Components::ServerId>();
-
         const auto it = std::ranges::find_if(server_ids, [network_id](const std::optional<Components::ServerId> &server_id) {
             return server_id.has_value() && server_id->id == network_id;
         });
@@ -251,7 +296,8 @@ void Client::setupPacketHandler_() {
             const entity_t e = registry_.spawn_entity();
 
             registry_.add_component(e, Position(pos->x, pos->y));
-            registry_.add_component(e, Components::Drawable(EXPLOSION_1, (std::max)(draw->width, draw->height), (std::max)(draw->width, draw->height), 0, 0, 65, 66,
+            registry_.add_component(e, Components::Drawable(EXPLOSION_1, (std::max)(draw->width, draw->height), (std::max)(draw->width, draw->height), 0, 0, 65,
+                                                            66,
                                                             [frame = 0](Components::Drawable &drawable) mutable {
                                                                 if (frame++ < 3)
                                                                     return;

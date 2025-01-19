@@ -5,7 +5,7 @@ project(platformGame)
 set(CMAKE_CXX_STANDARD 23)
 
 add_executable(${PROJECT_NAME}
-        main.cpp
+        src/main.cpp
         src/Platformer.cpp
         src/systems/CameraSystem.cpp
         src/systems/CollisionSystem.cpp

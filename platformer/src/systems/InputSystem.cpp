@@ -9,49 +9,46 @@
 #include "Zipper.hh"
 
 void Platform::inputSystem(Registry &r) {
-    auto &positions = r.get_components<Position>();
-    auto &velocities = r.get_components<Velocity>();
-    auto &entityType = r.get_components<EntityType>();
+    SparseArray<Position> &positions = r.get_components<Position>();
+    SparseArray<Velocity> &velocities = r.get_components<Velocity>();
+    SparseArray<EntityType> &entityType = r.get_components<EntityType>();
 
-    auto &renderer = getInstance().getRenderer();
-    auto ev = renderer.getEvents();
+    Graphic::IRenderer &renderer = getInstance().getRenderer();
+    const Graphic::event_t &ev = renderer.getEvents();
 
     bool left = false;
     bool right = false;
     bool jump = false;
 
-    for (auto &k : ev.inputs) {
-        if (k == Graphic::Keys::LeftArrow) left = true;
-        if (k == Graphic::Keys::RightArrow) right = true;
-        if (k == Graphic::Keys::UpArrow) jump = true;
+    for (const Graphic::Keys &k : ev.inputs) {
+        if (k == Graphic::Keys::LeftArrow)
+            left = true;
+        if (k == Graphic::Keys::RightArrow)
+            right = true;
+        if (k == Graphic::Keys::UpArrow)
+            jump = true;
     }
 
-    if (jump && !Platform::getInstance().gameStarted_) {
-        Platform::getInstance().gameStarted_ = true;
-    }
-    if (!Platform::getInstance().gameStarted_) {
+    if (jump && !getInstance().gameStarted_)
+        getInstance().gameStarted_ = true;
+    if (!getInstance().gameStarted_)
         return;
-    }
-    if (jump) {
-        Platform::getInstance().autoJump_ = true;
-    }
+    if (jump)
+        getInstance().autoJump_ = true;
 
     for (auto &&[pos, vel, player] : Zipper(positions, velocities, entityType)) {
         if (player.type == PlayerType) {
-            if (left && !right) {
+            if (left && !right)
                 vel.x = -250.f;
-            } else if (right && !left) {
+            else if (right && !left)
                 vel.x = 250.f;
-            } else {
+            else
                 vel.x = 0.f;
-            }
-            if (Platform::getInstance().autoJump_) {
-                if (std::fabs(vel.y) < 0.01f) {
+            if (getInstance().autoJump_) {
+                if (std::fabs(vel.y) < 0.01f)
                     vel.y = -500.f;
-                }
-            } else if (jump && std::fabs(vel.y) < 0.01f) {
+            } else if (jump && std::fabs(vel.y) < 0.01f)
                 vel.y = -500.f;
-            }
         }
     }
 }

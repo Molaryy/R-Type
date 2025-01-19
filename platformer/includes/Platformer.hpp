@@ -108,7 +108,7 @@ class Platform {
 
         void initEntities();
         void createPlayer(float x, float y);
-        void createPlatform(float x, float y, int w, int h);
+        void createPlatform(float x, float y, float w, float h);
         void createSpring(float x, float y);
         void restartGame();
         void generatePlatformStair(size_t count);

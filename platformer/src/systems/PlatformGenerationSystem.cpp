@@ -5,50 +5,53 @@
 ** PlatformGenerationSystem.cpp
 */
 
+#include <IndexedZipper.hh>
+#include <queue>
+
 #include "Platformer.hpp"
 #include "Zipper.hh"
 
 void Platform::platformGenerationSystem(Registry &r) {
-    float lastGeneratedY = Platform().getInstance().getLastGeneratedY();
+    const float lastGeneratedY = getInstance().getLastGeneratedY();
     auto &positions = r.get_components<Position>();
     auto &entityType = r.get_components<EntityType>();
     float minScreenY = 999999.f;
 
     for (auto &&[pos, player] : Zipper(positions, entityType)) {
         if (player.type == PlayerType) {
-            float screenY = pos.y + Platform::getInstance().cameraOffsetY_;
+            const float screenY = pos.y + getInstance().cameraOffsetY_;
 
-            if (screenY < minScreenY) {
+            if (screenY < minScreenY)
                 minScreenY = screenY;
-            }
         }
     }
 
     if (minScreenY < 100.f) {
-        float newY = lastGeneratedY - 100.f;
-        std::uniform_real_distribution<float> distX(50.f, 800.f - 100.f);
-        float x = distX(Platform::getInstance().rng_);
+        const float newY = lastGeneratedY - 100.f;
+        std::uniform_real_distribution distX(50.f, 800.f - 100.f);
+        const float x = distX(getInstance().rng_);
 
-        Platform::getInstance().createPlatform(x, newY, 100, 20);
-        if (Platform::getInstance().rng_() % 2 == 0) {
-            float x2 = distX(Platform::getInstance().rng_);
-            Platform::getInstance().createPlatform(x2, newY, 100, 20);
+        getInstance().createPlatform(x, newY, 100, 20);
+        if (getInstance().rng_() % 2 == 0) {
+            const float x2 = distX(getInstance().rng_);
+            getInstance().createPlatform(x2, newY, 100, 20);
         }
-        Platform().getInstance().setLastGeneratedY(newY);
+        getInstance().setLastGeneratedY(newY);
     }
 
-    const float removeThreshold = 600.f + 50.f;
+    constexpr float removeThreshold = 600.f + 50.f;
+    std::queue<entity_t> kill_queue;
 
-    for (std::size_t e = 0; e < r.max_entities(); ++e) {
-        if (!entityType[e].has_value()) continue;
-        if (entityType[e].value().type == PlatformType) {
-            if (!positions[e].has_value()) continue;
-            auto &pos = positions[e].value();
-            float screenY = pos.y + Platform::getInstance().cameraOffsetY_;
-
-            if (screenY > removeThreshold) {
-                r.kill_entity(static_cast<entity_t>(e));
-            }
+    for (auto &&[e, type, pos] : IndexedZipper(entityType, positions)) {
+        if (type.type == PlatformType) {
+            const float screenY = pos.y + getInstance().cameraOffsetY_;
+            if (screenY > removeThreshold)
+                kill_queue.push(e);
         }
+    }
+
+    while (!kill_queue.empty()) {
+        r.kill_entity(kill_queue.front());
+        kill_queue.pop();
     }
 }
