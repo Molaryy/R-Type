@@ -3,6 +3,11 @@ name: deploy documentation
 on:
   push:
     branches: [ "main", "master" ]
+  pull_request:
+    types:
+      - opened
+    branches-ignore:
+      - 'ga-ignore-**'
 
 env:
   USER: molaryy35
