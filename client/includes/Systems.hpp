@@ -49,24 +49,6 @@ namespace Systems {
         }
     }
 
-    inline void changeColorOverText(Registry &r) {
-        auto &texts = r.get_components<Components::RenderText>();
-        auto &positions = r.get_components<Position>();
-        auto &colorsTexts = r.get_components<Components::ColorText>();
-        auto &colorsOverText = r.get_components<Components::ColorOverText>();
-
-        for (auto &&[pos, text, colorText, colorOverText] : Zipper(positions, texts, colorsTexts, colorsOverText)) {
-            if (!text.isDrawable)
-                continue;
-            if (colorOverText.isOver) {
-                colorText.color = colorOverText.newColor;
-            } else {
-                colorText.color = colorOverText.defaultColor;
-            }
-        }
-    }
-
-
     #define NAME_SIZE 30
     inline void handleInputBox(Registry &r) {
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
@@ -97,7 +79,7 @@ namespace Systems {
                             }
                         }
                     }
-            }
+                }
             renderer.drawText(inputText.text.text, pos.x, pos.y + 30, inputText.text.fontSize, colorText.color.r, colorText.color.g, colorText.color.b, colorText.color.a);
             }
         }
@@ -113,33 +95,83 @@ namespace Systems {
         }
     }
 
+    inline void changeColorOverText(Registry &r) {
+        auto &texts = r.get_components<Components::RenderText>();
+        auto &colorsTexts = r.get_components<Components::ColorText>();
+        auto &colorsOverText = r.get_components<Components::ColorOverText>();
+        auto &mouseOverTexts = r.get_components<Components::MouseOverText>();
+
+        for (auto &&[text, colorText, colorOverText, mouseOverText] : Zipper(texts, colorsTexts, colorsOverText, mouseOverTexts)) {
+            if (!text.isDrawable)
+                continue;
+            if (mouseOverText.isOver) {
+                colorText.color = colorOverText.newColor;
+            } else {
+                colorText.color = colorOverText.defaultColor;
+            }
+        }
+    }
+
+    inline void handleClickableSoundText(Registry &r) {
+        auto &clickableTexts = r.get_components<Components::MouseOverTextSound>();
+        auto &mouseOverTexts = r.get_components<Components::MouseOverText>();
+        Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
+        Graphic::event_t events = renderer.getEvents();
+        std::function<void(int soundID)> secureCallback;
+        const bool leftClicked = std::ranges::find(events.inputs, Graphic::Keys::LeftClick) != events.inputs.end();
+        int soundID = 0;
+
+        for (auto &&[clickable, mouseOverText] : Zipper(clickableTexts, mouseOverTexts)) {
+            if (mouseOverText.isOver && leftClicked) {
+                secureCallback = clickable.callback;
+                soundID = clickable.soundID;
+                break;
+            }
+        }
+
+        if (secureCallback) {
+            secureCallback(soundID);
+        }
+    }
+
+    inline void handleClickable(Registry &r) {
+        auto &clickableTexts = r.get_components<Components::ClickableText>();
+        auto &mouseOverTexts = r.get_components<Components::MouseOverText>();
+        Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
+        Graphic::event_t events = renderer.getEvents();
+        std::function<void(Registry &r)> secureCallback;
+        const bool leftClicked = std::ranges::find(events.inputs, Graphic::Keys::LeftClick) != events.inputs.end();
+
+        for (auto &&[clickable, mouseOverText] : Zipper(clickableTexts, mouseOverTexts)) {
+            if (mouseOverText.isOver && leftClicked) {
+                secureCallback = clickable.callback;
+                break;
+            }
+        }
+
+        if (secureCallback) {
+            secureCallback(r);
+        }
+    }
+
     inline void handleMouse(Registry &r) {
         auto &texts = r.get_components<Components::RenderText>();
         auto &positions = r.get_components<Position>();
-        auto &clickables = r.get_components<Components::ClickableText>();
-        auto &colorsOverTexts = r.get_components<Components::ColorOverText>();
+        auto &mouseOverTexts = r.get_components<Components::MouseOverText>();
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
         Graphic::event_t events = renderer.getEvents();
-        const bool leftClicked = std::ranges::find(events.inputs, Graphic::Keys::LeftClick) != events.inputs.end();
         auto [mouse_x, mouse_y] = events.mouse_pos;
         std::function<void(Registry &r)> secureCallback;
 
-        for (auto &&[pos, clickable, text, colorsOverText] : Zipper(positions, clickables, texts, colorsOverTexts)) {
+        for (auto &&[pos, mouseOverText, text] : Zipper(positions, mouseOverTexts, texts)) {
             if (!text.isDrawable)
                 continue;
             if (mouse_x >= static_cast<int>(pos.x) && mouse_x <= pos.x + static_cast<int>(text.text.size()) * text.fontSize &&
                 mouse_y >= static_cast<int>(pos.y) && mouse_y <= static_cast<int>(pos.y) + text.fontSize) {
-                if (leftClicked) {
-                    secureCallback = clickable.callback;
-                    break;
-                }
-                colorsOverText.isOver = true;
+                mouseOverText.isOver = true;
             } else {
-                colorsOverText.isOver = false;
+                mouseOverText.isOver = false;
             }
-        }
-        if (secureCallback) {
-            secureCallback(r);
         }
     }
 

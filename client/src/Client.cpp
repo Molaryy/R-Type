@@ -20,6 +20,7 @@
 #include "Scenes.hpp"
 #include "Systems.hh"
 #include "Systems.hpp"
+#include "Scenes.hpp"
 
 Client::~Client() = default;
 
@@ -177,6 +178,8 @@ void Client::setupSystems_() {
     registry_.add_system(Systems::handleInputs);
     registry_.add_system(Systems::drawRectangles);
     registry_.add_system(Systems::handleInputBox);
+    registry_.add_system(Systems::handleClickable);
+    registry_.add_system(Systems::handleClickableSoundText);
     if (debug_)
         registry_.add_system(Systems::log);
     registry_.add_system([](Registry &r) {
@@ -201,6 +204,11 @@ void Client::run() {
     renderer_->loadTexture("assets/enemies.gif");
     renderer_->loadTexture("assets/missiles.gif");
     renderer_->loadTexture("assets/maps/space.png");
+    for (const auto &voice_button : VOICE_BUTTONS_TITLES_FILEPATHS) {
+        std::cout << voice_button << std::endl;
+        renderer_->loadSound(voice_button);
+    }
+
 
     while (!renderer_->windowShouldClose()) {
         renderer_->beginDrawing();

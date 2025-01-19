@@ -41,6 +41,16 @@ namespace Components {
         }
     };
 
+    struct MouseOverTextSound {
+        bool isActivated;
+        std::function<void(int soundID)> callback;
+        int soundID;
+
+        void log() const {
+            std::cout << "soundID = { " << soundID << " }";
+        }
+    };
+
     struct ClickableText {
         std::function<void(Registry &r)> callback;
 
@@ -49,10 +59,17 @@ namespace Components {
         }
     };
 
+    struct MouseOverText {
+        bool isOver;
+
+        void log() const {
+            std::cout << "MouseOverText = { " << isOver << " }";
+        }
+    };
+
     struct ColorOverText {
         Color newColor;
         Color defaultColor;
-        bool isOver;
 
         void log() const {
             std::cout << "ColorOverText = { "
