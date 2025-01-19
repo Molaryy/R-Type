@@ -49,7 +49,7 @@ private:
     bool game_mode_;
     std::unordered_map<uint16_t, entity_t> players_;
     Protocol::LobbyState state_;
-    std::size_t pos_in_level_;
+    std::size_t score_;
 
     std::queue<std::function<void()>> networkTasks_;
 

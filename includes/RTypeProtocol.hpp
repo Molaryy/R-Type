@@ -21,12 +21,14 @@
 #define WIDTH 800
 #define HEIGHT 600
 
+#define TILE_SIZE 20
+
 #define CAMERA_SPEED (-1)
 
 #define SERVER_TPS 30
 
 #define SCOREBOARD_SIZE 10
-#define NAME_SIZE 64
+#define NAME_SIZE 30
 
 namespace Protocol {
     enum InputKey : uint8_t {

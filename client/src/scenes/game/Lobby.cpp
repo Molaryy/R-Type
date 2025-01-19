@@ -146,7 +146,8 @@ void lobbyPage(Registry &r, const std::size_t lobby_id) {
     r.add_component(e, Components::ClickableText([lobby_id](Registry &reg) {
         lobbyPage(reg, lobby_id);
     }));
-    r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
+    r.add_component(e, Components::ColorOverText(darkBlue, grey));
+    r.add_component(e, Components::MouseOverText(false));
 
     e = r.spawn_entity();
     r.add_component(e, Components::RenderText(std::string("Players ") + std::to_string(lobby.nb_players), 40, true));
@@ -158,7 +159,8 @@ void lobbyPage(Registry &r, const std::size_t lobby_id) {
     r.add_component(e, Position(225, 300));
     r.add_component(e, Components::ColorText(white));
     r.add_component(e, Components::ClickableText(startLobby));
-    r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
+    r.add_component(e, Components::ColorOverText(darkBlue, grey));
+    r.add_component(e, Components::MouseOverText(false));
 
     e = r.spawn_entity();
     r.add_component(e, Components::RenderText(std::string("Gamemode: ") + (lobby.game_mode ? "Endless" : "Campaign"), 30));
@@ -191,7 +193,8 @@ void lobbyPage(Registry &r, const std::size_t lobby_id) {
         }
         lobbyPage(reg, lobby_id);
     }));
-    r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
+    r.add_component(e, Components::ColorOverText(darkBlue, grey));
+    r.add_component(e, Components::MouseOverText(false));
 
     e = r.spawn_entity();
     r.add_component(e, Components::RenderText("Lobbies list", 20, true));
@@ -201,7 +204,8 @@ void lobbyPage(Registry &r, const std::size_t lobby_id) {
         leaveLobby();
         lobbyCallback(reg);
     }));
-    r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
+    r.add_component(e, Components::ColorOverText(darkBlue, grey));
+    r.add_component(e, Components::MouseOverText(false));
 }
 
 void joinLobby(Registry &r, const std::function<void()> &send_packet) {
@@ -257,14 +261,16 @@ void lobbyCallback(Registry &r) {
     r.add_component(e, Position(600, 50));
     r.add_component(e, Components::ColorText(white));
     r.add_component(e, Components::ClickableText(lobbyCallback));
-    r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
+    r.add_component(e, Components::ColorOverText(darkBlue, grey));
+    r.add_component(e, Components::MouseOverText(false));
 
     e = r.spawn_entity();
     r.add_component(e, Components::RenderText("Menu", 20, true));
     r.add_component(e, Position(50, 550));
     r.add_component(e, Components::ColorText(white));
     r.add_component(e, Components::ClickableText(createMenuScene));
-    r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
+    r.add_component(e, Components::ColorOverText(darkBlue, grey));
+    r.add_component(e, Components::MouseOverText(false));
 
     e = r.spawn_entity();
     r.add_component(e, Components::RenderText("Join Random Lobby", 20, true));
@@ -276,7 +282,8 @@ void lobbyCallback(Registry &r) {
             network.send(packetSended.serialize());
         });
     }));
-    r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
+    r.add_component(e, Components::ColorOverText(darkBlue, grey));
+    r.add_component(e, Components::MouseOverText(false));
 
     e = r.spawn_entity();
     r.add_component(e, Components::RenderText("Join New Lobby", 20, true));
@@ -288,7 +295,8 @@ void lobbyCallback(Registry &r) {
             network.send(packetSended.serialize());
         });
     }));
-    r.add_component(e, Components::ColorOverText(darkBlue, grey, false));
+    r.add_component(e, Components::ColorOverText(darkBlue, grey));
+    r.add_component(e, Components::MouseOverText(false));
 
     const std::unordered_map<Protocol::LobbyState, std::string> state_string {
         {Protocol::OPEN, "Open"},
@@ -312,6 +320,7 @@ void lobbyCallback(Registry &r) {
                 network.send(packetSended.serialize());
             });
         }));
-        r.add_component(button, Components::ColorOverText(darkBlue, grey, false));
+        r.add_component(button, Components::ColorOverText(darkBlue, grey));
+        r.add_component(button, Components::MouseOverText(false));
     }
 }

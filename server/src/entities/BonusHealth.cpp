@@ -30,11 +30,13 @@ void BonusHealth::collision(Registry &r, const entity_t me, const entity_t other
         network.send(network_id.id, packet.serialize());
 }
 
-entity_t BonusHealth::create(Registry &r, const Position position) {
+entity_t BonusHealth::create(Registry &r, const Position &position) {
+    Position pos = position;
+
     const entity_t entity = r.spawn_entity();
 
     r.add_component(entity, ComponentEntityType(Protocol::BONUS_HEALTH));
-    r.add_component(entity, Position(position));
+    r.add_component(entity, Position(pos));
     r.add_component(entity, Velocity(CAMERA_SPEED, 0));
     r.add_component(entity, Life(1, 1));
     r.add_component(entity, Collision(BONUS_HEALTH_SIZE, BONUS_HEALTH_SIZE, collision));
@@ -43,7 +45,7 @@ entity_t BonusHealth::create(Registry &r, const Position position) {
         Protocol::SpawnEntityPacket(
             entity,
             Protocol::BONUS_HEALTH,
-            Protocol::Vector2f(position.x, position.y),
+            Protocol::Vector2f(pos.x, pos.y),
             Protocol::Vector2f(BONUS_HEALTH_SIZE, BONUS_HEALTH_SIZE),
             Protocol::Vector2f(CAMERA_SPEED, 0),
             1

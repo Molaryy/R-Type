@@ -20,6 +20,7 @@
 #include "Scenes.hpp"
 #include "Systems.hh"
 #include "Systems.hpp"
+#include "Scenes.hpp"
 
 Client::~Client() = default;
 
@@ -118,7 +119,7 @@ void Client::setupPacketHandler_() {
             return server_id.has_value() && server_id->id == network_id;
         });
         if (it == server_ids.end()) {
-            std::cerr << "POSITION_VELOCITY: Failed to find server id: " << network_id << std::endl;
+            std::cerr << "POSITION_VELOCITY: Failed to find server id: " << network_id <<  std::endl;
             return;
         }
         const entity_t entity_id = std::ranges::distance(server_ids.begin(), it);
@@ -251,7 +252,7 @@ void Client::setupPacketHandler_() {
                                                                         drawable.text_x = 0;
                                                                 }));
                 break;
-default:
+            default:
                 std::cerr << "Unknown entity type: " << type << std::endl;
                 break;
         }
@@ -294,6 +295,11 @@ default:
 
         const std::optional<Position> &pos = registry_.get_components<Position>()[entity_id];
         std::optional<Components::Drawable> &draw = registry_.get_components<Components::Drawable>()[entity_id];
+        const std::optional<Components::ComponentEntityType> &type = registry_.get_components<Components::ComponentEntityType>()[entity_id];
+        if (type.has_value() && type->type == Protocol::PLAYER) {
+            draw->can_draw = false;
+            return;
+        }
 
         if (pos.has_value() && draw.has_value()) {
             const entity_t e = registry_.spawn_entity();
@@ -312,7 +318,6 @@ default:
                                                                 }
                                                             }));
         }
-        const std::optional<Components::ComponentEntityType> &type = registry_.get_components<Components::ComponentEntityType>()[entity_id];
         if (type.has_value() && type->type == Protocol::PLAYER) {
             draw->can_draw = false;
             return;
@@ -352,6 +357,10 @@ void Client::setupSystems_() {
     registry_.add_system(Systems::drawEntities);
     registry_.add_system(Systems::spriteSheetHandler);
     registry_.add_system(Systems::handleInputs);
+    registry_.add_system(Systems::drawRectangles);
+    registry_.add_system(Systems::handleInputBox);
+    registry_.add_system(Systems::handleClickable);
+    registry_.add_system(Systems::handleMouseOverSoundText);
     if (debug_)
         registry_.add_system(Systems::log);
     registry_.add_system([](Registry &r) {
@@ -429,10 +438,16 @@ void Client::run() {
     loadSounds();
     playMusic();
 
-    createMenuScene(registry_);
+    if (getLocalUsername().empty()) {
+        createSignForm(registry_);
+    } else {
+        createMenuScene(registry_);
+    }
 
     for (const std::string &path : textures_paths)
         renderer_->loadTexture(path);
+    for (const std::string &path : sounds_paths)
+        renderer_->loadSound(path);
 
     while (!renderer_->windowShouldClose()) {
         renderer_->updateMusic();

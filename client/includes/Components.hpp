@@ -11,7 +11,6 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
-
 #include "Gameplay.hpp"
 #include "Registry.hh"
 #include "RTypeProtocol.hpp"
@@ -24,9 +23,8 @@ namespace Components {
 
         void log() const {
             std::cout << "RenderText = { " "text = " << text << ", " <<
-                "fontSize = " << fontSize << "} ";
+                    "fontSize = " << fontSize << "} ";
         }
-
     };
 
     struct ColorText {
@@ -34,11 +32,21 @@ namespace Components {
 
         void log() const {
             std::cout << "ColorText = { "
-                "r = " << static_cast<unsigned int>(color.r) << ", " <<
-                "g = " << static_cast<unsigned int>(color.g) << ", " <<
-                "b = " << static_cast<unsigned int>(color.b) << ", " <<
-                "a = " << static_cast<unsigned int>(color.a) << ", " <<
-                "}";
+                    "r = " << static_cast<unsigned int>(color.r) << ", " <<
+                    "g = " << static_cast<unsigned int>(color.g) << ", " <<
+                    "b = " << static_cast<unsigned int>(color.b) << ", " <<
+                    "a = " << static_cast<unsigned int>(color.a) << ", " <<
+                    "}";
+        }
+    };
+
+    struct MouseOverTextSound {
+        bool isActivated;
+        std::function<void(int soundID)> callback;
+        int soundID;
+
+        void log() const {
+            std::cout << "soundID = { " << soundID << " }";
         }
     };
 
@@ -50,44 +58,64 @@ namespace Components {
         }
     };
 
-    struct ColorOverText {
-        Color newColor;
-        Color defaultColor;
+    struct MouseOverText {
         bool isOver;
 
         void log() const {
+            std::cout << "MouseOverText = { " << isOver << " }";
+        }
+    };
+
+    struct ColorOverText {
+        Color newColor;
+        Color defaultColor;
+
+        void log() const {
             std::cout << "ColorOverText = { "
-                "r = " << static_cast<unsigned int>(newColor.r) << ", " <<
-                "g = " << static_cast<unsigned int>(newColor.g) << ", " <<
-                "b = " << static_cast<unsigned int>(newColor.b) << ", " <<
-                "a = " << static_cast<unsigned int>(newColor.a) << ", " <<
-                "}";
+                    "r = " << static_cast<unsigned int>(newColor.r) << ", " <<
+                    "g = " << static_cast<unsigned int>(newColor.g) << ", " <<
+                    "b = " << static_cast<unsigned int>(newColor.b) << ", " <<
+                    "a = " << static_cast<unsigned int>(newColor.a) << ", " <<
+                    "}";
         }
     };
 
 
     struct Rect {
         Color color;
+        int width;
+        int height;
 
         void log() const {
             std::cout << "Rect = { "
-                "r = " << static_cast<unsigned int>(color.r) << ", " <<
-                "g = " << static_cast<unsigned int>(color.g) << ", " <<
-                "b = " << static_cast<unsigned int>(color.b) << ", " <<
-                "a = " << static_cast<unsigned int>(color.a) << ", " <<
-                "}";
+                    "r = " << static_cast<unsigned int>(color.r) << ", " <<
+                    "g = " << static_cast<unsigned int>(color.g) << ", " <<
+                    "b = " << static_cast<unsigned int>(color.b) << ", " <<
+                    "a = " << static_cast<unsigned int>(color.a) << ", " <<
+                    "}";
         }
     };
 
-    struct InputRect {
-        std::string text;
+    struct Input {
+        std::string inputTextTitle;
 
         void log() const {
-            std::cout << "InputText = { text = " << text << "}";
+            std::cout << "InputBox = { " << inputTextTitle << " }";
+        }
+    };
+
+    struct InputText {
+        RenderText text;
+
+        void log() const {
+            std::cout << "InputText = { text = " << text.text << "}";
         }
     };
 
     struct ScrollableText {
+         void log() const {
+            std::cout << "ScrollableText = {}";
+        }
     };
 
     struct ServerId {
@@ -106,11 +134,10 @@ namespace Components {
         Protocol::EntityType type;
 
         void log() const {
-            std::cout << "EntityType = { " << typeName_.at(type) << " }";
+            std::cout << "EntityType = { " << typeName.at(type) << " }";
         }
 
-    private:
-        std::unordered_map<Protocol::EntityType, std::string> typeName_{
+        inline static std::unordered_map<Protocol::EntityType, std::string> typeName = {
             {Protocol::PLAYER, "Player"},
             {Protocol::PLAYER_BULLET, "Player Bullet"},
             {Protocol::ENEMY_FLY, "Enemy Fly"},

@@ -9,6 +9,7 @@
 
 #include <array>
 #include <string>
+#include "Scenes.hpp"
 
 struct Color {
     unsigned char r;
@@ -31,6 +32,7 @@ enum Textures {
     BONUS_HEALTH,
     BONUS_FORCE,
     BONUS_TRIPLE_SHOT,
+    BACKGROUND_IMAGE,
     NB_TEXTURES
 };
 
@@ -47,4 +49,10 @@ inline std::array<std::string, NB_TEXTURES> textures_paths {
     "assets/bonus_health.png",
     "assets/bonus_force.png",
     "assets/bonus_triple_shot.png",
+    "assets/background.jpg",
 };
+
+#define VOICE_BUTTONS_TITLES_FILEPATHS {"./assets/voice/Play.wav", "./assets/voice/Leaderboard.wav", "./assets/voice/Settings.wav", "./assets/voice/Credits.wav", "./assets/voice/Logout.wav", "./assets/voice/Exit.wav"}
+
+
+inline std::array<std::string, NB_MENU_BUTTONS> sounds_paths VOICE_BUTTONS_TITLES_FILEPATHS;

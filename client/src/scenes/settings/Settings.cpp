@@ -44,7 +44,8 @@ void settingsCallback(Registry &r)
         r.add_component(optionEntity, Components::ClickableText([i, actions](Registry &) {
             actions[i]();
         }));
-        r.add_component(optionEntity, Components::ColorOverText({20, 82, 172, 255}, {255, 255, 255, 255}, false));
+        r.add_component(optionEntity, Components::ColorOverText({20, 82, 172, 255}, {255, 255, 255, 255}));
+        r.add_component(optionEntity, Components::MouseOverText(false));
     }
 
     exitButtonCallback(r);

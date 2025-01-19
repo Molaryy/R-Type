@@ -22,7 +22,7 @@ Lobby::Lobby(const std::size_t maxClient, const bool debug)
       debug_(debug),
       game_mode_(true),
       state_(Protocol::OPEN),
-      pos_in_level_(0) {
+      score_(0) {
     static std::size_t next_lobby = 0;
     lobby_id_ = next_lobby++;
     thread_ = std::thread(&Lobby::run_, this);
@@ -124,9 +124,10 @@ void Lobby::startGame() {
                 return;
             }
 
-            Network::Packet response(Protocol::EmptyPacket(), Protocol::START_GAME);
-            networkLib_.sendAll(response.serialize());
 
+            Network::Packet response(Protocol::EmptyPacket(), Protocol::START_GAME);
+            for (const auto &n_id : players_ | std::views::keys)
+                networkLib_.send(n_id, response.serialize());
             for (const auto &pla : players_ | std::views::values) {
                 Network::Packet new_player_packet(
                     Protocol::SpawnEntityPacket(
@@ -138,9 +139,13 @@ void Lobby::startGame() {
                         PLAYER_HEALTH),
                     Protocol::SPAWN
                 );
-                networkLib_.sendAll(new_player_packet.serialize());
+                for (const auto &n_id : players_ | std::views::keys) {
+                    networkLib_.send(n_id, new_player_packet.serialize());
+                    std::cout << "SEND TO " << n_id << " | " << pla << std::endl;
+                }
             }
-            pos_in_level_ = 0;
+
+            score_ = 0;
             registry_.clear_systems();
 
             registry_.add_system([this]([[maybe_unused]] const Registry &r) {
@@ -153,12 +158,14 @@ void Lobby::startGame() {
 
             if (game_mode_)
                 registry_.add_system([this](Registry &r) {
-                    Systems::levelEndlessHandler(r, pos_in_level_);
+                    Systems::levelEndlessHandler(r, score_);
                 });
-            else
-                registry_.add_system([this](Registry &r) {
-                    Systems::levelCampaignHandler(r, pos_in_level_);
+            else {
+                auto handler = std::make_shared<Systems::LevelCampaignHandlerSystem>(score_);
+                registry_.add_system([handler](Registry &r) {
+                    (*handler)(r);
                 });
+            }
 
             registry_.add_system(Systems::generic_collide);
             registry_.add_system(Systems::killNoHealthEntitys);
@@ -213,7 +220,7 @@ bool Lobby::getGameMode() const {
 }
 
 std::size_t Lobby::getScore() const {
-    return pos_in_level_;
+    return score_;
 }
 
 void Lobby::executeNetworkSystem_([[maybe_unused]] const Registry &r, Lobby &lobby) {
@@ -248,7 +255,7 @@ void Lobby::gameOverCallback_() {
     for (const auto &client : players_ | std::views::keys) {
         const entity_t entity = Player::create(registry_, client);
         players_[client] = entity;
-        Network::Packet packet(Protocol::EndGamePacket(pos_in_level_, entity), Protocol::END_GAME);
+        Network::Packet packet(Protocol::EndGamePacket(score_, entity), Protocol::END_GAME);
         networkLib_.send(client, packet.serialize());
     }
     registerLobbySystems_();

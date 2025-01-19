@@ -21,6 +21,10 @@
 #define SOUND_GAME_OVER "assets/sounds/Music/game-over.mp3"
 #define SPACE_ASTEROIDS "assets/sounds/Music/space-asteroids.mp3"
 
+#define WIDTH 800
+#define HEIGHT 600
+#define USER_CONFIG_FILEPATH ".config/client/user"
+
 class Client
 {
 public:
