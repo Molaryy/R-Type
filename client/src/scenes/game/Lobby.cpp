@@ -14,7 +14,6 @@
 #include "Scenes.hpp"
 #include "IRenderer.hpp"
 
-//getLobbyData, if lobby open, callback
 bool Lobby::timeOut(const std::chrono::system_clock::time_point time_out_clock, Network::INetworkClient &network)
 {
     Registry &r = Client::getInstance().getRegistry();
@@ -29,7 +28,7 @@ bool Lobby::timeOut(const std::chrono::system_clock::time_point time_out_clock, 
         r.add_component(popup, Components::ColorText({255, 0, 0, 255}));
         r.add_component(popup, Components::ColorOverText({255, 0, 0, 255}, {255, 0, 0, 255}, false));
         r.add_component(popup, Components::ClickableText([](Registry &) {
-            exit(84);
+            exit(0);
         }));
         return true;
     }
