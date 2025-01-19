@@ -24,9 +24,8 @@ namespace Components {
 
         void log() const {
             std::cout << "RenderText = { " "text = " << text << ", " <<
-                "fontSize = " << fontSize << "} ";
+                    "fontSize = " << fontSize << "} ";
         }
-
     };
 
     struct ColorText {
@@ -34,11 +33,11 @@ namespace Components {
 
         void log() const {
             std::cout << "ColorText = { "
-                "r = " << static_cast<unsigned int>(color.r) << ", " <<
-                "g = " << static_cast<unsigned int>(color.g) << ", " <<
-                "b = " << static_cast<unsigned int>(color.b) << ", " <<
-                "a = " << static_cast<unsigned int>(color.a) << ", " <<
-                "}";
+                    "r = " << static_cast<unsigned int>(color.r) << ", " <<
+                    "g = " << static_cast<unsigned int>(color.g) << ", " <<
+                    "b = " << static_cast<unsigned int>(color.b) << ", " <<
+                    "a = " << static_cast<unsigned int>(color.a) << ", " <<
+                    "}";
         }
     };
 
@@ -57,11 +56,11 @@ namespace Components {
 
         void log() const {
             std::cout << "ColorOverText = { "
-                "r = " << static_cast<unsigned int>(newColor.r) << ", " <<
-                "g = " << static_cast<unsigned int>(newColor.g) << ", " <<
-                "b = " << static_cast<unsigned int>(newColor.b) << ", " <<
-                "a = " << static_cast<unsigned int>(newColor.a) << ", " <<
-                "}";
+                    "r = " << static_cast<unsigned int>(newColor.r) << ", " <<
+                    "g = " << static_cast<unsigned int>(newColor.g) << ", " <<
+                    "b = " << static_cast<unsigned int>(newColor.b) << ", " <<
+                    "a = " << static_cast<unsigned int>(newColor.a) << ", " <<
+                    "}";
         }
     };
 
@@ -71,11 +70,11 @@ namespace Components {
 
         void log() const {
             std::cout << "Rect = { "
-                "r = " << static_cast<unsigned int>(color.r) << ", " <<
-                "g = " << static_cast<unsigned int>(color.g) << ", " <<
-                "b = " << static_cast<unsigned int>(color.b) << ", " <<
-                "a = " << static_cast<unsigned int>(color.a) << ", " <<
-                "}";
+                    "r = " << static_cast<unsigned int>(color.r) << ", " <<
+                    "g = " << static_cast<unsigned int>(color.g) << ", " <<
+                    "b = " << static_cast<unsigned int>(color.b) << ", " <<
+                    "a = " << static_cast<unsigned int>(color.a) << ", " <<
+                    "}";
         }
     };
 
@@ -106,11 +105,10 @@ namespace Components {
         Protocol::EntityType type;
 
         void log() const {
-            std::cout << "EntityType = { " << typeName_.at(type) << " }";
+            std::cout << "EntityType = { " << typeName.at(type) << " }";
         }
 
-    private:
-        std::unordered_map<Protocol::EntityType, std::string> typeName_{
+        inline static std::unordered_map<Protocol::EntityType, std::string> typeName = {
             {Protocol::PLAYER, "Player"},
             {Protocol::PLAYER_BULLET, "Player Bullet"},
             {Protocol::ENEMY_FLY, "Enemy Fly"},

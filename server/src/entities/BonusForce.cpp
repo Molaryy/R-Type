@@ -39,11 +39,13 @@ void BonusForce::collision(Registry &r, const entity_t me, const entity_t other)
     bonus->type = Bonus::Damage;
 }
 
-entity_t BonusForce::create(Registry &r, const Position position) {
+entity_t BonusForce::create(Registry &r, const Position &position) {
+    Position pos = position;
+
     const entity_t entity = r.spawn_entity();
 
     r.add_component(entity, ComponentEntityType(Protocol::BONUS_DAMAGE));
-    r.add_component(entity, Position(position));
+    r.add_component(entity, Position(pos));
     r.add_component(entity, Velocity(CAMERA_SPEED, 0));
     r.add_component(entity, Life(1, 1));
     r.add_component(entity, Collision(BONUS_FORCE_SIZE, BONUS_FORCE_SIZE, collision));
@@ -52,7 +54,7 @@ entity_t BonusForce::create(Registry &r, const Position position) {
         Protocol::SpawnEntityPacket(
             entity,
             Protocol::BONUS_DAMAGE,
-            Protocol::Vector2f(position.x, position.y),
+            Protocol::Vector2f(pos.x, pos.y),
             Protocol::Vector2f(BONUS_FORCE_SIZE, BONUS_FORCE_SIZE),
             Protocol::Vector2f(CAMERA_SPEED, 0),
             1

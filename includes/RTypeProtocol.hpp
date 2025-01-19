@@ -21,6 +21,8 @@
 #define WIDTH 800
 #define HEIGHT 600
 
+#define TILE_SIZE 20
+
 #define CAMERA_SPEED (-1)
 
 #define SERVER_TPS 30

@@ -21,7 +21,7 @@
 
 class Registry {
 public:
-    template <class Component>
+    template<class Component>
     SparseArray<Component> &register_component() {
         const std::type_index idx(typeid(Component));
         if (!components_arrays_.contains(idx)) {
@@ -46,7 +46,7 @@ public:
     }
 
 
-    template <class Component>
+    template<class Component>
     SparseArray<Component> &get_components() {
         const std::type_index idx(typeid(Component));
         if (!components_arrays_.contains(idx))
@@ -55,7 +55,7 @@ public:
         return std::any_cast<SparseArray<Component> &>(components);
     }
 
-    template <class Component>
+    template<class Component>
     SparseArray<Component> const &get_components() const {
         const std::type_index idx(typeid(Component));
         if (!components_arrays_.contains(idx))
@@ -64,7 +64,7 @@ public:
         return std::any_cast<const SparseArray<Component> &>(components);
     }
 
-    template <class Component>
+    template<class Component>
     std::optional<Component> &get_entity_component(entity_t e) {
         const std::type_index idx(typeid(Component));
         if (!components_arrays_.contains(idx))
@@ -73,7 +73,7 @@ public:
         return std::any_cast<SparseArray<Component> &>(components)[e];
     }
 
-    template <class Component>
+    template<class Component>
     std::optional<Component> const &get_entity_component(entity_t e) const {
         const std::type_index idx(typeid(Component));
         if (!components_arrays_.contains(idx))
@@ -112,21 +112,21 @@ public:
         components_arrays_.clear();
     }
 
-    template <typename Component>
+    template<typename Component>
     typename SparseArray<Component>::reference_type add_component(entity_t const &to, Component &&c) {
         if (!components_arrays_.contains(typeid(Component)))
             register_component<Component>();
         return get_components<Component>().insert_at(to, c);
     }
 
-    template <typename Component, typename... Params>
+    template<typename Component, typename... Params>
     typename SparseArray<Component>::reference_type emplace_component(entity_t const &to, Params &&... p) {
         if (!components_arrays_.contains(typeid(Component)))
             register_component<Component>();
         return get_components<Component>().emplace_at(to, std::forward<Params>(p)...);
     }
 
-    template <typename Component>
+    template<typename Component>
     void remove_component(entity_t const &from) {
         const std::type_index idx(typeid(Component));
         if (!components_arrays_.contains(idx))
@@ -135,11 +135,9 @@ public:
             remove_functions_[idx](*this, from);
     }
 
-    template <typename Function>
+    template<typename Function>
     void add_system(Function &&f) {
-        systems_.push_back([f = std::forward<Function>(f)](Registry &reg) {
-            f(reg);
-        });
+        systems_.emplace_back(std::forward<Function>(f));
     }
 
     void remove_system(const std::size_t idx) {
@@ -154,6 +152,7 @@ public:
 
     void run_systems() {
         std::vector<std::function<void(Registry &)>> systems_copy = systems_;
+        const std::vector<std::function<void(Registry &)>> systems_copy2 = systems_;
         for (std::function<void(Registry &)> &system : systems_copy)
             system(*this);
     }

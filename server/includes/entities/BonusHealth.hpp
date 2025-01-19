@@ -18,5 +18,5 @@ public:
     BonusHealth() = delete;
 
     static void collision(Registry &r, entity_t me, entity_t other);
-    static entity_t create(Registry &r, Position position);
+    static entity_t create(Registry &r, const Position &position);
 };

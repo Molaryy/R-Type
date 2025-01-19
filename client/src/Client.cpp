@@ -118,7 +118,7 @@ void Client::setupPacketHandler_() {
             return server_id.has_value() && server_id->id == network_id;
         });
         if (it == server_ids.end()) {
-            std::cerr << "POSITION_VELOCITY: Failed to find server id: " << network_id << std::endl;
+            std::cerr << "POSITION_VELOCITY: Failed to find server id: " << network_id <<  std::endl;
             return;
         }
         const entity_t entity_id = std::ranges::distance(server_ids.begin(), it);
@@ -249,7 +249,7 @@ void Client::setupPacketHandler_() {
                                                                         drawable.text_x = 0;
                                                                 }));
                 break;
-default:
+            default:
                 std::cerr << "Unknown entity type: " << type << std::endl;
                 break;
         }
@@ -289,9 +289,14 @@ default:
 
         if (!natural)
             return registry_.kill_entity(entity_id);
-        const std::optional<Position> &pos = registry_.get_components<Position>()[entity_id];
         std::optional<Components::Drawable> &draw = registry_.get_components<Components::Drawable>()[entity_id];
+        const std::optional<Components::ComponentEntityType> &type = registry_.get_components<Components::ComponentEntityType>()[entity_id];
+        if (type.has_value() && type->type == Protocol::PLAYER) {
+            draw->can_draw = false;
+            return;
+        }
 
+        const std::optional<Position> &pos = registry_.get_components<Position>()[entity_id];
         if (pos.has_value() && draw.has_value()) {
             const entity_t e = registry_.spawn_entity();
 
@@ -308,11 +313,6 @@ default:
                                                                     drawable.text_height = 0;
                                                                 }
                                                             }));
-        }
-        const std::optional<Components::ComponentEntityType> &type = registry_.get_components<Components::ComponentEntityType>()[entity_id];
-        if (type.has_value() && type->type == Protocol::PLAYER) {
-            draw->can_draw = false;
-            return;
         }
         registry_.kill_entity(entity_id);
     });

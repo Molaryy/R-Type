@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <Components.hh>
+
 #include "Registry.hh"
 
 #define TURRET_BULLET_SPEED 10
@@ -16,6 +18,10 @@
 #define TURRET_HEALTH 4
 #define TURRET_SIZE 40
 #define TURRET_SPEED (-2)
+
+#define TURRET_DROP_BONUS_HEALTH_CHANCE 0.1
+#define TURRET_DROP_BONUS_DAMAGE_CHANCE 0.04
+#define TURRET_DROP_BONUS_TRIPLE_CHANCE 0.04
 
 class EnemyTurret {
 public:
@@ -28,4 +34,5 @@ public:
     };
     static void collision(Registry &r, entity_t me, entity_t other);
     static entity_t create(Registry &r);
+    static entity_t createFromPos(Registry &r, const Position &position);
 };
