@@ -14,11 +14,13 @@
 #include "RTypeProtocol.hpp"
 #include "Systems.hh"
 
-Server::Server(const std::size_t port, const std::size_t max_lobby, const std::size_t max_client, const bool debug, const std::string &path)
+Server::Server(const std::size_t port, const std::size_t max_lobby, const std::size_t max_client, const bool debug, const bool network_debug,
+               const std::string &path)
     : networkLoader_("./", "asio_server"),
       port_(port),
       maxClient_(max_client), nbClient_(0),
       debug_(debug),
+      network_debug_(network_debug),
       maxLobby_(max_lobby),
       serverRunning_(true),
       score_(path) {
@@ -36,8 +38,9 @@ Server::~Server() {
     networkLib_->close();
 }
 
-Server &Server::createInstance(const std::size_t port, const std::size_t max_lobby, const std::size_t max_client, const bool debug, const std::string &path) {
-    instance_.reset(new Server(port, max_lobby, max_client, debug, path));
+Server &Server::createInstance(const std::size_t port, const std::size_t max_lobby, const std::size_t max_client, const bool debug, const bool network_debug,
+                               const std::string &path) {
+    instance_.reset(new Server(port, max_lobby, max_client, debug, network_debug, path));
     return *instance_;
 }
 
@@ -86,7 +89,7 @@ void Server::initPacketHandling_() {
     packetHandler_.setPacketCallback(
         Protocol::ASK_LOBBY_LIST,
         [this]([[maybe_unused]] const Network::Packet &packet, const uint16_t client) {
-            if (debug_)
+            if (network_debug_)
                 std::cout << "Client: " << client << " : Ask for number of lobbies : " << lobbies_.size() << std::endl;
 
             Network::Packet lobbyList(Protocol::LobbyListPacket(lobbies_.size()), Protocol::CommandIdServer::LOBBY_LIST);
@@ -97,7 +100,7 @@ void Server::initPacketHandling_() {
         [this](const Network::Packet &packet, const uint16_t client) {
             const auto [lobby_id] = packet.getPayload<Protocol::AskLobbyDataPacket>();
 
-            if (debug_)
+            if (network_debug_)
                 std::cout << "Client: " << client << " : Ask data of lobby " << lobby_id << std::endl;
 
             Protocol::LobbyDataPacket lobbyDataPacket(lobby_id, Protocol::LobbyState::CLOSE, 0, false);
@@ -118,7 +121,7 @@ void Server::initPacketHandling_() {
     packetHandler_.setPacketCallback(
         Protocol::JOIN_LOBBY_BY_ID,
         [this](const Network::Packet &packet, const uint16_t client) {
-            if (debug_)
+            if (network_debug_)
                 std::cout << "Client: " << client << " : Join lobby" << std::endl;
 
             const auto [lobby_id] = packet.getPayload<Protocol::JoinLobbyPacket>();
@@ -143,7 +146,7 @@ void Server::initPacketHandling_() {
     packetHandler_.setPacketCallback(
         Protocol::JOIN_NEW_LOBBY,
         [this]([[maybe_unused]] const Network::Packet &packet, const uint16_t client) {
-            if (debug_)
+            if (network_debug_)
                 std::cout << "Client: " << client << " : Join a newly created lobby" << std::endl;
 
             const auto it = std::ranges::find_if(lobbies_, [client](const std::unique_ptr<Lobby> &lobby) {
@@ -160,7 +163,7 @@ void Server::initPacketHandling_() {
     packetHandler_.setPacketCallback(
         Protocol::JOIN_RANDOM_LOBBY,
         [this]([[maybe_unused]] const Network::Packet &packet, const uint16_t client) {
-            if (debug_)
+            if (network_debug_)
                 std::cout << "Client: " << client << " : Join a random lobby" << std::endl;
 
             for (const std::unique_ptr<Lobby> &lobby : lobbies_) {
@@ -184,7 +187,7 @@ void Server::initPacketHandling_() {
     packetHandler_.setPacketCallback(
         Protocol::CONNECT,
         [this]([[maybe_unused]] const Network::Packet &packet, const uint16_t client) {
-            if (debug_)
+            if (network_debug_)
                 std::cout << "Client: " << client << " : Ask for connection" << std::endl;
 
             Network::Packet response(Protocol::EmptyPacket(), Protocol::ACCEPT_CONNECTION);
@@ -193,7 +196,7 @@ void Server::initPacketHandling_() {
     packetHandler_.setPacketCallback(
         Protocol::ASK_START_GAME,
         [this]([[maybe_unused]] const Network::Packet &packet, const uint16_t client) {
-            if (debug_)
+            if (network_debug_)
                 std::cout << "Client: " << client << " : Try starting game" << std::endl;
 
             const auto it = std::ranges::find_if(lobbies_, [client](const std::unique_ptr<Lobby> &lobby) {
@@ -216,7 +219,7 @@ void Server::initPacketHandling_() {
                 return;
             }
             auto [key_pressed] = packet.getPayload<Protocol::InputsKeysPacket>();
-            if (debug_)
+            if (network_debug_)
                 std::cout << "Client: " << client << " : Sended inputs: " << std::boolalpha << key_pressed[0] << ", " << key_pressed[1] << ", "
                         << key_pressed[2] << ", " << key_pressed[3] << ", " << key_pressed[4] << std::endl;
 
@@ -231,7 +234,8 @@ void Server::initPacketHandling_() {
     packetHandler_.setPacketCallback(
         Protocol::LEAVE_LOBBY,
         [this]([[maybe_unused]] const Network::Packet &packet, const uint16_t client) {
-            std::cout << "Client: " << client << " : Leave lobby" << std::endl;
+            if (network_debug_)
+                std::cout << "Client: " << client << " : Leave lobby" << std::endl;
 
             const auto it = std::ranges::find_if(lobbies_, [client](const std::unique_ptr<Lobby> &lobby) {
                 return lobby->containPlayer(client);
@@ -246,7 +250,7 @@ void Server::initPacketHandling_() {
     packetHandler_.setPacketCallback(
         Protocol::ASK_SCOREBOARD,
         [this]([[maybe_unused]] const Network::Packet &packet, const uint16_t client) {
-            if (debug_)
+            if (network_debug_)
                 std::cout << "Client: " << client << " : Ask for scoreboard" << std::endl;
             const std::vector<std::pair<std::string, std::size_t>> scores = score_.getTopTen();
             Protocol::ScoreboardPacket scoreboardP{};
@@ -261,7 +265,7 @@ void Server::initPacketHandling_() {
     packetHandler_.setPacketCallback(
         Protocol::CHANGE_GAME_MODE,
         [this]([[maybe_unused]] const Network::Packet &packet, const uint16_t client) {
-            if (debug_)
+            if (network_debug_)
                 std::cout << "Client: " << client << " : Leave lobby" << std::endl;
 
             const auto it = std::ranges::find_if(lobbies_, [client](const std::unique_ptr<Lobby> &lobby) {

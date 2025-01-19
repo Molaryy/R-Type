@@ -9,13 +9,13 @@
 
 #include <cmath>
 
-#include "entities/EnemyTank.hpp"
-#include "entities/EnemyTurret.hpp"
 #include "Components.hh"
 #include "Components.hpp"
 #include "IndexedZipper.hh"
 #include "Registry.hh"
 #include "Zipper.hh"
+#include "entities/EnemyTank.hpp"
+#include "entities/EnemyTurret.hpp"
 #include "entities/EnemyFly.hpp"
 #include "entities/Player.hpp"
 #include "entities/PlayerBullet.hpp"
@@ -35,7 +35,7 @@ namespace Systems {
 
         for (auto &&[entity, input, velocity, position, clock, life, bonus] : IndexedZipper(inputs, velocities, positions, clocks, lifes, bonuses)) {
             if (!life.is_alive())
-                return;
+                continue;
             velocity.x = 0;
             velocity.y = 0;
             ++clock.last;
@@ -55,7 +55,7 @@ namespace Systems {
                     });
                 }
             }
-            for (auto &&[network_id] : Zipper(network_ids)) {
+            for (auto &&[network_id, life2] : Zipper(network_ids, lifes)) {
                 Protocol::EntityPositionVelocityPacket pos_vel(
                     entity,
                     {position.x, position.y},
@@ -65,7 +65,7 @@ namespace Systems {
                     Protocol::POSITION_VELOCITY
                 );
                 network.send(network_id.id, packet.serialize());
-                if (bonus.type == Bonus::None)
+                if (bonus.type == Bonus::None || !life2.is_alive())
                     continue;
                 pos_vel.entity_id = bonus.id;
                 pos_vel.position = {position.x + PLAYER_SIZE_X, position.y};
@@ -79,32 +79,63 @@ namespace Systems {
         }
     }
 
-    inline void levelEndlessHandler(Registry &r, std::size_t &pos_in_level) {
-        pos_in_level += 1;
+    inline void levelEndlessHandler(Registry &r, std::size_t &score) {
+        if (score == 0) {
+            const SparseArray<NetworkId> &network_ids = r.get_components<NetworkId>();
+            SparseArray<Position> &positions = r.get_components<Position>();
+            const SparseArray<Velocity> &velocities = r.get_components<Velocity>();
+            size_t i = 100;
 
-        if (pos_in_level % 60 != 0)
+            for (auto &&[entity, network_id, position, velocity] : IndexedZipper(network_ids, positions, velocities)) {
+                position.x = i;
+                i += 50;
+                position.y = 100;
+                Protocol::EntityPositionVelocityPacket pos_vel(
+                    entity,
+                    {position.x, position.y},
+                    {velocity.x, velocity.y});
+                Network::Packet packet(
+                    pos_vel,
+                    Protocol::POSITION_VELOCITY
+                );
+            }
+        }
+
+        score += 1;
+
+        if (score % 60 != 0)
             return;
         std::vector<std::pair<std::function<entity_t(Registry &)>, double>> spawn_rates{
             {EnemyFly::create, 2},
             {EnemyTurret::create, 1},
             {EnemyTank::create, 0.3}
         };
-        double difficulty = static_cast<double>(pos_in_level) / 300.0 * (0.8 + static_cast<double>(std::rand()) / RAND_MAX * (1.2 - 0.8));
+        double difficulty = static_cast<double>(score) / 500.0 * (0.8 + static_cast<double>(std::rand()) / RAND_MAX * (1.2 - 0.8)) + 0.5;
         if (difficulty > 1)
             difficulty = 1 + (difficulty - 1) * 0.5;
         if (difficulty > 3)
             difficulty = 3 + (difficulty - 3) * 0.5;
         if (difficulty > 4)
             difficulty = 4;
-        std::cout << difficulty << std::endl;
         for (auto &&[spawn, rate] : spawn_rates) {
             for ([[maybe_unused]] std::size_t _ : std::ranges::iota_view{static_cast<std::size_t>(0), static_cast<std::size_t>(difficulty * rate)})
                 spawn(r);
         }
     }
 
-    inline void levelCampaignHandler(Registry &r, std::size_t &pos_in_level) {
-    }
+    class LevelCampaignHandlerSystem {
+    public:
+        explicit LevelCampaignHandlerSystem(const std::size_t &initialPos)
+            : score_(initialPos) {
+        }
+
+        void operator()(Registry &r) {
+            score_ += 1;
+        }
+
+    private:
+        std::size_t score_;
+    };
 
     inline void killNoHealthEntitys(Registry &r) {
         std::queue<entity_t> entity_to_kill;

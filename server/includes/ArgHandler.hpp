@@ -28,6 +28,7 @@ public:
     std::size_t max_client{MAX_CLIENTS};
     std::size_t max_lobby{MAX_LOBBY};
     bool debug{false};
+    bool debug_network{false};
 
 private:
     static std::optional<std::string> getArgument_(const std::string &arg, const std::vector<std::string_view> &av);
