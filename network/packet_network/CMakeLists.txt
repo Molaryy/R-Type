@@ -1,16 +1,13 @@
 cmake_minimum_required(VERSION 3.27)
 
-project(PacketNetwork)
+project(packet_network)
 
 set(CMAKE_CXX_STANDARD 23)
 
 add_library(${PROJECT_NAME} STATIC
         Packet.cpp
-        Packet.hpp
         PacketHandler.cpp
-        PacketHandler.hpp
         PacketHandler.cpp
-        PacketHandler.hpp
 )
 
 if (WIN32)

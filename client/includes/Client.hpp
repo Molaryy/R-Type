@@ -1,28 +1,58 @@
 /*
 ** EPITECH PROJECT, 2024
-** R-Type
+** R_Type
 ** File description:
-** Client.hpp
+** Client
 */
 
 #pragma once
 
-#include <asio.hpp>
-#include <thread>
-#include <vector>
-#include "ClientNetwork.hpp"
+#include <dylib.hpp>
+#include <memory>
 
-class Client {
-    public:
-        Client(const std::string &serverIP, unsigned int port);
-        ~Client();
+#include "INetworkClient.hpp"
+#include "IRenderer.hpp"
+#include "PacketHandler.hpp"
+#include "Registry.hh"
 
-        void run();
-        void stop();
-        void sendInteraction(const Interaction &interaction);
+class Client
+{
+public:
+    Client(const Client &ref) = delete;
+    void operator=(const Client &ref) = delete;
 
-    private:
-        asio::io_context ioContext_;
-        ClientNetwork network_;
-        std::thread ioThread_;
+    ~Client();
+
+    void run();
+
+    static Client &createInstance(const std::string &ip, std::size_t port, bool debug);
+    static Client &getInstance();
+
+    Graphic::IRenderer &getRenderer() const;
+    Network::INetworkClient &getNetworkLib() const;
+
+    Network::PacketHandler &getPacketHandler();
+
+    Registry &getRegistry();
+
+    std::size_t my_server_id{};
+    std::size_t lobby_id{};
+
+private:
+    Client(const std::string &ip, std::size_t port, bool debug);
+
+    bool connectToServer_(const std::string &ip, std::size_t port);
+    void setupPacketHandler_();
+
+    void setupSystems_();
+
+    dylib graph_loader_;
+    dylib network_loader_;
+    std::unique_ptr<Graphic::IRenderer> renderer_;
+    std::unique_ptr<Network::INetworkClient> network_lib_;
+
+    Network::PacketHandler packet_handler_;
+    Registry registry_;
+    bool debug_;
+    static std::unique_ptr<Client> instance_;
 };

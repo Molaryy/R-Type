@@ -5,11 +5,20 @@ project(r-type_server)
 set(CMAKE_CXX_STANDARD 23)
 
 add_executable(${PROJECT_NAME}
-        src/Arguments.cpp
-#        src/Game.cpp
+        src/Main.cpp
+        src/ArgHandler.cpp
         src/Server.cpp
-        main.cpp
-        includes/Components.hpp
+        src/Lobby.cpp
+        src/Score.cpp
+        src/entities/Player.cpp
+        src/entities/EnemyFly.cpp
+        src/entities/EnemyTank.cpp
+        src/entities/EnemyTurret.cpp
+        src/entities/PlayerBullet.cpp
+        src/entities/EnemyBullet.cpp
+        src/entities/BonusHealth.cpp
+        src/entities/BonusForce.cpp
+        src/entities/BonusTripleShot.cpp
 )
 
 target_include_directories(${PROJECT_NAME}
@@ -17,11 +26,11 @@ target_include_directories(${PROJECT_NAME}
         PRIVATE ${CMAKE_SOURCE_DIR}/network/packet_network
         PRIVATE ${CMAKE_SOURCE_DIR}/network/includes
         PRIVATE ${CMAKE_SOURCE_DIR}/includes
-        PRIVATE ${CMAKE_SOURCE_DIR}/ecs/include
+        PRIVATE ${CMAKE_SOURCE_DIR}/ecs/includes
 )
 
 target_link_libraries(${PROJECT_NAME}
-        PRIVATE PacketNetwork
+        PRIVATE packet_network
         PRIVATE dylib
 )
 
