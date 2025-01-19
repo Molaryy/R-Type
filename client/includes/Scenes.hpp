@@ -9,7 +9,7 @@
 
 #include "Client.hpp"
 
-#define NB_MENU_BUTTONS 5
+#define NB_MENU_BUTTONS 6
 
 // Colors
 #define COLOR_GREY {200, 200, 200, 255}
@@ -21,3 +21,4 @@ void lobbyPage(Registry &r, std::size_t lobby_id);
 void settingsCallback(Registry &r);
 void createMenuScene(Registry &r);
 void exitButtonCallback(Registry &r);
+void accessibilityCallback(Registry &r);

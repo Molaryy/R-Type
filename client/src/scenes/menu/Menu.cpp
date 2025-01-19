@@ -100,15 +100,24 @@ void createMenuScene(Registry &r) {
     r.add_component(e, Components::RenderText("R-TYPE", 40, true));
     r.add_component(e, Position(50, 50));
     r.add_component(e, Components::ColorText(white));
-    const std::vector<std::string> titles = {"Play", "Leaderboard", "Settings", "Credits", "Exit"};
-    const std::vector<std::function<void(Registry &r)>> callbacks = {lobbyCallback, leaderBoardCallback, settingsCallback, creditsCallback, exitCallback};
+    const std::vector<std::string> titles = {"Play", "Leaderboard", "Settings", "Credits", "Exit", "Accessibility"};
+    const std::vector<std::function<void(Registry &r)>> callbacks = {lobbyCallback, leaderBoardCallback, settingsCallback, creditsCallback, exitCallback, accessibilityCallback};
 
 
     for (std::size_t i = 0; i < NB_MENU_BUTTONS; i++) {
         entity_t button = r.spawn_entity();
 
-        r.add_component(button, Components::RenderText(titles[i], 20, true));
-        r.add_component(button, Position(100.0f, static_cast<float>(150 + i * 50)));
+        if (i == 5) {
+            int textWidth = Client::getInstance().getRenderer().measureText(titles[i], 20);
+            float posX = WIDTH - textWidth - 100;
+            float posY = HEIGHT - 50;
+            r.add_component(button, Components::RenderText(titles[i], 20, true));
+            r.add_component(button, Position(posX, posY));
+        } else {
+            r.add_component(button, Components::RenderText(titles[i], 20, true));
+            r.add_component(button, Position(100.0f, static_cast<float>(150 + i * 50)));
+        }
+
         r.add_component(button, Components::ColorText(grey));
         r.add_component(button, Components::ClickableText(callbacks[i]));
         r.add_component(button, Components::ColorOverText(darkBlue, grey, false));
@@ -127,4 +136,14 @@ void createMenuScene(Registry &r) {
     //r.add_component(pop_up, Position(x, y));
     //r.add_component(pop_up, Components::ColorText(white));
     //r.add_component(pop_up, Components::ColorOverText(darkBlue, grey, false));
+}
+
+void accessibilityCallback(Registry &r) {
+    r.clear_entities();
+
+    entity_t title = r.spawn_entity();
+    r.add_component(title, Components::RenderText("Accessibility Options", 40, true));
+    r.add_component(title, Position(100, 50));
+    r.add_component(title, Components::ColorText({255, 255, 255, 255}));
+    exitButtonCallback(r);
 }
