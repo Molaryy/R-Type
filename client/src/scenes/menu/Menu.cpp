@@ -118,10 +118,19 @@ std::string getLocalUsername() {
     return "";
 }
 
+void storeLocalUsername(const std::string &username) {
+    std::ofstream file(USER_CONFIG_FILEPATH);
+
+    if (file.is_open()) {
+        file << "username=" << username;
+        file.close();
+    }
+}
+
 #define MENU_BUTTONS_TITLES {"Play", "Leaderboard", "Settings", "Credits", "Exit"}
 
 void createSignForm(Registry &r) {
-    entity_t pop_up = r.spawn_entity();
+    entity_t inputTextTitle = r.spawn_entity();
     const std::vector<std::string> titles = MENU_BUTTONS_TITLES;
     constexpr Color white = COLOR_WHITE;
     constexpr Color grey = COLOR_GREY;
@@ -129,32 +138,59 @@ void createSignForm(Registry &r) {
     Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
     std::string enterUsernameText = "Enter your username:";
 
+
+    // Enter username title
+    int textWidth = renderer.measureText(enterUsernameText, 20);
     int x = (WIDTH - renderer.measureText(enterUsernameText, 20)) / 2;
     int y = (HEIGHT - renderer.measureText(enterUsernameText, 20)) / 2;
 
-    r.add_component(pop_up, Components::RenderText(enterUsernameText, 20, true));
-    r.add_component(pop_up, Position(x, y));
-    r.add_component(pop_up, Components::ColorText(white));
-    r.add_component(pop_up, Components::ColorOverText(darkBlue, grey, false));
-    r.add_component(pop_up, Components::ClickableText([titles, enterUsernameText](Registry &r) {
-        auto &inputTexts = r.get_components<Components::InputText>();
+    r.add_component(inputTextTitle, Components::RenderText(enterUsernameText, 20, true));
+    r.add_component(inputTextTitle, Position(x, y));
+    r.add_component(inputTextTitle, Components::ColorText(white));
+    r.add_component(inputTextTitle, Components::Input(enterUsernameText));
+    r.add_component(inputTextTitle, Components::ColorOverText(darkBlue, grey, false));
 
-        for (auto &&[input] : Zipper(inputTexts)) {
-            if (input.respectiveTextButton == enterUsernameText) {
+
+    float inputX = x - textWidth / 2;
+    // Input rectangle
+    entity_t inputRectangle = r.spawn_entity();
+    r.add_component(inputRectangle, Components::Rect(white, textWidth * 2 + 10, 40));
+    r.add_component(inputRectangle, Position(inputX, y + 30));
+    r.add_component(inputRectangle, Components::Input(enterUsernameText));
+
+    // Input Text
+    entity_t inputText = r.spawn_entity();
+    r.add_component(inputText, Components::InputText({"", 20, true}));
+    r.add_component(inputText, Position(inputX + 10, y +10));
+    r.add_component(inputText, Components::Input(enterUsernameText));
+    r.add_component(inputText, Components::ColorText(darkBlue));
+
+    // Sign in text button
+    const std::string signInText = "Sign in";
+    entity_t signIntButton = r.spawn_entity();
+    r.add_component(signIntButton, Components::RenderText(signInText, 20, true));
+    r.add_component(signIntButton, Position(WIDTH / 2 - 40, y + 100));
+    r.add_component(signIntButton, Components::ColorText(white));
+    r.add_component(signIntButton, Components::ColorOverText(darkBlue, grey, false));
+    r.add_component(signIntButton, Components::Input(enterUsernameText));
+    r.add_component(signIntButton, Components::ClickableText([signInText, enterUsernameText](Registry &r) {
+        auto &inputTexts = r.get_components<Components::InputText>();
+        auto &inputs = r.get_components<Components::Input>();
+
+        for (auto &&[inputText, input] : Zipper(inputTexts, inputs)) {
+            if (input.inputTextTitle == enterUsernameText && !inputText.text.text.empty()) {
+                storeLocalUsername(inputText.text.text);
                 r.clear_entities();
                 createMenuScene(r);
             }
         }
     }));
-    r.add_component(pop_up, Components::InputText("", "Enter your username:"));
-    r.add_component(pop_up, Components::InputRect(enterUsernameText, {255, 255, 255, 255}, 20, 20, x, y));
 }
 
 void createMenuScene(Registry &r) {
     r.clear_entities();
 
     const entity_t e = r.spawn_entity();
-
     constexpr Color white = COLOR_WHITE;
     constexpr Color grey = COLOR_GREY;
     constexpr Color darkBlue = COLOR_DARK_BLUE;

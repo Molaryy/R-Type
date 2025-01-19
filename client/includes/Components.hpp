@@ -11,7 +11,6 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
-
 #include "Gameplay.hpp"
 #include "Registry.hh"
 #include "RTypeProtocol.hpp"
@@ -68,6 +67,8 @@ namespace Components {
 
     struct Rect {
         Color color;
+        int width;
+        int height;
 
         void log() const {
             std::cout << "Rect = { "
@@ -79,33 +80,26 @@ namespace Components {
         }
     };
 
-    struct InputText {
-        std::string text;
-        std::string respectiveTextButton;
+    struct Input {
+        std::string inputTextTitle;
 
         void log() const {
-            std::cout << "InputText = { text = " << text << "}";
+            std::cout << "InputBox = { " << inputTextTitle << " }";
         }
     };
 
-    struct InputRect {
-        std::string title;
-        Color color;
-        int width;
-        int height;
-        int x;
-        int y;
+    struct InputText {
+        RenderText text;
+
         void log() const {
-            std::cout << "InputRect = { "
-                "r = " << static_cast<unsigned int>(color.r) << ", " <<
-                "g = " << static_cast<unsigned int>(color.g) << ", " <<
-                "b = " << static_cast<unsigned int>(color.b) << ", " <<
-                "a = " << static_cast<unsigned int>(color.a) << ", " <<
-                "}";
+            std::cout << "InputText = { text = " << text.text << "}";
         }
     };
 
     struct ScrollableText {
+         void log() const {
+            std::cout << "ScrollableText = {}";
+        }
     };
 
     struct ServerId {

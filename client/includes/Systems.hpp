@@ -66,25 +66,50 @@ namespace Systems {
         }
     }
 
+
+    #define NAME_SIZE 30
     inline void handleInputBox(Registry &r) {
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
         Graphic::event_t events = renderer.getEvents();
         auto &inputTexts = r.get_components<Components::InputText>();
-        auto &inputRect = r.get_components<Components::InputRect>();
+        auto &positions = r.get_components<Position>();
+        auto &inputs = r.get_components<Components::Input>();
+        auto &rects = r.get_components<Components::Rect>();
+        auto &colorsTexts = r.get_components<Components::ColorText>();
 
-        for (auto &&[input, rect] : Zipper(inputTexts, inputRect)) {
-            if (input.respectiveTextButton == rect.title) {
-                for (auto key : events.inputs) {
-                    if (key >= Graphic::Keys::A && key <= Graphic::Keys::Z) {
-                        key = static_cast<Graphic::Keys>(key + 65);
-                        input.text += static_cast<char>(key);
-                    } else if (key >= Graphic::Keys::Num0 && key <= Graphic::Keys::Num9) {
-                        key = static_cast<Graphic::Keys>(key + 22);
-                        input.text += static_cast<char>(key);
+        for (auto &&[inputText, pos, input, colorText] : Zipper(inputTexts,  positions, inputs, colorsTexts)) {
+            for (auto &&[rect, inputRect] : Zipper(rects, inputs)) {
+                if (inputRect.inputTextTitle == input.inputTextTitle) {
+                    for (auto key : events.inputs) {
+                        if (key >= Graphic::Keys::A && key <= Graphic::Keys::Z) {
+                            key = static_cast<Graphic::Keys>(key + 65);
+                            if (inputText.text.text.size() < NAME_SIZE) {
+                                inputText.text.text += static_cast<char>(key);
+                            }
+                        } else if (key >= Graphic::Keys::Num0 && key <= Graphic::Keys::Num9) {
+                            key = static_cast<Graphic::Keys>(key + 22);
+                            if (inputText.text.text.size() < NAME_SIZE) {
+                                inputText.text.text += static_cast<char>(key);
+                            }
+                        } else if (key == Graphic::Keys::Backspace) {
+                            if (!inputText.text.text.empty()) {
+                                inputText.text.text.pop_back();
+                            }
+                        }
                     }
-                }
             }
-            renderer.drawText(input.text, rect.x, rect.y + 30, rect.width, rect.color.r, rect.color.g, rect.color.b, rect.color.a);
+            renderer.drawText(inputText.text.text, pos.x, pos.y + 30, inputText.text.fontSize, colorText.color.r, colorText.color.g, colorText.color.b, colorText.color.a);
+            }
+        }
+    }
+
+    inline void drawRectangles(Registry &r) {
+        auto &positions = r.get_components<Position>();
+        auto &rects = r.get_components<Components::Rect>();
+        Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
+
+        for (auto &&[pos, rect] : Zipper(positions, rects)) {
+            renderer.drawRectangle(pos.x, pos.y, rect.width, rect.height, rect.color.r, rect.color.g, rect.color.b, rect.color.a);
         }
     }
 

@@ -104,7 +104,7 @@ namespace Graphic {
             events.inputs.push_back(CloseWindow);
 
         for (auto const &[raylibKey, customKey] : inputMap_) {
-            if (IsKeyDown(raylibKey)) {
+            if (IsKeyPressed(raylibKey)) {
                 events.inputs.push_back(customKey);
             }
         }

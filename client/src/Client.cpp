@@ -175,6 +175,7 @@ void Client::setupSystems_() {
     registry_.add_system(Systems::handleMouse);
     registry_.add_system(Systems::drawEntities);
     registry_.add_system(Systems::handleInputs);
+    registry_.add_system(Systems::drawRectangles);
     registry_.add_system(Systems::handleInputBox);
     if (debug_)
         registry_.add_system(Systems::log);
