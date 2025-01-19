@@ -79,11 +79,29 @@ namespace Components {
         }
     };
 
-    struct InputRect {
+    struct InputText {
         std::string text;
+        std::string respectiveTextButton;
 
         void log() const {
             std::cout << "InputText = { text = " << text << "}";
+        }
+    };
+
+    struct InputRect {
+        std::string title;
+        Color color;
+        int width;
+        int height;
+        int x;
+        int y;
+        void log() const {
+            std::cout << "InputRect = { "
+                "r = " << static_cast<unsigned int>(color.r) << ", " <<
+                "g = " << static_cast<unsigned int>(color.g) << ", " <<
+                "b = " << static_cast<unsigned int>(color.b) << ", " <<
+                "a = " << static_cast<unsigned int>(color.a) << ", " <<
+                "}";
         }
     };
 

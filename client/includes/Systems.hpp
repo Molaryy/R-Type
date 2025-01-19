@@ -54,14 +54,37 @@ namespace Systems {
         auto &positions = r.get_components<Position>();
         auto &colorsTexts = r.get_components<Components::ColorText>();
         auto &colorsOverText = r.get_components<Components::ColorOverText>();
-        Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
 
         for (auto &&[pos, text, colorText, colorOverText] : Zipper(positions, texts, colorsTexts, colorsOverText)) {
+            if (!text.isDrawable)
+                continue;
             if (colorOverText.isOver) {
                 colorText.color = colorOverText.newColor;
             } else {
                 colorText.color = colorOverText.defaultColor;
             }
+        }
+    }
+
+    inline void handleInputBox(Registry &r) {
+        Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
+        Graphic::event_t events = renderer.getEvents();
+        auto &inputTexts = r.get_components<Components::InputText>();
+        auto &inputRect = r.get_components<Components::InputRect>();
+
+        for (auto &&[input, rect] : Zipper(inputTexts, inputRect)) {
+            if (input.respectiveTextButton == rect.title) {
+                for (auto key : events.inputs) {
+                    if (key >= Graphic::Keys::A && key <= Graphic::Keys::Z) {
+                        key = static_cast<Graphic::Keys>(key + 65);
+                        input.text += static_cast<char>(key);
+                    } else if (key >= Graphic::Keys::Num0 && key <= Graphic::Keys::Num9) {
+                        key = static_cast<Graphic::Keys>(key + 22);
+                        input.text += static_cast<char>(key);
+                    }
+                }
+            }
+            renderer.drawText(input.text, rect.x, rect.y + 30, rect.width, rect.color.r, rect.color.g, rect.color.b, rect.color.a);
         }
     }
 
@@ -77,6 +100,8 @@ namespace Systems {
         std::function<void(Registry &r)> secureCallback;
 
         for (auto &&[pos, clickable, text, colorsOverText] : Zipper(positions, clickables, texts, colorsOverTexts)) {
+            if (!text.isDrawable)
+                continue;
             if (mouse_x >= static_cast<int>(pos.x) && mouse_x <= pos.x + static_cast<int>(text.text.size()) * text.fontSize &&
                 mouse_y >= static_cast<int>(pos.y) && mouse_y <= static_cast<int>(pos.y) + text.fontSize) {
                 if (leftClicked) {

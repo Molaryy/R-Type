@@ -19,4 +19,6 @@
 void lobbyCallback(Registry &r);
 void settingsCallback(Registry &r);
 void createMenuScene(Registry &r);
+std::string getLocalUsername();
+void createSignForm(Registry &r);
 void exitButtonCallback(Registry &r);

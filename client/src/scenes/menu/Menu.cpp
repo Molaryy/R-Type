@@ -10,8 +10,11 @@
 #include "Scenes.hpp"
 #include "IRenderer.hpp"
 #include "Client.hpp"
+#include "Zipper.hh"
 #include <fstream>
 #include <sstream>
+#include <fstream>
+
 
 void exitButtonCallback(Registry &r)
 {
@@ -91,6 +94,62 @@ void exitCallback(Registry &r) {
     exit(0); // TODO handle it properly
 }
 
+std::string getLocalUsername() {
+    std::ifstream file(USER_CONFIG_FILEPATH);
+
+    if (file.is_open()) {
+        std::string line;
+        while (std::getline(file, line)) {
+            std::istringstream iss(line);
+            std::string key;
+            if (std::getline(iss, key, '=')) {
+                std::string value;
+                if (std::getline(iss, value)) {
+                    if (key == "username" && !value.empty()) {
+                        std::cout << "Username found: " << value << std::endl;
+                        file.close();
+                        return value;
+                    }
+                }
+            }
+        }
+        file.close();
+    }
+    return "";
+}
+
+#define MENU_BUTTONS_TITLES {"Play", "Leaderboard", "Settings", "Credits", "Exit"}
+
+void createSignForm(Registry &r) {
+    entity_t pop_up = r.spawn_entity();
+    const std::vector<std::string> titles = MENU_BUTTONS_TITLES;
+    constexpr Color white = COLOR_WHITE;
+    constexpr Color grey = COLOR_GREY;
+    constexpr Color darkBlue = COLOR_DARK_BLUE;
+    Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
+    std::string enterUsernameText = "Enter your username:";
+
+    int x = (WIDTH - renderer.measureText(enterUsernameText, 20)) / 2;
+    int y = (HEIGHT - renderer.measureText(enterUsernameText, 20)) / 2;
+
+    r.add_component(pop_up, Components::RenderText(enterUsernameText, 20, true));
+    r.add_component(pop_up, Position(x, y));
+    r.add_component(pop_up, Components::ColorText(white));
+    r.add_component(pop_up, Components::ColorOverText(darkBlue, grey, false));
+    r.add_component(pop_up, Components::ClickableText([titles, enterUsernameText](Registry &r) {
+        auto &inputTexts = r.get_components<Components::InputText>();
+
+        for (auto &&[input] : Zipper(inputTexts)) {
+            if (input.respectiveTextButton == enterUsernameText) {
+                r.clear_entities();
+                createMenuScene(r);
+            }
+        }
+    }));
+    r.add_component(pop_up, Components::InputText("", "Enter your username:"));
+    r.add_component(pop_up, Components::InputRect(enterUsernameText, {255, 255, 255, 255}, 20, 20, x, y));
+}
+
 void createMenuScene(Registry &r) {
     r.clear_entities();
 
@@ -103,9 +162,8 @@ void createMenuScene(Registry &r) {
     r.add_component(e, Components::RenderText("R-TYPE", 40, true));
     r.add_component(e, Position(50, 50));
     r.add_component(e, Components::ColorText(white));
-    const std::vector<std::string> titles = {"Play", "Leaderboard", "Settings", "Credits", "Exit"};
+    const std::vector<std::string> titles = MENU_BUTTONS_TITLES;
     const std::vector<std::function<void(Registry &r)>> callbacks = {lobbyCallback, leaderBoardCallback, settingsCallback, creditsCallback, exitCallback};
-    Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
 
 
     for (std::size_t i = 0; i < NB_MENU_BUTTONS; i++) {
@@ -117,15 +175,4 @@ void createMenuScene(Registry &r) {
         r.add_component(button, Components::ClickableText(callbacks[i]));
         r.add_component(button, Components::ColorOverText(darkBlue, grey, false));
     }
-    //entity_t pop_up = r.spawn_entity();
-//
-    //std::string text = "Enter your username:";
-    //r.add_component(pop_up, Components::RenderText(text, 20, true));
-    //int textSie = renderer.measureText(text, 20);
-    //int x = (WIDTH - renderer.measureText(text, 20)) / 3;
-    //int y = (HEIGHT - renderer.measureText(text, 20)) / 2;
-    //std::cout << "X: " << x << " Y: " << y << std::endl;
-    //r.add_component(pop_up, Position(x, y));
-    //r.add_component(pop_up, Components::ColorText(white));
-    //r.add_component(pop_up, Components::ColorOverText(darkBlue, grey, false));
 }

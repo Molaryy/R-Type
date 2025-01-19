@@ -175,6 +175,7 @@ void Client::setupSystems_() {
     registry_.add_system(Systems::handleMouse);
     registry_.add_system(Systems::drawEntities);
     registry_.add_system(Systems::handleInputs);
+    registry_.add_system(Systems::handleInputBox);
     if (debug_)
         registry_.add_system(Systems::log);
     registry_.add_system([](Registry &r) {
@@ -189,7 +190,11 @@ void Client::run() {
 
     renderer_->initWindow(WIDTH, HEIGHT, "rtype");
 
-    createMenuScene(registry_);
+    if (getLocalUsername().empty()) {
+        createSignForm(registry_);
+    } else {
+        createMenuScene(registry_);
+    }
 
     renderer_->loadTexture("assets/spaceship.gif");
     renderer_->loadTexture("assets/enemies.gif");
