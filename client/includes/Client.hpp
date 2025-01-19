@@ -15,6 +15,12 @@
 #include "PacketHandler.hpp"
 #include "Registry.hh"
 
+#define SOUND_PLAYER_BULLET "assets/sounds/Fx/shot1.wav"
+#define SOUND_ENEMY_BULLET "assets/sounds/Fx/shot2.wav"
+#define SOUND_EXPLOSION "assets/sounds/Fx/explosion.wav"
+#define SOUND_GAME_OVER "assets/sounds/Music/game-over.mp3"
+#define SPACE_ASTEROIDS "assets/sounds/Music/space-asteroids.mp3"
+
 class Client
 {
 public:
@@ -42,10 +48,9 @@ public:
     void toggleMusic();
     void playMusic();
     void stopMusic();
-    void playGameOverMusic();
-
-    void toggleSoundEffects();
     void playSoundEffect(int soundID);
+    void loadSounds();
+    void toggleSoundEffects();
 
     void changeFPS();
     void changeResolution();
@@ -70,14 +75,17 @@ private:
 
     // config for settings
     int musicID_ = -1;
-    bool musicEnabled_ = true;
+    int playerBulletSoundID_ = -1;
+    int enemyBulletSoundID_ = -1;
+    int explosionSoundID_ = -1;
+    int gameOverSoundID_ = -1;
 
+    bool musicEnabled_ = true;
     bool soundEffectsEnabled_ = true;
+    bool playGameOverMusic_ = false;
+
     int currentResolutionIndex_ = 0;
     int currentFPSIndex_ = 1;
-    bool colorBlindModeEnabled_ = false;
-    bool playGameOverMusic_ = false;
-    bool shouldRestartNormalMusic_ = true;
 
     const std::vector<std::pair<int, int>> resolutions_ = {{800, 600}, {1280, 720}, {1920, 1080}};
     const std::vector<int> fpsOptions_ = {30, 60, 120};

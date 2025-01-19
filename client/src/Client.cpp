@@ -171,6 +171,7 @@ void Client::setupPacketHandler_() {
                                                                     if (drawable.text_x > drawable.text_width)
                                                                         drawable.text_x = 0;
                                                                 }));
+                playSoundEffect(playerBulletSoundID_);
                 break;
             case Protocol::EntityType::ENEMY_BULLET:
                 registry_.add_component(e, Components::Drawable(ENEMY_BULLET, size.x, size.y, 0, 0, 48, 48,
@@ -182,6 +183,7 @@ void Client::setupPacketHandler_() {
                                                                     if (drawable.text_x > drawable.text_width * 3)
                                                                         drawable.text_x = 0;
                                                                 }));
+                playSoundEffect(enemyBulletSoundID_);
                 break;
             case Protocol::EntityType::ENEMY_FLY:
                 registry_.add_component(e, Components::Drawable(FLY_ENEMY, size.x, size.y, 0, 0, 33, 36, [frame = 0](Components::Drawable &drawable) mutable {
@@ -287,8 +289,10 @@ default:
         }
         const entity_t entity_id = std::ranges::distance(server_ids.begin(), it);
 
-        if (!natural)
+        if (!natural) {
+            playSoundEffect(explosionSoundID_);
             return registry_.kill_entity(entity_id);
+        }
         const std::optional<Position> &pos = registry_.get_components<Position>()[entity_id];
         std::optional<Components::Drawable> &draw = registry_.get_components<Components::Drawable>()[entity_id];
 
@@ -400,8 +404,22 @@ void Client::stopMusic() {
     }
 }
 
+void Client::loadSounds() {
+    musicID_ = renderer_->loadMusic(SPACE_ASTEROIDS);
+    playerBulletSoundID_ = renderer_->loadSound(SOUND_PLAYER_BULLET);
+    enemyBulletSoundID_ = renderer_->loadSound(SOUND_ENEMY_BULLET);
+    explosionSoundID_ = renderer_->loadSound(SOUND_EXPLOSION);
+    gameOverSoundID_ = renderer_->loadSound(SOUND_GAME_OVER);
+
+    if (playerBulletSoundID_ == -1 || enemyBulletSoundID_ == -1 || explosionSoundID_ == -1 || gameOverSoundID_ == -1) {
+        throw std::runtime_error("Failed to load one or more sound effects.");
+    }
+
+    std::cout << "Sound effects loaded successfully." << std::endl;
+}
+
 void Client::playSoundEffect(int soundID) {
-    if (soundEffectsEnabled_) {
+    if (soundEffectsEnabled_ && soundID != -1) {
         renderer_->playSound(soundID);
     }
 }
@@ -410,7 +428,7 @@ void Client::run() {
     setupSystems_();
 
     renderer_->initWindow(WIDTH, HEIGHT, "rtype");
-    musicID_ = renderer_->loadMusic("assets/sounds/Music/space-asteroids.mp3");
+    loadSounds();
     playMusic();
 
     createMenuScene(registry_);
