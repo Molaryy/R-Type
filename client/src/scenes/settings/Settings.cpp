@@ -26,7 +26,6 @@ void settingsCallback(Registry &r)
         "Toggle Music",
         "Toggle Sound Effects",
         "Change Resolution",
-        "Toggle Colorblind Mode",
     };
 
     std::vector<std::function<void()>> actions = {
@@ -34,7 +33,6 @@ void settingsCallback(Registry &r)
         [&client]() { client.toggleMusic(); },
         [&client]() { client.toggleSoundEffects(); },
         [&client]() { client.changeResolution(); },
-        [&client]() { client.toggleColorBlindMode(); },
     };
 
     for (std::size_t i = 0; i < settingsOptions.size(); ++i) {

@@ -42,11 +42,11 @@ public:
     void toggleMusic();
     void playMusic();
     void stopMusic();
+    void playGameOverMusic();
 
     void toggleSoundEffects();
     void playSoundEffect(int soundID);
 
-    void toggleColorBlindMode();
     void changeFPS();
     void changeResolution();
 
@@ -76,6 +76,8 @@ private:
     int currentResolutionIndex_ = 0;
     int currentFPSIndex_ = 1;
     bool colorBlindModeEnabled_ = false;
+    bool playGameOverMusic_ = false;
+    bool shouldRestartNormalMusic_ = true;
 
     const std::vector<std::pair<int, int>> resolutions_ = {{800, 600}, {1280, 720}, {1920, 1080}};
     const std::vector<int> fpsOptions_ = {30, 60, 120};

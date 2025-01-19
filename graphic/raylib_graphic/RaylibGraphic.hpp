@@ -44,6 +44,7 @@ namespace Graphic {
             void stopMusic(int musicID) override;
             void updateMusic() override;
             float getFrameTime() override;
+            bool isKeyPressed(int key) const override;
             int measureText(const std::string &text, int fontSize) override;
 
         private:

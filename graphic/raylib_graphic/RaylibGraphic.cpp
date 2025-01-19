@@ -203,6 +203,10 @@ namespace Graphic {
         SetTargetFPS(fps);
     }
 
+    bool RaylibGraphic::isKeyPressed(int key) const {
+    return IsKeyPressed(key);
+    }
+
     extern "C" {
     LIB_EXPORT IRenderer *create_instance() {
         return new RaylibGraphic();

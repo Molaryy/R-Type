@@ -334,6 +334,10 @@ default:
         registry_.add_component(e, Components::RenderText(std::string("Game Over"), 40, true));
         registry_.add_component(e, Position(300, 80));
         registry_.add_component(e, Components::ColorText{COLOR_WHITE});
+
+        renderer_->unloadMusic(musicID_);
+        musicID_ = renderer_->loadMusic("assets/sounds/Music/game-over.mp3");
+        renderer_->playMusic(musicID_); 
     });
 }
 
@@ -360,11 +364,6 @@ void Client::changeResolution() {
     auto [width, height] = resolutions_[currentResolutionIndex_];
     renderer_->setWindowSize(width, height);
     std::cout << "Resolution changed to: " << width << "x" << height << std::endl;
-}
-
-void Client::toggleColorBlindMode() {
-    colorBlindModeEnabled_ = !colorBlindModeEnabled_;
-    std::cout << "Colorblind mode " << (colorBlindModeEnabled_ ? "enabled" : "disabled") << std::endl;
 }
 
 void Client::changeFPS() {

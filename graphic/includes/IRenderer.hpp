@@ -339,5 +339,14 @@ namespace Graphic {
              * 
              */
             virtual void setTargetFPS(int fps) = 0;
+
+            /**
+             * @brief check if a key is pressed
+             * 
+             * @param key 
+             * @return true 
+             * @return false 
+             */
+            virtual bool isKeyPressed(int key) const = 0;
     };
 }
