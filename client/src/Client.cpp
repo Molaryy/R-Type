@@ -179,7 +179,7 @@ void Client::setupSystems_() {
     registry_.add_system(Systems::drawRectangles);
     registry_.add_system(Systems::handleInputBox);
     registry_.add_system(Systems::handleClickable);
-    registry_.add_system(Systems::handleClickableSoundText);
+    registry_.add_system(Systems::handleMouseOverSoundText);
     if (debug_)
         registry_.add_system(Systems::log);
     registry_.add_system([](Registry &r) {

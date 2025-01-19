@@ -112,17 +112,14 @@ namespace Systems {
         }
     }
 
-    inline void handleClickableSoundText(Registry &r) {
+    inline void handleMouseOverSoundText(Registry &r) {
         auto &clickableTexts = r.get_components<Components::MouseOverTextSound>();
         auto &mouseOverTexts = r.get_components<Components::MouseOverText>();
-        Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
-        Graphic::event_t events = renderer.getEvents();
         std::function<void(int soundID)> secureCallback;
-        const bool leftClicked = std::ranges::find(events.inputs, Graphic::Keys::LeftClick) != events.inputs.end();
         int soundID = 0;
 
         for (auto &&[clickable, mouseOverText] : Zipper(clickableTexts, mouseOverTexts)) {
-            if (mouseOverText.isOver && leftClicked) {
+            if (mouseOverText.isOver) {
                 secureCallback = clickable.callback;
                 soundID = clickable.soundID;
                 break;
@@ -202,8 +199,9 @@ namespace Systems {
 
         for (uint8_t i = 0; i < Protocol::NB_INPUTS_KEYS; ++i) {
             if (last_inputs.input_keys[i] ^ inputs.input_keys[i]) {
-                for (uint8_t j = i; j < Protocol::NB_INPUTS_KEYS; ++j)
+                for (uint8_t j = i; j < Protocol::NB_INPUTS_KEYS; ++j) {
                     last_inputs.input_keys[j] = inputs.input_keys[j];
+                }
                 Network::Packet packet(inputs, Protocol::INPUT_KEYS);
                 Client::getInstance().getNetworkLib().send(packet.serialize());
                 return;
