@@ -119,7 +119,7 @@ void Client::setupPacketHandler_() {
             return server_id.has_value() && server_id->id == network_id;
         });
         if (it == server_ids.end()) {
-            std::cerr << "POSITION_VELOCITY: Failed to find server id: " << network_id <<  std::endl;
+            std::cerr << "POSITION_VELOCITY: Failed to find server id: " << network_id << std::endl;
             return;
         }
         const entity_t entity_id = std::ranges::distance(server_ids.begin(), it);
@@ -249,6 +249,10 @@ void Client::setupPacketHandler_() {
                                                                     if (drawable.text_x > drawable.text_width * 2)
                                                                         drawable.text_x = 0;
                                                                 }));
+                registry_.add_component(e, Life(health, health));
+                break;
+            case Protocol::WALL:
+                registry_.add_component(e, Components::Drawable(WALL, size.x, size.y, 0, 0, 315, 120, [](Components::Drawable &){}));
                 break;
             default:
                 std::cerr << "Unknown entity type: " << type << std::endl;

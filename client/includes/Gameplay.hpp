@@ -32,6 +32,7 @@ enum Textures {
     BONUS_HEALTH,
     BONUS_FORCE,
     BONUS_TRIPLE_SHOT,
+    WALL,
     BACKGROUND_IMAGE,
     NB_TEXTURES
 };
@@ -50,6 +51,7 @@ inline std::array<std::string, NB_TEXTURES> textures_paths {
     "assets/bonus_force.png",
     "assets/bonus_triple_shot.png",
     "assets/background.jpg",
+    "assets/wall.png",
 };
 
 #define VOICE_BUTTONS_TITLES_FILEPATHS {"./assets/voice/Play.wav", "./assets/voice/Leaderboard.wav", "./assets/voice/Settings.wav", "./assets/voice/Credits.wav", "./assets/voice/Logout.wav", "./assets/voice/Exit.wav"}

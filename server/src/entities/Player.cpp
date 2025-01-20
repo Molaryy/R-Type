@@ -7,8 +7,7 @@
 
 #include "entities/Player.hpp"
 
-#include <entities/BonusHealth.hpp>
-
+#include "entities/BonusHealth.hpp"
 #include "Zipper.hh"
 #include "Components.hh"
 #include "Components.hpp"
@@ -22,16 +21,24 @@ void Player::collision(Registry &r, const entity_t me, const entity_t other) {
         Protocol::BONUS_DAMAGE || otherType->type == Protocol::BONUS_TRIPLE_SHOT)
         return;
 
+    Network::INetworkServer &network = Server::getInstance().getNetwork();
     if (otherType->side == ComponentEntityType::Enemy)
         life->takeDamage(10);
     else if (otherType->type == Protocol::BONUS_HEALTH)
         life->heal(BONUS_HEALTH_HEALING);
+    else if (otherType->type == Protocol::WALL) {
+        life->current = 0;
+        Network::Packet packet(Protocol::DeadPacket(me, true), Protocol::KILL);
+        const SparseArray<NetworkId> &network_ids = r.get_components<NetworkId>();
+        for (auto &&[network_id] : Zipper(network_ids))
+            network.send(network_id.id, packet.serialize());
+        return;
+    }
 
     Network::Packet packet(
         Protocol::HitPacket(me, life->current),
         Protocol::HIT
     );
-    Network::INetworkServer &network = Server::getInstance().getNetwork();
     for (auto &&[network_id] : Zipper(r.get_components<NetworkId>()))
         network.send(network_id.id, packet.serialize());
 }

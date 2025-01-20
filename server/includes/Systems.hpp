@@ -11,6 +11,7 @@
 #include <fstream>
 #include <stdexcept>
 
+#include "entities/Wall.hpp"
 #include "entities/BonusHealth.hpp"
 #include "entities/BonusTripleShot.hpp"
 #include "entities/BonusForce.hpp"
@@ -127,38 +128,78 @@ namespace Systems {
 
     class LevelCampaignHandlerSystem {
     public:
-        explicit LevelCampaignHandlerSystem(const std::size_t &initialPos)
+        explicit LevelCampaignHandlerSystem(Registry &reg, std::size_t &initialPos)
             : score_(initialPos) {
+            try {
+                loadFile_();
+                success = true;
+            } catch (const std::runtime_error &e) {
+                std::cerr << e.what() << ", starting endless mode" << std::endl;
+                reg.add_system([this, &initialPos](Registry &r) {
+                    levelEndlessHandler(r, initialPos);
+                });
+                success = false;
+            }
         }
 
 
         void operator()(Registry &r) {
+            if (!success)
+                return;
             score_ += 1;
             if (pos_in_level_ < WIDTH) {
-                loadFile_();
                 do {
                     pos_in_level_ -= CAMERA_SPEED;
-                    loadLine(r);
+                    loadLine_(r);
                 } while (pos_in_level_ < WIDTH);
+                return;
+            }
+            if (next_to_draw_ >= levels_[atm_level_].size()) {
+                if (frame_at_end_ <= 90) {
+                    frame_at_end_++;
+                }
+                next_to_draw_ = 0;
+                pos_in_level_ = 0;
+                atm_level_ += 1;
+                cleanLevel_(r);
+                if (atm_level_ >= levels_.size())
+                    return;
+
                 return;
             }
             std::cout << pos_in_level_ << std::endl;
             pos_in_level_ -= CAMERA_SPEED;
-            loadLine(r);
+            loadLine_(r);
         }
 
     private:
-        void loadLine(Registry &r) {
+        void loadLine_(Registry &r) {
             if (pos_in_level_ / TILE_SIZE <= next_to_draw_)
                 return;
             std::vector<LevelElementType> &line = levels_[atm_level_][next_to_draw_];
 
             float y = 0;
+            const auto x = static_cast<float>(next_to_draw_ * TILE_SIZE > WIDTH ? WIDTH : next_to_draw_ * TILE_SIZE);
             for (LevelElementType &level_element : line) {
-                map_lvl_elem_type_.at(level_element)(r, Position(static_cast<float>(next_to_draw_ * TILE_SIZE), y));
+                map_lvl_elem_type_.at(level_element)(r, Position(x, y));
                 y += TILE_SIZE;
             }
             next_to_draw_++;
+        }
+
+        void cleanLevel_(Registry &r) {
+            SparseArray<ComponentEntityType> types = r.get_components<ComponentEntityType>();
+            Network::INetworkServer &network = Server::getInstance().getNetwork();
+
+            for (auto &&[id, type] : IndexedZipper(types)) {
+                if (type.type == Protocol::BONUS_DAMAGE || type.type == Protocol::BONUS_TRIPLE_SHOT || type.type == Protocol::PLAYER)
+                    continue;
+                Network::Packet packet(Protocol::DeadPacket(id, false), Protocol::KILL);
+                const SparseArray<NetworkId> &network_ids = r.get_components<NetworkId>();
+                for (auto &&[network_id] : Zipper(network_ids))
+                    network.send(network_id.id, packet.serialize());
+                r.kill_entity(id);
+            }
         }
 
         void loadFile_() {
@@ -198,6 +239,8 @@ namespace Systems {
         std::size_t pos_in_level_{};
         std::size_t next_to_draw_{};
         std::size_t atm_level_{};
+        bool success = false;
+        std::size_t frame_at_end_ = 0;
 
         enum LevelElementType {
             VOID_ELEM_TYPE,
@@ -234,10 +277,7 @@ namespace Systems {
                 VOID_ELEM_TYPE, [](Registry &r, const Position &pos) {
                 }
             },
-            {
-                WALL, [](Registry &r, const Position &pos) {
-                }
-            },
+            {WALL, Wall::createFromPos},
             {
                 PLAYER, [id = 0](Registry &r, const Position &pos) mutable {
                     const SparseArray<NetworkId> &network_ids = r.get_components<NetworkId>();
@@ -277,12 +317,17 @@ namespace Systems {
     };
 
     inline void killNoHealthEntitys(Registry &r) {
+        Network::INetworkServer &network = Server::getInstance().getNetwork();
         std::queue<entity_t> entity_to_kill;
         for (auto &&[id, life, type] : IndexedZipper(r.get_components<Life>(), r.get_components<ComponentEntityType>()))
             if (!life.is_alive() && type.type != Protocol::PLAYER)
                 entity_to_kill.push(id);
 
         while (!entity_to_kill.empty()) {
+            Network::Packet packet(Protocol::DeadPacket(entity_to_kill.front(), false), Protocol::KILL);
+            const SparseArray<NetworkId> &network_ids = r.get_components<NetworkId>();
+            for (auto &&[network_id] : Zipper(network_ids))
+                network.send(network_id.id, packet.serialize());
             r.kill_entity(entity_to_kill.front());
             entity_to_kill.pop();
         }
@@ -315,7 +360,6 @@ namespace Systems {
                     const SparseArray<NetworkId> &network_ids = r.get_components<NetworkId>();
                     for (auto &&[network_id] : Zipper(network_ids))
                         network.send(network_id.id, packet.serialize());
-
                     r.kill_entity(id);
                 }
             } else {
