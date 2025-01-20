@@ -71,10 +71,17 @@ namespace Systems {
                     Protocol::POSITION_VELOCITY
                 );
                 network.send(network_id.id, packet.serialize());
-                if (bonus.type == Bonus::None || !life2.is_alive())
+                std::optional<Position> &bon_pos = positions[bonus.id];
+                std::optional<Velocity> &bon_vel = velocities[bonus.id];
+                if (bonus.type == Bonus::None || !life2.is_alive() || !bon_pos || !bon_vel)
                     continue;
+                bon_pos->x = position.x + PLAYER_SIZE_X;
+                bon_pos->y = position.y;
+                bon_vel->x = velocity.x;
+                bon_vel->y = velocity.y;
                 pos_vel.entity_id = bonus.id;
-                pos_vel.position = {position.x + PLAYER_SIZE_X, position.y};
+                pos_vel.position = {bon_pos->x, bon_pos->y};
+                pos_vel.velocity = {bon_vel->x, bon_vel->y};
                 packet = Network::Packet(pos_vel, Protocol::POSITION_VELOCITY);
                 network.send(network_id.id, packet.serialize());
             }
@@ -167,7 +174,6 @@ namespace Systems {
 
                 return;
             }
-            std::cout << pos_in_level_ << std::endl;
             pos_in_level_ -= CAMERA_SPEED;
             loadLine_(r);
         }
@@ -274,12 +280,14 @@ namespace Systems {
 
         const std::unordered_map<LevelElementType, std::function<void(Registry &, const Position &)>> map_lvl_elem_type_ = {
             {
-                VOID_ELEM_TYPE, [](Registry &r, const Position &pos) {
+                VOID_ELEM_TYPE,
+                [](Registry &r, const Position &pos) {
                 }
             },
             {WALL, Wall::createFromPos},
             {
-                PLAYER, [id = 0](Registry &r, const Position &pos) mutable {
+                PLAYER,
+                [id = 0](Registry &r, const Position &pos) mutable {
                     const SparseArray<NetworkId> &network_ids = r.get_components<NetworkId>();
                     SparseArray<Position> &positions = r.get_components<Position>();
                     const SparseArray<Velocity> &velocities = r.get_components<Velocity>();
@@ -302,11 +310,13 @@ namespace Systems {
             {TURRET, EnemyTurret::createFromPos},
             {TANK, EnemyTank::createFromPos},
             {
-                BOSS, [](Registry &r, const Position &pos) {
+                BOSS,
+                [](Registry &r, const Position &pos) {
                 }
             },
             {
-                BOSS_HEART, [](Registry &r, const Position &pos) {
+                BOSS_HEART,
+                [](Registry &r, const Position &pos) {
                 }
             },
             {FLY, EnemyFly::createFromPos},
@@ -317,18 +327,20 @@ namespace Systems {
     };
 
     inline void killNoHealthEntitys(Registry &r) {
-        Network::INetworkServer &network = Server::getInstance().getNetwork();
-        std::queue<entity_t> entity_to_kill;
+        std::queue<std::tuple<entity_t, bool, bool>> entity_to_kill;
         for (auto &&[id, life, type] : IndexedZipper(r.get_components<Life>(), r.get_components<ComponentEntityType>()))
-            if (!life.is_alive() && type.type != Protocol::PLAYER)
-                entity_to_kill.push(id);
+            if (life.current <= 0)
+                entity_to_kill.emplace(id, type.type != Protocol::PLAYER, life.current == 0);
 
+        Network::INetworkServer &network = Server::getInstance().getNetwork();
         while (!entity_to_kill.empty()) {
-            Network::Packet packet(Protocol::DeadPacket(entity_to_kill.front(), false), Protocol::KILL);
+            std::tuple<unsigned long, bool, bool> &tuple = entity_to_kill.front();
+            Network::Packet packet(Protocol::DeadPacket(std::get<0>(tuple), std::get<2>(tuple)), Protocol::KILL);
             const SparseArray<NetworkId> &network_ids = r.get_components<NetworkId>();
             for (auto &&[network_id] : Zipper(network_ids))
                 network.send(network_id.id, packet.serialize());
-            r.kill_entity(entity_to_kill.front());
+            if (std::get<1>(tuple))
+                r.kill_entity(std::get<0>(tuple));
             entity_to_kill.pop();
         }
     }
@@ -348,29 +360,18 @@ namespace Systems {
     }
 
     inline void killOutOfScreenEntity(Registry &r) {
-        Network::INetworkServer &network = Server::getInstance().getNetwork();
-        const SparseArray<Position> positions = r.get_components<Position>();
-        const SparseArray<ComponentEntityType> types = r.get_components<ComponentEntityType>();
-        const SparseArray<Collision> collisions = r.get_components<Collision>();
+        const SparseArray<Position> &positions = r.get_components<Position>();
+        const SparseArray<ComponentEntityType> &types = r.get_components<ComponentEntityType>();
+        const SparseArray<Collision> &collisions = r.get_components<Collision>();
+        SparseArray<Life> &lifes = r.get_components<Life>();
 
-        for (auto &&[id, pos, type, col] : IndexedZipper(positions, types, collisions)) {
+        for (auto &&[id, pos, type, col, life] : IndexedZipper(positions, types, collisions, lifes)) {
             if (type.type != Protocol::PLAYER) {
                 if (pos.x < -col.width || pos.y < -col.height || pos.x > WIDTH + col.width || pos.y > HEIGHT + col.height) {
-                    Network::Packet packet(Protocol::DeadPacket(id, false), Protocol::KILL);
-                    const SparseArray<NetworkId> &network_ids = r.get_components<NetworkId>();
-                    for (auto &&[network_id] : Zipper(network_ids))
-                        network.send(network_id.id, packet.serialize());
-                    r.kill_entity(id);
+                    life.current = -1;
                 }
-            } else {
-                std::optional<Life> &life = r.get_entity_component<Life>(id);
-                if (life && life->is_alive() && (pos.x < -15 || pos.y < -15 || pos.x > WIDTH - PLAYER_SIZE_X + 15 || pos.y > HEIGHT - PLAYER_SIZE_Y + 15)) {
-                    life->current = 0;
-                    Network::Packet packet(Protocol::DeadPacket(id, true), Protocol::KILL);
-                    const SparseArray<NetworkId> &network_ids = r.get_components<NetworkId>();
-                    for (auto &&[network_id] : Zipper(network_ids))
-                        network.send(network_id.id, packet.serialize());
-                }
+            } else if (life.is_alive() && (pos.x < -15 || pos.y < -15 || pos.x > WIDTH - PLAYER_SIZE_X + 15 || pos.y > HEIGHT - PLAYER_SIZE_Y + 15)) {
+                life.current = -1;
             }
         }
     }
