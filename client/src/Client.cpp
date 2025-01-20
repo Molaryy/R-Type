@@ -377,8 +377,12 @@ void Client::run() {
 
     for (const std::string &path : textures_paths)
         renderer_->loadTexture(path);
-    for (const std::string &path : sounds_paths)
+    for (const std::string &path : voiceMenuButtonsTitleFilepaths)
         renderer_->loadSound(path);
+    for (const std::string &path : voiceLobbyButtonsTitleFilepaths) {
+        std::cout << path << std::endl;
+        renderer_->loadSound(path);
+    }
 
     while (!renderer_->windowShouldClose()) {
         renderer_->beginDrawing();

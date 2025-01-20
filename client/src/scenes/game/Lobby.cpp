@@ -76,6 +76,7 @@ std::vector<Protocol::LobbyDataPacket> getLobbyList(Network::INetworkClient &net
         Network::Packet deserialized_packet(oldest_packet);
         packet_handler(deserialized_packet);
     }
+
     while (lobby_data.size() < nb_lobby) {
         const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
         if (const std::chrono::duration<double> elapsed_seconds = now - time_out_clock; elapsed_seconds.count() > 3.0)
@@ -263,6 +264,7 @@ void lobbyCallback(Registry &r) {
     r.add_component(e, Components::ClickableText(lobbyCallback));
     r.add_component(e, Components::ColorOverText(darkBlue, grey));
     r.add_component(e, Components::MouseOverText(false));
+    r.add_component(e, Components::MouseOverTextSound(makeSound(NB_MENU_BUTTONS + RELOAD), NB_MENU_BUTTONS + RELOAD));
 
     e = r.spawn_entity();
     r.add_component(e, Components::RenderText("Menu", 20, true));
@@ -271,6 +273,7 @@ void lobbyCallback(Registry &r) {
     r.add_component(e, Components::ClickableText(createMenuScene));
     r.add_component(e, Components::ColorOverText(darkBlue, grey));
     r.add_component(e, Components::MouseOverText(false));
+    r.add_component(e, Components::MouseOverTextSound( makeSound(NB_MENU_BUTTONS + MENU), NB_MENU_BUTTONS + MENU));
 
     e = r.spawn_entity();
     r.add_component(e, Components::RenderText("Join Random Lobby", 20, true));
@@ -284,7 +287,8 @@ void lobbyCallback(Registry &r) {
     }));
     r.add_component(e, Components::ColorOverText(darkBlue, grey));
     r.add_component(e, Components::MouseOverText(false));
-
+    r.add_component(e, Components::MouseOverTextSound( makeSound(NB_MENU_BUTTONS + JOIN_RANDOM_LOBBY), NB_MENU_BUTTONS + JOIN_RANDOM_LOBBY));
+ 
     e = r.spawn_entity();
     r.add_component(e, Components::RenderText("Join New Lobby", 20, true));
     r.add_component(e, Position(550, 550));
@@ -297,6 +301,7 @@ void lobbyCallback(Registry &r) {
     }));
     r.add_component(e, Components::ColorOverText(darkBlue, grey));
     r.add_component(e, Components::MouseOverText(false));
+    r.add_component(e, Components::MouseOverTextSound( makeSound(NB_MENU_BUTTONS + JOIN_NEW_LOBBY), NB_MENU_BUTTONS + JOIN_NEW_LOBBY));
 
     const std::unordered_map<Protocol::LobbyState, std::string> state_string {
         {Protocol::OPEN, "Open"},
@@ -322,5 +327,6 @@ void lobbyCallback(Registry &r) {
         }));
         r.add_component(button, Components::ColorOverText(darkBlue, grey));
         r.add_component(button, Components::MouseOverText(false));
+        r.add_component(button, Components::MouseOverTextSound( makeSound(NB_MENU_BUTTONS + LOBBY), NB_MENU_BUTTONS + LOBBY));
     }
 }

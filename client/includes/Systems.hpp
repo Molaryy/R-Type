@@ -64,9 +64,10 @@ namespace Systems {
         auto &colorsTexts = r.get_components<Components::ColorText>();
         auto &colorsOverText = r.get_components<Components::ColorOverText>();
         auto &mouseOverTexts = r.get_components<Components::MouseOverText>();
+        auto &soundTexts = r.get_components<Components::MouseOverTextSound>();
 
-        for (auto &&[text, colorText, colorOverText, mouseOverText] : Zipper(texts, colorsTexts, colorsOverText, mouseOverTexts)) {
-            if (!text.isDrawable)
+        for (auto &&[text, colorText, colorOverText, mouseOverText, soundText] : Zipper(texts, colorsTexts, colorsOverText, mouseOverTexts, soundTexts)) {
+            if (!text.isDrawable || (text.text == "Accessibility" && isAccessibilityOn))
                 continue;
             if (mouseOverText.isOver) {
                 colorText.color = colorOverText.newColor;
@@ -83,8 +84,7 @@ namespace Systems {
         int soundID = 0;
 
         for (auto &&[clickable, mouseOverText] : Zipper(clickableTexts, mouseOverTexts)) {
-            if (mouseOverText.isOver) {
-                std::cout << "MouseOverTextSound" << std::endl;
+            if (mouseOverText.isOver && isAccessibilityOn) {
                 secureCallback = clickable.callback;
                 soundID = clickable.soundID;
                 break;

@@ -119,7 +119,6 @@ std::string getLocalUsername() {
                 std::string value;
                 if (std::getline(iss, value)) {
                     if (key == "username" && !value.empty()) {
-                        std::cout << "Username found: " << value << std::endl;
                         file.close();
                         return value;
                     }
@@ -197,10 +196,22 @@ void createSignForm(Registry &r) {
 
 std::function<void(int)> makeSound(int soundID) {
     return [soundID](int passedSoundID) {
-        std::cout << "Playing sound with id: " << soundID << std::endl;
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
         renderer.playSound(soundID);
     };
+}
+
+void accessibilityCallback(Registry &r) {
+    auto &texts = r.get_components<Components::RenderText>();
+    auto &buttons = r.get_components<Components::MouseOverTextSound>();
+    auto &colorTexts = r.get_components<Components::ColorText>();
+
+    isAccessibilityOn = !isAccessibilityOn;
+    for (auto &&[button, colorText, text] : Zipper(buttons, colorTexts, texts)) {
+        if (text.text == "Accessibility") {
+            colorText.color = isAccessibilityOn ? Color(COLOR_DARK_BLUE) : Color(COLOR_WHITE);
+        }
+    }
 }
 
 void createMenuScene(Registry &r) {
@@ -215,21 +226,23 @@ void createMenuScene(Registry &r) {
     r.add_component(e, Components::RenderText("R-TYPE", 40, true));
     r.add_component(e, Position(50, 50));
     r.add_component(e, Components::ColorText(white));
-    const std::vector<std::string> titles = MENU_BUTTONS_TITLES;
-    const std::vector<std::function<void(Registry &r)>> callbacks = {lobbyCallback, leaderBoardCallback, settingsCallback, creditsCallback, logoutCallback, exitCallback};
-    const std::vector<int> soundIDS = {PLAY_SOUND_ID, LEADERBOARD_SOUND_ID, SETTINGS_SOUND_ID, CREDITS_SOUND_ID, LOGOUT_SOUND_ID, EXIT_SOUND_ID};
-
+    const std::vector<std::function<void(Registry &r)>> callbacks = {lobbyCallback, leaderBoardCallback, settingsCallback, creditsCallback, logoutCallback, exitCallback, accessibilityCallback};
 
     for (std::size_t i = 0; i < NB_MENU_BUTTONS; i++) {
         entity_t button = r.spawn_entity();
 
-        r.add_component(button, Components::RenderText(titles[i], 20, true));
-        r.add_component(button, Position(100.0f, static_cast<float>(150 + i * 50)));
+        r.add_component(button, Components::RenderText(menuButtonsTitles[i], 20, true));
+        if (menuButtonsTitles[i] == "Accessibility") {
+            r.add_component(button, Position(WIDTH - 200, HEIGHT - 50));
+        } else {
+            r.add_component(button, Position(50, static_cast<float>(150 + i * 50)));
+        }
+
         r.add_component(button, Components::ColorText(grey));
         r.add_component(button, Components::ClickableText(callbacks[i]));
         r.add_component(button, Components::ColorOverText(darkBlue, grey));
         r.add_component(button, Components::MouseOverText(false));
-        r.add_component(button, Components::MouseOverTextSound(true, makeSound(soundIDS[i]), soundIDS[i]));
+        r.add_component(button, Components::MouseOverTextSound(makeSound(i), i));
     }
 
     const std::string username = getLocalUsername();
