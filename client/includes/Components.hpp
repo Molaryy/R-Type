@@ -41,7 +41,6 @@ namespace Components {
     };
 
     struct MouseOverTextSound {
-        bool isActivated;
         std::function<void(int soundID)> callback;
         int soundID;
 

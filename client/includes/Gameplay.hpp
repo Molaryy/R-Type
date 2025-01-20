@@ -51,8 +51,3 @@ inline std::array<std::string, NB_TEXTURES> textures_paths {
     "assets/bonus_triple_shot.png",
     "assets/background.jpg",
 };
-
-#define VOICE_BUTTONS_TITLES_FILEPATHS {"./assets/voice/Play.wav", "./assets/voice/Leaderboard.wav", "./assets/voice/Settings.wav", "./assets/voice/Credits.wav", "./assets/voice/Logout.wav", "./assets/voice/Exit.wav"}
-
-
-inline std::array<std::string, NB_MENU_BUTTONS> sounds_paths VOICE_BUTTONS_TITLES_FILEPATHS;
