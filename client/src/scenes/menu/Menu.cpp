@@ -156,7 +156,7 @@ void createSignForm(Registry &r) {
     r.add_component(inputTextTitle, Components::MouseOverText(false));
 
 
-    float inputX = x - textWidth / 2;
+    const float inputX = x - textWidth / 2;
     // Input rectangle
     entity_t inputRectangle = r.spawn_entity();
     r.add_component(inputRectangle, Components::Rect(white, textWidth * 2 + 10, 40));

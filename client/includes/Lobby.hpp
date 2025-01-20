@@ -18,7 +18,7 @@ class Lobby
 public:
     Lobby() = default;
     ~Lobby() = default;
-    bool timeOut(const std::chrono::system_clock::time_point time_out_clock, Network::INetworkClient &network);
+    static bool timeOut(const std::chrono::system_clock::time_point time_out_clock, Network::INetworkClient &network);
     void leaveLobby();
     std::vector<Protocol::LobbyDataPacket> getLobbyList(Network::INetworkClient &network, Network::PacketHandler &packet_handler);
     Protocol::LobbyDataPacket getLobbyData(const std::size_t lobby_id);

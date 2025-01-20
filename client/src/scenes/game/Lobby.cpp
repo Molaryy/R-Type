@@ -12,7 +12,6 @@
 #include "Components.hh"
 #include "RTypeProtocol.hpp"
 #include "Scenes.hpp"
-#include "IRenderer.hpp"
 
 bool Lobby::timeOut(const std::chrono::system_clock::time_point time_out_clock, Network::INetworkClient &network)
 {
@@ -26,7 +25,7 @@ bool Lobby::timeOut(const std::chrono::system_clock::time_point time_out_clock, 
 
         r.add_component(popup, Position(200, 250));
         r.add_component(popup, Components::ColorText({255, 0, 0, 255}));
-        r.add_component(popup, Components::ColorOverText({255, 0, 0, 255}, {255, 0, 0, 255}, false));
+        r.add_component(popup, Components::ColorOverText({255, 0, 0, 255}, {255, 0, 0, 255}));
         r.add_component(popup, Components::ClickableText([](Registry &) {
             exit(0);
         }));
