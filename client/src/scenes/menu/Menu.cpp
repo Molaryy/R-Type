@@ -104,7 +104,7 @@ void logoutCallback(Registry &r) {
 
 void exitCallback(Registry &r) {
     r.clear_entities();
-    exit(0); // TODO handle it properly
+    exit(0);
 }
 
 std::string getLocalUsername() {
