@@ -5,6 +5,9 @@
 ** Settings scene
 */
 
+#include "Client.hpp"
+#include "Zipper.hh"
+
 #include <fstream>
 #include <Lobby.hpp>
 #include <sstream>
@@ -24,14 +27,14 @@ void exitButtonCallback(Registry &r)
     r.add_component(backButton, Components::RenderText("Back to Menu", 20));
     r.add_component(backButton, Position(50, 500));
     r.add_component(backButton, Components::ColorText({255, 255, 255, 255}));
-    r.add_component(backButton, Components::ClickableText([](Registry &reg) {
-        createMenuScene(reg);
-    }));
+    r.add_component(backButton, Components::ClickableText([](Registry &reg)
+                                                          { createMenuScene(reg); }));
     r.add_component(backButton, Components::ColorOverText({20, 82, 172, 255}, {255, 255, 255, 255}));
     r.add_component(backButton, Components::MouseOverText(false));
 }
 
-void leaderBoardCallback(Registry &r) {
+void leaderBoardCallback(Registry &r)
+{
     r.clear_entities();
 
     const entity_t title = r.spawn_entity();
@@ -43,7 +46,8 @@ void leaderBoardCallback(Registry &r) {
     auto [names, scores] = leaderboard.getScoreboard();
     for (std::size_t i = 0; i < SCOREBOARD_SIZE; ++i)
     {
-        if (std::strlen(names[i]) == 0 && scores[i] == 0) {
+        if (std::strlen(names[i]) == 0 && scores[i] == 0)
+        {
             break;
         }
         const entity_t nameEntity = r.spawn_entity();
@@ -60,7 +64,8 @@ void leaderBoardCallback(Registry &r) {
     exitButtonCallback(r);
 }
 
-void creditsCallback(Registry &r) {
+void creditsCallback(Registry &r)
+{
     r.clear_entities();
 
     const entity_t titleEntity = r.spawn_entity();
@@ -79,7 +84,8 @@ void creditsCallback(Registry &r) {
 
     float yPosition = 150;
 
-    for (const auto &line : credits) {
+    for (const auto &line : credits)
+    {
         entity_t lineEntity = r.spawn_entity();
         r.add_component(lineEntity, Components::RenderText(line, 20, true));
         r.add_component(lineEntity, Position(100, yPosition));
@@ -89,22 +95,26 @@ void creditsCallback(Registry &r) {
     exitButtonCallback(r);
 }
 
-void storeLocalUsername(const std::string &username) {
+void storeLocalUsername(const std::string &username)
+{
     std::ofstream file(USER_CONFIG_FILEPATH);
 
-    if (file.is_open()) {
+    if (file.is_open())
+    {
         file << "username=" << username;
         file.close();
     }
 }
 
-void logoutCallback(Registry &r) {
+void logoutCallback(Registry &r)
+{
     storeLocalUsername("");
     r.clear_entities();
     createSignForm(r);
 }
 
-void exitCallback(Registry &r) {
+void exitCallback(Registry &r)
+{
     r.clear_entities();
     exit(0);
 }
@@ -112,12 +122,15 @@ void exitCallback(Registry &r) {
 std::string getLocalUsername() {
     std::ifstream file(USER_CONFIG_FILEPATH);
 
-    if (file.is_open()) {
+    if (file.is_open())
+    {
         std::string line;
-        while (std::getline(file, line)) {
+        while (std::getline(file, line))
+        {
             std::istringstream iss(line);
             std::string key;
-            if (std::getline(iss, key, '=')) {
+            if (std::getline(iss, key, '='))
+            {
                 std::string value;
                 if (std::getline(iss, value)) {
                     if (key == "username" && !value.empty()) {
@@ -132,16 +145,14 @@ std::string getLocalUsername() {
     return "";
 }
 
-
-
-void createSignForm(Registry &r) {
+void createSignForm(Registry &r)
+{
     entity_t inputTextTitle = r.spawn_entity();
     constexpr Color white = COLOR_WHITE;
     constexpr Color grey = COLOR_GREY;
     constexpr Color darkBlue = COLOR_DARK_BLUE;
     Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
     std::string enterUsernameText = "Enter your username:";
-
 
     // Enter username title
     int textWidth = renderer.measureText(enterUsernameText, 20);
@@ -155,7 +166,6 @@ void createSignForm(Registry &r) {
     r.add_component(inputTextTitle, Components::ColorOverText(darkBlue, grey));
     r.add_component(inputTextTitle, Components::MouseOverText(false));
 
-
     const float inputX = x - textWidth / 2;
     // Input rectangle
     entity_t inputRectangle = r.spawn_entity();
@@ -166,7 +176,7 @@ void createSignForm(Registry &r) {
     // Input Text
     entity_t inputText = r.spawn_entity();
     r.add_component(inputText, Components::InputText({"", 20, true}));
-    r.add_component(inputText, Position(inputX + 10, y +10));
+    r.add_component(inputText, Position(inputX + 10, y + 10));
     r.add_component(inputText, Components::Input(enterUsernameText));
     r.add_component(inputText, Components::ColorText(darkBlue));
 
@@ -179,7 +189,8 @@ void createSignForm(Registry &r) {
     r.add_component(signIntButton, Components::ColorOverText(darkBlue, grey));
     r.add_component(signIntButton, Components::MouseOverText(false));
     r.add_component(signIntButton, Components::Input(enterUsernameText));
-    r.add_component(signIntButton, Components::ClickableText([signInText, enterUsernameText](Registry &r) {
+    r.add_component(signIntButton, Components::ClickableText([signInText, enterUsernameText](Registry &r)
+                                                             {
         auto &inputTexts = r.get_components<Components::InputText>();
         auto &inputs = r.get_components<Components::Input>();
 
@@ -191,8 +202,7 @@ void createSignForm(Registry &r) {
 
 
             }
-        }
-    }));
+        } }));
 }
 
 
@@ -226,7 +236,6 @@ void createMenuScene(Registry &r)
     constexpr Color grey = COLOR_GREY;
     constexpr Color darkBlue = COLOR_DARK_BLUE;
 
-
     r.add_component(e, Components::RenderText("R-TYPE", 40, true));
     r.add_component(e, Position(50, 50));
     r.add_component(e, Components::ColorText(white));
@@ -240,7 +249,8 @@ void createMenuScene(Registry &r)
         accessibilityCallback
     };
 
-    for (std::size_t i = 0; i < NB_MENU_BUTTONS; i++) {
+    for (std::size_t i = 0; i < NB_MENU_BUTTONS; i++)
+    {
         entity_t button = r.spawn_entity();
 
         r.add_component(button, Components::RenderText(menuButtonsTitles[i], 20, true));
