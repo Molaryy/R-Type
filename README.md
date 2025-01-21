@@ -69,6 +69,14 @@ If you encounter any bugs, have feature requests, or want to contribute improvem
 
 We encourage all contributions and will do our best to address your issues or consider your suggestions for the project's improvement.
 
+## Documentation 💡
+
+You can access our documentation respectively with those links:
+
+http://rfc.molaryy.fr/protocol.txt
+http://doxygen.molaryy.fr/
+http://documentation.molaryy.fr/
+
 ## Our team ❤️
 
 | [<img src="https://github.com/arthepitech.png?size=85" width=85><br><sub>arthepitech</sub>](https://github.com/arthepitech) | [<img src="https://github.com/Tchips46.png?size=85" width=85><br><sub>Tchips46</sub>](https://github.com/Tchips46) | [<img src="https://github.com/nicolas-gi.png?size=85" width=85><br><sub>Zawaaa</sub>](https://github.com/nicolas-gi) | [<img src="https://github.com/Molaryy.png?size=85" width=85><br><sub>Mohammed J.</sub>](https://github.com/Molaryy) | [<img src="https://github.com/moonia.png?size=85" width=85><br><sub>Moonia</sub>](https://github.com/moonia) |
