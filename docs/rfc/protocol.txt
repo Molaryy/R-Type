@@ -1,1 +1,75 @@
-test
+# RFC: Network Packet Structure
+
+## Abstract
+This document specifies the structure of packets in the custom network library. The packet format ensures clarity, reliability, and consistency in communication between components. This specification defines the beginning and end delimiters, as well as the internal structure of the packet for proper interpretation.
+
+## Introduction
+The network library operates using a structured packet format. Each packet is framed with specific delimiters and contains well-defined fields for timestamp, status code, payload size, and payload data. This RFC outlines the packet format, enabling developers to implement, parse, and validate packets in the network library.
+
+## Packet Structure
+A packet consists of the following components:
+
+### 1. Delimiters
+- **Start Delimiter:** Each packet begins with the literal string `PACKET_START`.
+- **End Delimiter:** Each packet ends with the literal string `PACKET_END`.
+
+### 2. Packet Fields
+Between the delimiters, the packet contains the following fields:
+
+#### 2.1 Timestamp
+- **Size:** 8 bytes
+- **Description:** A unique identifier for the packet's arrival order. The timestamp is encoded as an 8-byte integer in network byte order (big-endian).
+
+#### 2.2 Status Code
+- **Size:** 2 bytes
+- **Description:** Indicates the type or status of the packet. The status code is represented as a 2-byte integer in network byte order (big-endian).
+
+#### 2.3 Payload Size
+- **Size:** 4 bytes
+- **Description:** Specifies the size of the payload in bytes. The payload size is represented as a 4-byte integer in network byte order (big-endian).
+
+#### 2.4 Payload
+- **Size:** Variable (determined by the Payload Size field)
+- **Description:** The content of the packet. The length of this field is equal to the value specified in the Payload Size field. The payload may contain any type of data, such as strings, binary data, or serialized objects.
+
+## Example Packet
+Below is an example of a packet:
+
+```
+PACKET_START
+[TIMESTAMP][STATUS_CODE][PAYLOAD_SIZE][PAYLOAD]
+PACKET_END
+```
+
+### Example in Hexadecimal Representation
+Suppose the packet has the following values:
+- **Timestamp:** 1627928400000 (hex: `00 00 01 7D 46 99 04 00`)
+- **Status Code:** 200 (hex: `00 C8`)
+- **Payload Size:** 12 (hex: `00 00 00 0C`)
+- **Payload:** "Hello World!" (ASCII hex: `48 65 6C 6C 6F 20 57 6F 72 6C 64 21`)
+
+The packet would appear as:
+```
+PACKET_START
+00 00 01 7D 46 99 04 00 00 C8 00 00 00 0C 48 65 6C 6C 6F 20 57 6F 72 6C 64 21
+PACKET_END
+```
+
+## Implementation Guidelines
+1. **Parsing:**
+   - Detect `PACKET_START` and `PACKET_END` delimiters to identify the packet boundaries.
+   - Extract fields between these delimiters and validate their sizes.
+2. **Validation:**
+   - Ensure the Payload Size matches the actual length of the Payload.
+   - Verify the integrity of the packet structure.
+3. **Error Handling:**
+   - If delimiters are missing or corrupted, discard the packet.
+   - If field sizes are inconsistent, log an error and discard the packet.
+
+## Security Considerations
+- **Input Validation:** Ensure that all packet fields are validated to prevent buffer overflows and malicious payloads.
+- **Timestamp Integrity:** Confirm that timestamps are monotonic and unique.
+- **Payload Handling:** Handle payload data securely to avoid injection attacks or corruption.
+
+## Conclusion
+This RFC defines a robust and extensible packet structure for the network library. Adherence to this specification ensures consistent communication and simplifies debugging and interoperability.

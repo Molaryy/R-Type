@@ -49,13 +49,13 @@ Other examples of components could include:
 A **System** contains the logic that operates on entities with specific components. Systems scan through entities, identify those with the relevant components, and process them. For instance, a **Render System** might operate on entities with `Position` and `Drawable` components to render them on screen:
 
 ```cpp
-void RenderSystem(Registry &registry)
-{
-    for (auto &entity : registry.view<Position, Drawable>())
-    {
-        Position &pos = registry.get<Position>(entity);
-        Drawable &drawable = registry.get<Drawable>(entity);
-        //here, we would render the entity at the specified position
+inline void drawRectangles(Registry &r) {
+    auto &positions = r.get_components<Position>();
+    auto &rects = r.get_components<Components::Rect>();
+    Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
+
+    for (auto &&[pos, rect] : Zipper(positions, rects)) {
+        renderer.drawRectangle(pos.x, pos.y, rect.width, rect.height, rect.color.r, rect.color.g, rect.color.b, rect.color.a);
     }
 }
 ```
@@ -77,4 +77,24 @@ By sequencing systems from components, we can create reusable systems that inter
 3. **Performance:** Components are stored in 'close' memory, which improves cache efficiency and execution speed.
 4. **Maintainability:** ECS reduces the complexity of code, making it easier to debug, maintain, and extend.
 
-![](./assets/entity.png)
+### Diagrams and Visuals
+
+#### UML Diagram
+![](./assets/uml.svg)
+This UML diagram provides an overview of the system architecture, showing the relationships between different components, entities, and systems. It helps in understanding how various parts of the ECS interact with each other.
+
+#### Protocol Diagram
+![](./assets/protocol.png)
+The protocol diagram illustrates the communication protocol used in the game engine. It shows how data is transmitted between the client and server, including the types of messages exchanged and their sequence.
+
+#### Sparse Set Diagram
+![](./assets/sparse.png)
+This diagram explains the sparse set data structure used for efficient component storage and retrieval. Sparse sets allow for quick access to components by entity ID, improving performance in the ECS.
+
+#### Client Components Diagram
+![](./assets/components_client.png)
+The client components diagram details the components that are specific to the client-side of the game engine. It shows how these components are organized and how they interact with client systems.
+
+#### Server Components Diagram
+![](./assets/server_components.png)
+The server components diagram outlines the components used on the server-side. It highlights the server-specific components and their interactions with server systems, ensuring proper game state management and synchronization.
