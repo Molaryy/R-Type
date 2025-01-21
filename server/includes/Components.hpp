@@ -42,6 +42,7 @@ private:
         {Protocol::ENEMY_FLY, Enemy},
         {Protocol::ENEMY_TURRET, Enemy},
         {Protocol::ENEMY_BULLET, Enemy},
+        {Protocol::BOSS, Enemy},
         {Protocol::BOSS_HEART, Enemy},
         {Protocol::WALL, Neutral},
         {Protocol::BONUS_HEALTH, Neutral},

@@ -17,7 +17,8 @@ void Wall::collision(Registry &r, const entity_t me, const entity_t other) {
     std::optional<Life> &otherLife = r.get_entity_component<Life>(other);
     const std::optional<Life> &life = r.get_entity_component<Life>(me);
     const std::optional<ComponentEntityType> &type = r.get_entity_component<ComponentEntityType>(other);
-    if (!life.has_value() || !life->is_alive() || !otherLife.has_value() || !otherLife->is_alive() || !type.has_value() || type->type == Protocol::WALL)
+    if (!life.has_value() || !life->is_alive() || !otherLife.has_value() || !otherLife->is_alive() || !type.has_value() || type->type == Protocol::WALL
+        || type->type == Protocol::BOSS)
         return;
 
     otherLife->current = 0;

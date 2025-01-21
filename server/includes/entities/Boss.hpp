@@ -2,36 +2,34 @@
 ** EPITECH PROJECT, 2025
 ** R-Type
 ** File description:
-** EnemyTurret.hpp
+** Boss.hpp
 */
 
 #pragma once
 
-#include <Components.hh>
-
+#include "Components.hh"
 #include "Registry.hh"
+#include "RTypeProtocol.hpp"
 
-#define TURRET_BULLET_SPEED 10
-#define TURRET_BULLET_SIZE 10
-#define TURRET_BULLET_RATE 50
+#define BOSS_BULLET_SPEED 20
+#define BOSS_BULLET_SIZE 10
+#define BOSS_BULLET_RATE 25
 
-#define TURRET_HEALTH 15
-#define TURRET_SIZE 40
-#define TURRET_SPEED (-2)
+#define BOSS_HEALTH 800
+#define BOSS_SIZE_X 206
+#define BOSS_SIZE_Y HEIGHT
+#define BOSS_STOP_POS 650
 
-#define TURRET_DROP_BONUS_HEALTH_CHANCE 0.1
-#define TURRET_DROP_BONUS_DAMAGE_CHANCE 0.04
-#define TURRET_DROP_BONUS_TRIPLE_CHANCE 0.04
-
-class EnemyTurret {
+class Boss {
 public:
-    EnemyTurret() = delete;
+    Boss() = delete;
 
     struct ArtificialIntelligence {
         std::size_t tick = 0;
 
         void operator()(Registry &r, entity_t me);
     };
+
     static void collision(Registry &r, entity_t me, entity_t other);
     static entity_t create(Registry &r);
     static entity_t createFromPos(Registry &r, const Position &position);

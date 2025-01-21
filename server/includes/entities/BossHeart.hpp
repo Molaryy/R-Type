@@ -2,30 +2,28 @@
 ** EPITECH PROJECT, 2025
 ** R-Type
 ** File description:
-** EnemyTurret.hpp
+** BossHeart.hpp
 */
 
 #pragma once
 
-#include <Components.hh>
-
+#include "Components.hh"
 #include "Registry.hh"
 
-#define TURRET_BULLET_SPEED 10
-#define TURRET_BULLET_SIZE 10
-#define TURRET_BULLET_RATE 50
+#define BOSS_HEART_BULLET_SPEED 20
+#define BOSS_HEART_BULLET_SIZE 10
+#define BOSS_HEART_BULLET_RATE 60
 
-#define TURRET_HEALTH 15
-#define TURRET_SIZE 40
-#define TURRET_SPEED (-2)
+#define BOSS_HEART_HEALTH 200
+#define BOSS_HEART_SIZE 100
 
-#define TURRET_DROP_BONUS_HEALTH_CHANCE 0.1
-#define TURRET_DROP_BONUS_DAMAGE_CHANCE 0.04
-#define TURRET_DROP_BONUS_TRIPLE_CHANCE 0.04
+#define BOSS_HEART_STOP_POS 600
 
-class EnemyTurret {
+#define BOSS_HEART_DROP_BONUS_HEALTH_CHANCE 0.5
+
+class BossHeart {
 public:
-    EnemyTurret() = delete;
+    BossHeart() = delete;
 
     struct ArtificialIntelligence {
         std::size_t tick = 0;
