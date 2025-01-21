@@ -46,19 +46,27 @@ Other examples of components could include:
 - `Hitbox` (collision detection data)
 
 #### System
-A **System** contains the logic that operates on entities with specific components. Systems scan through entities, identify those with the relevant components, and process them. For instance, a **Render System** might operate on entities with `Position` and `Drawable` components to render them on screen:
+A **System** contains the logic that operates on entities with specific components. Systems scan through entities, identify those with the relevant components, and process them. For instance, a **Network Receiver System** might handle incoming network packets and process them accordingly:
 
 ```cpp
-void RenderSystem(Registry &registry)
+namespace Systems
 {
-    for (auto &entity : registry.view<Position, Drawable>())
+    inline void networkReceiver([[maybe_unused]] Registry &r)
     {
-        Position &pos = registry.get<Position>(entity);
-        Drawable &drawable = registry.get<Drawable>(entity);
-        //here, we would render the entity at the specified position
+        auto &core = Client::getInstance();
+        auto &network = core.getNetworkLib();
+        auto &packet_handler = core.getPacketHandler();
+
+        for (std::vector<uint8_t> oldest_packet = network.getOldestPacket() !oldest_packet.empty(); oldest_packet = network.getOldestPacket())
+        {
+            Network::Packet deserialized_packet(oldest_packet);
+            packet_handler(deserialized_packet);
+        }
     }
 }
 ```
+
+In this example, the `networkReceiver` system retrieves the oldest packet from the network library, deserializes it, and then processes it using the packet handler.
 
 #### Registry
 The **Registry** manages the entities, components, and systems. It allows entities to be created or destroyed and handles the addition and removal of components.
