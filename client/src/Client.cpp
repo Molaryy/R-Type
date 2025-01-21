@@ -340,10 +340,6 @@ case Protocol::WALL:
                                                                 }
                                                             }));
         }
-        if (type.has_value() && type->type == Protocol::PLAYER) {
-            draw->can_draw = false;
-            return;
-        }
         playSoundEffect(explosionSoundID_);
         registry_.kill_entity(entity_id);
     });
