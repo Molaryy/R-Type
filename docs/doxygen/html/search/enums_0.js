@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['type_0',['Type',['../structBonus.html#a7093461454d795f1f430dde694adf8de',1,'Bonus']]]
+  ['bonustype_0',['BonusType',['../structBonus.html#a96f58bfde5e83369560c9159e21a5c61',1,'Bonus']]]
 ];

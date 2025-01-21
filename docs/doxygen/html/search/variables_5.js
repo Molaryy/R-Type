@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['max_0',['max',['../structLife.html#a1f026627a927671425939a38f453a597',1,'Life']]]
+  ['type_0',['type',['../classComponentEntityType.html#af7dfe7a171469a42273da689e6b85a72',1,'ComponentEntityType::type'],['../structBonus.html#ae31eeab6ea841648fd627aa88acab27e',1,'Bonus::type']]]
 ];

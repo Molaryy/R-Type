@@ -13,12 +13,15 @@ add_executable(${PROJECT_NAME}
         src/entities/Player.cpp
         src/entities/EnemyFly.cpp
         src/entities/EnemyTank.cpp
+        src/entities/Boss.cpp
+        src/entities/BossHeart.cpp
         src/entities/EnemyTurret.cpp
         src/entities/PlayerBullet.cpp
         src/entities/EnemyBullet.cpp
         src/entities/BonusHealth.cpp
         src/entities/BonusForce.cpp
         src/entities/BonusTripleShot.cpp
+        src/entities/Wall.cpp
 )
 
 target_include_directories(${PROJECT_NAME}

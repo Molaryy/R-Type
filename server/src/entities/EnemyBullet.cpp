@@ -24,13 +24,6 @@ void EnemyBullet::collision(Registry &r, const entity_t me, const entity_t other
         return;
 
     life->current = 0;
-    Network::Packet packet(
-        Protocol::DeadPacket(me, false),
-        Protocol::KILL
-    );
-    Network::INetworkServer &network = Server::getInstance().getNetwork();
-    for (auto &&[network_id] : Zipper(r.get_components<NetworkId>()))
-        network.send(network_id.id, packet.serialize());
 }
 
 entity_t EnemyBullet::create(Registry &r, const Position start, const Position end, const float speed) {

@@ -2,11 +2,10 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: app-ingress
-  namespace: ingress-nginx
 spec:
   ingressClassName: nginx
   rules:
-    - host: r-type.molaryy.fr
+    - host: documentation.molaryy.fr
       http:
         paths:
           - path: /
@@ -16,14 +15,20 @@ spec:
                 name: docusaurus
                 port:
                   number: 3000
-          - path: /doxygen
+    - host: doxygen.molaryy.fr
+      http:
+        paths:
+          - path: /
             pathType: Prefix
             backend:
               service:
                 name: doxygen
                 port:
                   number: 8080
-          - path: /rfc
+    - host: rfc.molaryy.fr
+      http:
+        paths:
+          - path: /
             pathType: Prefix
             backend:
               service:

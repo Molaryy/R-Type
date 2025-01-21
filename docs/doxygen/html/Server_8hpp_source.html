@@ -100,42 +100,66 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="Network_8hpp.html">Network.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;asio.hpp&gt;</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;thread&gt;</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="foldopen" id="foldopen00014" data-start="{" data-end="};">
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classServer.html">   14</a></span><span class="keyword">class </span><a class="code hl_class" href="classServer.html">Server</a></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>{</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="classServer.html#a9a0c6d0a8c5590d87fe5dbf8f24e2266">   17</a></span>        <a class="code hl_function" href="classServer.html#a9a0c6d0a8c5590d87fe5dbf8f24e2266">Server</a>(asio::io_context &amp;ioContext, <span class="keyword">const</span> <span class="keywordtype">int</span> port, <span class="keyword">const</span> <span class="keywordtype">int</span> maxClients) : network_(ioContext, port, maxClients), ioContext_(ioContext){}</div>
-<div class="foldopen" id="foldopen00018" data-start="{" data-end="}">
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classServer.html#a4b3aa2579cb1c8cd1d069582c14d0fa6">   18</a></span>        <a class="code hl_function" href="classServer.html#a4b3aa2579cb1c8cd1d069582c14d0fa6">~Server</a>()</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        {</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>            <span class="keywordflow">if</span> (gameThread_.joinable())</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>                gameThread_.join();</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>            <span class="keywordflow">if</span> (checkClientThread_.joinable())</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>                checkClientThread_.join();</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        }</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;dylib.hpp&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;INetworkServer.hpp&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="Lobby_8hpp.html">Lobby.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;PacketHandler.hpp&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;<a class="code" href="Score_8hpp.html">Score.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="};">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classServer.html">   18</a></span><span class="keyword">class </span><a class="code hl_class" href="classServer.html">Server</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classServer.html#a9426dad0666d0f5ed012eb3e8bf3a8f3">   20</a></span>    <a class="code hl_function" href="classServer.html#a9426dad0666d0f5ed012eb3e8bf3a8f3">Server</a>(<span class="keyword">const</span> <a class="code hl_class" href="classServer.html">Server</a> &amp;ref) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classServer.html#ac26bbb27843639e0371310de0500ab16">   21</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classServer.html#ac26bbb27843639e0371310de0500ab16">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classServer.html">Server</a> &amp;ref) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_function" href="classServer.html#a4b3aa2579cb1c8cd1d069582c14d0fa6">~Server</a>();</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">static</span> <a class="code hl_class" href="classServer.html">Server</a> &amp;<a class="code hl_function" href="classServer.html#a4519d0541b94d051a83bad9f038e81e9">createInstance</a>(std::size_t port, std::size_t max_lobby, std::size_t max_client, <span class="keywordtype">bool</span> debug, <span class="keywordtype">bool</span> network_debug, <span class="keyword">const</span> std::string &amp;path);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classServer.html#a069fbefc5b6c3011e3ea0599db70f3d5">random</a>(<span class="keywordtype">double</span> chance);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classServer.html">Server</a> &amp;<a class="code hl_function" href="classServer.html#a3f855449a7a20a1feab08d071b6f7b0c">getInstance</a>();</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    [[nodiscard]] Network::PacketHandler &amp;<a class="code hl_function" href="classServer.html#a3c1977adc66e4a7b7a7cdab435d4081c">getPacketHandler</a>();</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    [[nodiscard]] Network::INetworkServer &amp;<a class="code hl_function" href="classServer.html#afd551677b13bb68286069ed456aa0632">getNetwork</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classServer.html#abb27d30b40a94326e3fd629d3b30b7d5">run</a>();</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <a class="code hl_function" href="classServer.html#a9426dad0666d0f5ed012eb3e8bf3a8f3">Server</a>(std::size_t port, std::size_t max_lobby, std::size_t max_client, <span class="keywordtype">bool</span> debug, <span class="keywordtype">bool</span> network_debug, <span class="keyword">const</span> std::string &amp;path);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">void</span> gameLoop_();</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">void</span> initPacketHandling_();</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">void</span> networkReceiver_();</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    dylib networkLoader_;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    std::size_t port_;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    std::size_t maxClient_;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    std::size_t nbClient_;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">bool</span> debug_;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">bool</span> network_debug_;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    std::size_t maxLobby_;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">static</span> std::unique_ptr&lt;Server&gt; instance_;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    std::unique_ptr&lt;Network::INetworkServer&gt; networkLib_;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    Network::PacketHandler packetHandler_;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    std::vector&lt;std::unique_ptr&lt;Lobby&gt;&gt; lobbies_;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">bool</span> serverRunning_;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <a class="code hl_class" href="classScore.html">Score</a> score_;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
 </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classServer.html#abb27d30b40a94326e3fd629d3b30b7d5">run</a>();</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classServer.html#a9cd1c08870861efc1716c6b59545ff85">gameLoop</a>();</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classServer.html#a83b9ea1b83eb9c40db430bfdfffc079c">monitorClients</a>();</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <a class="code hl_class" href="classNetwork.html">Network</a> network_;</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        asio::io_context &amp;ioContext_;</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        std::thread gameThread_;</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        std::thread checkClientThread_;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>};</div>
-</div>
-<div class="ttc" id="aNetwork_8hpp_html"><div class="ttname"><a href="Network_8hpp.html">Network.hpp</a></div></div>
-<div class="ttc" id="aclassNetwork_html"><div class="ttname"><a href="classNetwork.html">Network</a></div><div class="ttdef"><b>Definition</b> Network.hpp:34</div></div>
-<div class="ttc" id="aclassServer_html"><div class="ttname"><a href="classServer.html">Server</a></div><div class="ttdef"><b>Definition</b> Server.hpp:15</div></div>
-<div class="ttc" id="aclassServer_html_a4b3aa2579cb1c8cd1d069582c14d0fa6"><div class="ttname"><a href="classServer.html#a4b3aa2579cb1c8cd1d069582c14d0fa6">Server::~Server</a></div><div class="ttdeci">~Server()</div><div class="ttdef"><b>Definition</b> Server.hpp:18</div></div>
-<div class="ttc" id="aclassServer_html_a83b9ea1b83eb9c40db430bfdfffc079c"><div class="ttname"><a href="classServer.html#a83b9ea1b83eb9c40db430bfdfffc079c">Server::monitorClients</a></div><div class="ttdeci">void monitorClients()</div><div class="ttdef"><b>Definition</b> Server.cpp:54</div></div>
-<div class="ttc" id="aclassServer_html_a9a0c6d0a8c5590d87fe5dbf8f24e2266"><div class="ttname"><a href="classServer.html#a9a0c6d0a8c5590d87fe5dbf8f24e2266">Server::Server</a></div><div class="ttdeci">Server(asio::io_context &amp;ioContext, const int port, const int maxClients)</div><div class="ttdef"><b>Definition</b> Server.hpp:17</div></div>
-<div class="ttc" id="aclassServer_html_a9cd1c08870861efc1716c6b59545ff85"><div class="ttname"><a href="classServer.html#a9cd1c08870861efc1716c6b59545ff85">Server::gameLoop</a></div><div class="ttdeci">void gameLoop()</div><div class="ttdef"><b>Definition</b> Server.cpp:27</div></div>
-<div class="ttc" id="aclassServer_html_abb27d30b40a94326e3fd629d3b30b7d5"><div class="ttname"><a href="classServer.html#abb27d30b40a94326e3fd629d3b30b7d5">Server::run</a></div><div class="ttdeci">void run()</div><div class="ttdoc">Construct a new Server:: Server object.</div><div class="ttdef"><b>Definition</b> Server.cpp:14</div></div>
+<div class="ttc" id="aLobby_8hpp_html"><div class="ttname"><a href="Lobby_8hpp.html">Lobby.hpp</a></div></div>
+<div class="ttc" id="aScore_8hpp_html"><div class="ttname"><a href="Score_8hpp.html">Score.hpp</a></div></div>
+<div class="ttc" id="aclassScore_html"><div class="ttname"><a href="classScore.html">Score</a></div><div class="ttdef"><b>Definition</b> Score.hpp:15</div></div>
+<div class="ttc" id="aclassServer_html"><div class="ttname"><a href="classServer.html">Server</a></div><div class="ttdef"><b>Definition</b> Server.hpp:18</div></div>
+<div class="ttc" id="aclassServer_html_a069fbefc5b6c3011e3ea0599db70f3d5"><div class="ttname"><a href="classServer.html#a069fbefc5b6c3011e3ea0599db70f3d5">Server::random</a></div><div class="ttdeci">static bool random(double chance)</div><div class="ttdef"><b>Definition</b> Server.cpp:47</div></div>
+<div class="ttc" id="aclassServer_html_a3c1977adc66e4a7b7a7cdab435d4081c"><div class="ttname"><a href="classServer.html#a3c1977adc66e4a7b7a7cdab435d4081c">Server::getPacketHandler</a></div><div class="ttdeci">Network::PacketHandler &amp; getPacketHandler()</div><div class="ttdef"><b>Definition</b> Server.cpp:55</div></div>
+<div class="ttc" id="aclassServer_html_a3f855449a7a20a1feab08d071b6f7b0c"><div class="ttname"><a href="classServer.html#a3f855449a7a20a1feab08d071b6f7b0c">Server::getInstance</a></div><div class="ttdeci">static Server &amp; getInstance()</div><div class="ttdef"><b>Definition</b> Server.cpp:51</div></div>
+<div class="ttc" id="aclassServer_html_a4519d0541b94d051a83bad9f038e81e9"><div class="ttname"><a href="classServer.html#a4519d0541b94d051a83bad9f038e81e9">Server::createInstance</a></div><div class="ttdeci">static Server &amp; createInstance(std::size_t port, std::size_t max_lobby, std::size_t max_client, bool debug, bool network_debug, const std::string &amp;path)</div><div class="ttdef"><b>Definition</b> Server.cpp:41</div></div>
+<div class="ttc" id="aclassServer_html_a4b3aa2579cb1c8cd1d069582c14d0fa6"><div class="ttname"><a href="classServer.html#a4b3aa2579cb1c8cd1d069582c14d0fa6">Server::~Server</a></div><div class="ttdeci">~Server()</div><div class="ttdef"><b>Definition</b> Server.cpp:37</div></div>
+<div class="ttc" id="aclassServer_html_a9426dad0666d0f5ed012eb3e8bf3a8f3"><div class="ttname"><a href="classServer.html#a9426dad0666d0f5ed012eb3e8bf3a8f3">Server::Server</a></div><div class="ttdeci">Server(const Server &amp;ref)=delete</div></div>
+<div class="ttc" id="aclassServer_html_abb27d30b40a94326e3fd629d3b30b7d5"><div class="ttname"><a href="classServer.html#abb27d30b40a94326e3fd629d3b30b7d5">Server::run</a></div><div class="ttdeci">void run()</div><div class="ttdef"><b>Definition</b> Server.cpp:63</div></div>
+<div class="ttc" id="aclassServer_html_ac26bbb27843639e0371310de0500ab16"><div class="ttname"><a href="classServer.html#ac26bbb27843639e0371310de0500ab16">Server::operator=</a></div><div class="ttdeci">void operator=(const Server &amp;ref)=delete</div></div>
+<div class="ttc" id="aclassServer_html_afd551677b13bb68286069ed456aa0632"><div class="ttname"><a href="classServer.html#afd551677b13bb68286069ed456aa0632">Server::getNetwork</a></div><div class="ttdeci">Network::INetworkServer &amp; getNetwork() const</div><div class="ttdef"><b>Definition</b> Server.cpp:59</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

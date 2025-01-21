@@ -21,6 +21,7 @@
 #include "Systems.hh"
 #include "Systems.hpp"
 #include "Scenes.hpp"
+#include "Lobby.hpp"
 
 Client::~Client() = default;
 
@@ -98,7 +99,9 @@ bool Client::connectToServer_(const std::string &ip, const std::size_t port) {
     return true;
 }
 
-void Client::setupPacketHandler_() {
+void Client::setupPacketHandler_()
+{
+    Lobby lobby;
     packet_handler_.setPacketCallback(Protocol::START_GAME, [this](Network::Packet &) {
         registry_.clear_entities();
 
@@ -119,7 +122,7 @@ void Client::setupPacketHandler_() {
             return server_id.has_value() && server_id->id == network_id;
         });
         if (it == server_ids.end()) {
-            std::cerr << "POSITION_VELOCITY: Failed to find server id: " << network_id <<  std::endl;
+            std::cerr << "POSITION_VELOCITY: Failed to find server id: " << network_id << std::endl;
             return;
         }
         const entity_t entity_id = std::ranges::distance(server_ids.begin(), it);
@@ -172,6 +175,7 @@ void Client::setupPacketHandler_() {
                                                                     if (drawable.text_x > drawable.text_width)
                                                                         drawable.text_x = 0;
                                                                 }));
+                playSoundEffect(playerBulletSoundID_);
                 break;
             case Protocol::EntityType::ENEMY_BULLET:
                 registry_.add_component(e, Components::Drawable(ENEMY_BULLET, size.x, size.y, 0, 0, 48, 48,
@@ -183,6 +187,7 @@ void Client::setupPacketHandler_() {
                                                                     if (drawable.text_x > drawable.text_width * 3)
                                                                         drawable.text_x = 0;
                                                                 }));
+                playSoundEffect(enemyBulletSoundID_);
                 break;
             case Protocol::EntityType::ENEMY_FLY:
                 registry_.add_component(e, Components::Drawable(FLY_ENEMY, size.x, size.y, 0, 0, 33, 36, [frame = 0](Components::Drawable &drawable) mutable {
@@ -249,6 +254,35 @@ void Client::setupPacketHandler_() {
                                                                     if (drawable.text_x > drawable.text_width * 2)
                                                                         drawable.text_x = 0;
                                                                 }));
+                registry_.add_component(e, Life(health, health));
+                break;
+            case Protocol::BOSS_HEART:
+                registry_.add_component(e, Components::Drawable(BOSS_HEART, size.x, size.y, 0, 0, 130, 100,
+                                                                [frame = 0](Components::Drawable &drawable) mutable {
+                                                                    if (frame++ < 3)
+                                                                        return;
+                                                                    frame = 0;
+                                                                    drawable.text_x += drawable.text_width;
+                                                                    if (drawable.text_x > drawable.text_width)
+                                                                        drawable.text_x = 0;
+                                                                }));
+                registry_.add_component(e, Life(health, health));
+                break;
+            case Protocol::BOSS:
+                registry_.add_component(e, Components::Drawable(BOSS, size.x, size.y, 0, 0, 206, 600,
+                                                                [frame = 0](Components::Drawable &drawable) mutable {
+                                                                    if (frame++ < 3)
+                                                                        return;
+                                                                    frame = 0;
+                                                                    drawable.text_x += drawable.text_width;
+                                                                    if (drawable.text_x > drawable.text_width)
+                                                                        drawable.text_x = 0;
+                                                                }));
+                registry_.add_component(e, Life(health, health));
+                break;
+case Protocol::WALL:
+                registry_.add_component(e, Components::Drawable(WALL, size.x, size.y, 0, 0, 315, 120, [](Components::Drawable &) {
+                }));
                 break;
             default:
                 std::cerr << "Unknown entity type: " << type << std::endl;
@@ -290,13 +324,7 @@ void Client::setupPacketHandler_() {
 
         if (!natural)
             return registry_.kill_entity(entity_id);
-        std::optional<Components::Drawable> &draw = registry_.get_components<Components::Drawable>()[entity_id];
-        const std::optional<Components::ComponentEntityType> &type = registry_.get_components<Components::ComponentEntityType>()[entity_id];
-        if (type.has_value() && type->type == Protocol::PLAYER) {
-            draw->can_draw = false;
-            return;
-        }
-
+        const std::optional<Components::Drawable> &draw = registry_.get_components<Components::Drawable>()[entity_id];
         const std::optional<Position> &pos = registry_.get_components<Position>()[entity_id];
         if (pos.has_value() && draw.has_value()) {
             const entity_t e = registry_.spawn_entity();
@@ -315,16 +343,18 @@ void Client::setupPacketHandler_() {
                                                                 }
                                                             }));
         }
+        playSoundEffect(explosionSoundID_);
         registry_.kill_entity(entity_id);
     });
     packet_handler_.setPacketCallback(Protocol::SERVER_SHUTDOWN, [](Network::Packet &) {
         std::cout << "SERVER_SHUTDOWN received\n";
     });
-    packet_handler_.setPacketCallback(Protocol::END_GAME, [this](const Network::Packet &packet) {
+    packet_handler_.setPacketCallback(Protocol::END_GAME, [this, &lobby](const Network::Packet &packet)
+    {
         auto [score, new_id] = packet.getPayload<Protocol::EndGamePacket>();
         my_server_id = new_id;
 
-        lobbyPage(registry_, lobby_id);
+        lobby.lobbyPage(registry_, lobby_id);
 
         entity_t e = registry_.spawn_entity();
         registry_.add_component(e, Components::RenderText(std::string("Score: ") + std::to_string(score), 30, true));
@@ -335,6 +365,8 @@ void Client::setupPacketHandler_() {
         registry_.add_component(e, Components::RenderText(std::string("Game Over"), 40, true));
         registry_.add_component(e, Position(300, 80));
         registry_.add_component(e, Components::ColorText{COLOR_WHITE});
+
+        renderer_->playSound(gameOverSoundID_);
     });
 }
 
@@ -360,10 +392,73 @@ void Client::setupSystems_() {
 
 std::unique_ptr<Client> Client::instance_ = nullptr;
 
+void Client::changeResolution() {
+    currentResolutionIndex_ = (currentResolutionIndex_ + 1) % resolutions_.size();
+    auto [width, height] = resolutions_[currentResolutionIndex_];
+    renderer_->setWindowSize(width, height);
+    std::cout << "Resolution changed to: " << width << "x" << height << std::endl;
+}
+
+void Client::changeFPS() {
+    currentFPSIndex_ = (currentFPSIndex_ + 1) % fpsOptions_.size();
+    int fps = fpsOptions_[currentFPSIndex_];
+    renderer_->setTargetFPS(fps);
+    std::cout << "FPS changed to: " << fps << std::endl;
+}
+
+void Client::toggleSoundEffects() {
+    soundEffectsEnabled_ = !soundEffectsEnabled_;
+    std::cout << "Sound Effects " << (soundEffectsEnabled_ ? "enabled" : "disabled") << std::endl;
+}
+
+void Client::toggleMusic() {
+    musicEnabled_ = !musicEnabled_;
+    if (musicEnabled_) {
+        renderer_->playMusic(musicID_);
+    } else {
+        renderer_->stopMusic(musicID_);
+    }
+    std::cout << "Music " << (musicEnabled_ ? "enabled" : "disabled") << std::endl;
+}
+
+void Client::playMusic() {
+    if (musicEnabled_ && musicID_ != -1) {
+        renderer_->playMusic(musicID_);
+    }
+}
+
+void Client::stopMusic() {
+    if (musicID_ != -1) {
+        renderer_->stopMusic(musicID_);
+    }
+}
+
+void Client::loadSounds() {
+    musicID_ = renderer_->loadMusic(SPACE_ASTEROIDS);
+    playerBulletSoundID_ = renderer_->loadSound(SOUND_PLAYER_BULLET);
+    enemyBulletSoundID_ = renderer_->loadSound(SOUND_ENEMY_BULLET);
+    explosionSoundID_ = renderer_->loadSound(SOUND_EXPLOSION);
+    gameOverSoundID_ = renderer_->loadSound(SOUND_GAME_OVER);
+
+    if (playerBulletSoundID_ == -1 || enemyBulletSoundID_ == -1 || explosionSoundID_ == -1 || gameOverSoundID_ == -1) {
+        throw std::runtime_error("ERROR: Failed to load sound effects");
+    }
+
+    std::cout << "Sound effects loaded successfully." << std::endl;
+}
+
+void Client::playSoundEffect(int soundID) {
+    if (soundEffectsEnabled_ && soundID != -1) {
+        renderer_->playSound(soundID);
+    }
+}
+
 void Client::run() {
     setupSystems_();
 
     renderer_->initWindow(WIDTH, HEIGHT, "rtype");
+    loadSounds();
+    playMusic();
 
     if (getLocalUsername().empty()) {
         createSignForm(registry_);
@@ -373,15 +468,20 @@ void Client::run() {
 
     for (const std::string &path : textures_paths)
         renderer_->loadTexture(path);
-    for (const std::string &path : sounds_paths)
+    for (const std::string &path : voiceMenuButtonsTitleFilepaths)
         renderer_->loadSound(path);
+    for (const std::string &path : voiceLobbyButtonsTitleFilepaths) {
+        renderer_->loadSound(path);
+    }
 
     while (!renderer_->windowShouldClose()) {
+        renderer_->updateMusic();
         renderer_->beginDrawing();
         renderer_->clearBackground(0, 0, 0, 0);
 
         registry_.run_systems();
         renderer_->endDrawing();
     }
+    renderer_->unloadMusic(musicID_);
     renderer_->closeWindow();
 }

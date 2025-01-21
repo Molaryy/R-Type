@@ -15,7 +15,7 @@
 #define TURRET_BULLET_SIZE 10
 #define TURRET_BULLET_RATE 50
 
-#define TURRET_HEALTH 4
+#define TURRET_HEALTH 15
 #define TURRET_SIZE 40
 #define TURRET_SPEED (-2)
 

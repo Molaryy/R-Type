@@ -64,9 +64,10 @@ namespace Systems {
         auto &colorsTexts = r.get_components<Components::ColorText>();
         auto &colorsOverText = r.get_components<Components::ColorOverText>();
         auto &mouseOverTexts = r.get_components<Components::MouseOverText>();
+        auto &soundTexts = r.get_components<Components::MouseOverTextSound>();
 
-        for (auto &&[text, colorText, colorOverText, mouseOverText] : Zipper(texts, colorsTexts, colorsOverText, mouseOverTexts)) {
-            if (!text.isDrawable)
+        for (auto &&[text, colorText, colorOverText, mouseOverText, soundText] : Zipper(texts, colorsTexts, colorsOverText, mouseOverTexts, soundTexts)) {
+            if (!text.isDrawable || (text.text == "Accessibility" && isAccessibilityOn))
                 continue;
             if (mouseOverText.isOver) {
                 colorText.color = colorOverText.newColor;
@@ -83,8 +84,7 @@ namespace Systems {
         int soundID = 0;
 
         for (auto &&[clickable, mouseOverText] : Zipper(clickableTexts, mouseOverTexts)) {
-            if (mouseOverText.isOver) {
-                std::cout << "MouseOverTextSound" << std::endl;
+            if (mouseOverText.isOver && isAccessibilityOn) {
                 secureCallback = clickable.callback;
                 soundID = clickable.soundID;
                 break;
@@ -161,12 +161,16 @@ namespace Systems {
             if (!drawable.can_draw)
                 continue;
             const float life_ratio = static_cast<float>(life.current) / static_cast<float>(life.max);
-            renderer.drawRectangle(position.x, position.y - 10.f, drawable.width, 5.f, 255, 0, 0, 255);
-            renderer.drawRectangle(position.x, position.y - 10.f, drawable.width * life_ratio, 5.f, 0, 128, 0, 255);
+            float life_y = position.y - 10.f;
+            if (life_y < 0)
+                life_y = position.y + drawable.height / 2;
+            renderer.drawRectangle(position.x, life_y, drawable.width, 5.f, 255, 0, 0, 255);
+            renderer.drawRectangle(position.x, life_y, drawable.width * life_ratio, 5.f, 0, 128, 0, 255);
         }
     }
 
-    inline void handleInputBox(Registry &r) {
+    inline void handleInputBox(Registry &r)
+    {
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
         Graphic::event_t events = renderer.getEvents();
         auto &inputTexts = r.get_components<Components::InputText>();
@@ -178,19 +182,21 @@ namespace Systems {
         bool canUpdate = true;
 
 
-        if (events.inputs.size() != last_inputs.size()) {
+        if (events.inputs.size() != last_inputs.size())
+        {
             last_inputs = events.inputs;
             canUpdate = false;
         }
 
-        for (std::size_t i = 0; i < events.inputs.size(); ++i) {
-            if (events.inputs[i] != last_inputs[i]) {
+        for (std::size_t i = 0; i < events.inputs.size(); ++i)
+        {
+            if (events.inputs[i] != last_inputs[i])
+            {
                 last_inputs = events.inputs;
                 canUpdate = false;
                 break;
             }
         }
-        
 
         for (auto &&[inputText, pos, input, colorText] : Zipper(inputTexts,  positions, inputs, colorsTexts)) {
             for (auto &&[rect, inputRect] : Zipper(rects, inputs)) {
@@ -218,7 +224,8 @@ namespace Systems {
         }
     }
 
-    inline void handleInputs([[maybe_unused]] Registry &r) {
+    inline void handleInputs([[maybe_unused]] Registry &r)
+    {
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
         Graphic::event_t events = renderer.getEvents();
         static Protocol::InputsKeysPacket last_inputs{};

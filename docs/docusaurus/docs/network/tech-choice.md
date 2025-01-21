@@ -81,6 +81,6 @@ We evaluated a few other options but found ASIO to be the most suitable:
 
 ## Conclusion
 
-By choosing **ASIO**, we addressed the critical challenges of platform compatibility, modern C++ design, and performance for network programming. ASIO's clean and unified API allowed us to develop scalable and maintainable network code without the overhead of platform-specific workarounds. 
+By choosing **ASIO**, we addressed the critical challenges of platform compatibility, modern C++ design, and performance for network programming. ASIO's clean and unified API allowed us to develop scalable and maintainable network code without the overhead of platform-specific workarounds.
 
 In contrast, relying on built-in functions would have led to fragmented and hard-to-maintain code, while other libraries did not provide the same level of abstraction and performance as ASIO.

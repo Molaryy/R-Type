@@ -141,7 +141,6 @@ void Lobby::startGame() {
                 );
                 for (const auto &n_id : players_ | std::views::keys) {
                     networkLib_.send(n_id, new_player_packet.serialize());
-                    std::cout << "SEND TO " << n_id << " | " << pla << std::endl;
                 }
             }
 
@@ -161,7 +160,7 @@ void Lobby::startGame() {
                     Systems::levelEndlessHandler(r, score_);
                 });
             else {
-                auto handler = std::make_shared<Systems::LevelCampaignHandlerSystem>(score_);
+                auto handler = std::make_shared<Systems::LevelCampaignHandlerSystem>(registry_, score_);
                 registry_.add_system([handler](Registry &r) {
                     (*handler)(r);
                 });

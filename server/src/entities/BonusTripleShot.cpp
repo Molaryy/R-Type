@@ -20,23 +20,16 @@ void BonusTripleShot::collision(Registry &r, const entity_t me, const entity_t o
     if (!otherType.has_value() || !life.has_value() || !life->is_alive() || otherType->type != Protocol::PLAYER)
         return;
 
-    std::optional<Bonus> &bonus = r.get_components<Bonus>()[other];
-    if (!bonus.has_value())
+    std::optional<Bonus> &otherBonus = r.get_components<Bonus>()[other];
+    if (!otherBonus.has_value() || otherBonus->id == me)
         return;
-    if (bonus->id == me)
-        return;
-    if (bonus->type != Bonus::None) {
-        Network::Packet packet(
-            Protocol::DeadPacket(bonus->id, false),
-            Protocol::KILL
-        );
-        Network::INetworkServer &network = Server::getInstance().getNetwork();
-        for (auto &&[network_id] : Zipper(r.get_components<NetworkId>()))
-            network.send(network_id.id, packet.serialize());
-        r.kill_entity(bonus->id);
+    if (otherBonus->type != Bonus::None) {
+        std::optional<Life> &otherLife = r.get_components<Life>()[otherBonus->id];
+        if (otherLife)
+            otherLife->current = -1;
     }
-    bonus->id = me;
-    bonus->type = Bonus::TripleShot;
+    otherBonus->id = me;
+    otherBonus->type = Bonus::TripleShot;
 }
 
 entity_t BonusTripleShot::create(Registry &r, const Position &position) {

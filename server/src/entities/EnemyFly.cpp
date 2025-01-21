@@ -46,17 +46,15 @@ void EnemyFly::collision(Registry &r, const entity_t me, const entity_t other) {
         life->takeDamage(PLAYER_BULLET_DAMAGE + (otherBonus->type == Bonus::Damage ? BONUS_FORCE_DAMAGE_BOOST : 0));
     if (otherType->type == Protocol::PLAYER)
         life->current = 0;
-    Network::Packet packet;
     if (life->is_alive()) {
-        packet = Network::Packet(
+        Network::Packet packet(
             Protocol::HitPacket(me, life->current),
             Protocol::HIT
         );
+        Network::INetworkServer &network = Server::getInstance().getNetwork();
+        for (auto &&[network_id] : Zipper(r.get_components<NetworkId>()))
+            network.send(network_id.id, packet.serialize());
     } else {
-        packet = Network::Packet(
-            Protocol::DeadPacket(me, true),
-            Protocol::KILL
-        );
         const std::optional<Position> &pos = r.get_entity_component<Position>(me);
         if (pos) {
             if (Server::random(FLY_DROP_BONUS_HEALTH_CHANCE))
@@ -67,10 +65,6 @@ void EnemyFly::collision(Registry &r, const entity_t me, const entity_t other) {
                 BonusTripleShot::create(r, pos.value());
         }
     }
-
-    Network::INetworkServer &network = Server::getInstance().getNetwork();
-    for (auto &&[network_id] : Zipper(r.get_components<NetworkId>()))
-        network.send(network_id.id, packet.serialize());
 }
 
 entity_t EnemyFly::create(Registry &r) {

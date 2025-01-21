@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['height_0',['height',['../structDrawable.html#a01fe4754c3dc2ab77a4fbdc0c71aea22',1,'Drawable::height'],['../structCollision.html#a1dde56e25d49cfd3492695f4349db3de',1,'Collision::height']]]
+  ['max_5fclient_0',['max_client',['../classArgHandler.html#a5dc30d474e41ade4bc4fab4d17b38d2e',1,'ArgHandler']]],
+  ['max_5flobby_1',['max_lobby',['../classArgHandler.html#a0df6a2caed5c5440ef4fc320112bb4b6',1,'ArgHandler']]]
 ];
