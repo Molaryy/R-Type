@@ -21,6 +21,7 @@
 #include "Systems.hh"
 #include "Systems.hpp"
 #include "Scenes.hpp"
+#include "Lobby.hpp"
 
 Client::~Client() = default;
 
@@ -98,7 +99,9 @@ bool Client::connectToServer_(const std::string &ip, const std::size_t port) {
     return true;
 }
 
-void Client::setupPacketHandler_() {
+void Client::setupPacketHandler_()
+{
+    Lobby lobby;
     packet_handler_.setPacketCallback(Protocol::START_GAME, [this](Network::Packet &) {
         registry_.clear_entities();
 
@@ -346,11 +349,12 @@ case Protocol::WALL:
     packet_handler_.setPacketCallback(Protocol::SERVER_SHUTDOWN, [](Network::Packet &) {
         std::cout << "SERVER_SHUTDOWN received\n";
     });
-    packet_handler_.setPacketCallback(Protocol::END_GAME, [this](const Network::Packet &packet) {
+    packet_handler_.setPacketCallback(Protocol::END_GAME, [this, &lobby](const Network::Packet &packet)
+    {
         auto [score, new_id] = packet.getPayload<Protocol::EndGamePacket>();
         my_server_id = new_id;
 
-        lobbyPage(registry_, lobby_id);
+        lobby.lobbyPage(registry_, lobby_id);
 
         entity_t e = registry_.spawn_entity();
         registry_.add_component(e, Components::RenderText(std::string("Score: ") + std::to_string(score), 30, true));

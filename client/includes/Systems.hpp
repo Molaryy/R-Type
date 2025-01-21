@@ -169,7 +169,8 @@ namespace Systems {
         }
     }
 
-    inline void handleInputBox(Registry &r) {
+    inline void handleInputBox(Registry &r)
+    {
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
         Graphic::event_t events = renderer.getEvents();
         auto &inputTexts = r.get_components<Components::InputText>();
@@ -181,19 +182,21 @@ namespace Systems {
         bool canUpdate = true;
 
 
-        if (events.inputs.size() != last_inputs.size()) {
+        if (events.inputs.size() != last_inputs.size())
+        {
             last_inputs = events.inputs;
             canUpdate = false;
         }
 
-        for (std::size_t i = 0; i < events.inputs.size(); ++i) {
-            if (events.inputs[i] != last_inputs[i]) {
+        for (std::size_t i = 0; i < events.inputs.size(); ++i)
+        {
+            if (events.inputs[i] != last_inputs[i])
+            {
                 last_inputs = events.inputs;
                 canUpdate = false;
                 break;
             }
         }
-        
 
         for (auto &&[inputText, pos, input, colorText] : Zipper(inputTexts,  positions, inputs, colorsTexts)) {
             for (auto &&[rect, inputRect] : Zipper(rects, inputs)) {
@@ -221,7 +224,8 @@ namespace Systems {
         }
     }
 
-    inline void handleInputs([[maybe_unused]] Registry &r) {
+    inline void handleInputs([[maybe_unused]] Registry &r)
+    {
         Graphic::IRenderer &renderer = Client::getInstance().getRenderer();
         Graphic::event_t events = renderer.getEvents();
         static Protocol::InputsKeysPacket last_inputs{};
