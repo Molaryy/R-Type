@@ -453,7 +453,6 @@ void Client::run() {
     for (const std::string &path : voiceMenuButtonsTitleFilepaths)
         renderer_->loadSound(path);
     for (const std::string &path : voiceLobbyButtonsTitleFilepaths) {
-        std::cout << path << std::endl;
         renderer_->loadSound(path);
     }
 

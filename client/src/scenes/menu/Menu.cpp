@@ -242,7 +242,7 @@ void createMenuScene(Registry &r) {
         r.add_component(button, Components::ClickableText(callbacks[i]));
         r.add_component(button, Components::ColorOverText(darkBlue, grey));
         r.add_component(button, Components::MouseOverText(false));
-        r.add_component(button, Components::MouseOverTextSound(makeSound(i), i));
+        r.add_component(button, Components::MouseOverTextSound(makeSound(i + 4), i + 4));
     }
 
     const std::string username = getLocalUsername();
