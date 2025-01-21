@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['speedboost_0',['SpeedBoost',['../structBonus.html#a7093461454d795f1f430dde694adf8dea382f4c2ffc89db2ebab547a2aafc40d7',1,'Bonus']]]
+  ['enemy_0',['Enemy',['../classComponentEntityType.html#a3f614eef6af56050920b3a2ac2b55c8ca69edb4cd0bef9f8b57acf1e1f2ec0a31',1,'ComponentEntityType']]]
 ];

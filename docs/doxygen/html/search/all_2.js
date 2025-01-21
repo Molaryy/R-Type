@@ -1,20 +1,9 @@
 var searchData=
 [
-  ['cbegin_0',['cbegin',['../classsparse__array.html#a83813f04ca1a7eafc6dbc0b535f1dfe3',1,'sparse_array']]],
-  ['cend_1',['cend',['../classsparse__array.html#a1bb557f6544b08eff307d181cdb5580c',1,'sparse_array']]],
-  ['client_2',['Client',['../classClient.html',1,'Client'],['../classClient.html#a8800e5fa927aa5c8001bac962359a6a5',1,'Client::Client()']]],
-  ['collision_3',['Collision',['../structCollision.html',1,'']]],
-  ['collision_5ft_4',['Collision_t',['../Components_8hh.html#a9ea58ccee99d2eedf66e1d092e098315',1,'Components.hh']]],
-  ['collisionsystem_5',['CollisionSystem',['../classSystems.html#a0ba25e5d3012a8cd7589ed7b091b12cb',1,'Systems']]],
-  ['components_2ehh_6',['Components.hh',['../Components_8hh.html',1,'']]],
-  ['const_5fiterator_7',['const_iterator',['../classsparse__array.html#aea93ad93d0814d80160f31b8a8b3fceb',1,'sparse_array']]],
-  ['const_5freference_5ftype_8',['const_reference_type',['../classsparse__array.html#a4eff5d95fd0c2917e245b16f627ab1fe',1,'sparse_array']]],
-  ['container_5ft_9',['container_t',['../classsparse__array.html#aa636dc57b1dd2683098d1b3fdcdbd9bd',1,'sparse_array']]],
-  ['controllable_10',['Controllable',['../structControllable.html',1,'']]],
-  ['controllable_5ft_11',['Controllable_t',['../Components_8hh.html#aaa46248b1c0ccdeab7f1c44b22e43568',1,'Components.hh']]],
-  ['create_12',['Create',['../classCreate.html',1,'Create'],['../classCreate.html#a79756896dc7f6de947bbeecdbeb94bfa',1,'Create::Create()']]],
-  ['create_2ehh_13',['Create.hh',['../Create_8hh.html',1,'']]],
-  ['createenemy_14',['createEnemy',['../classCreate.html#aded8327a6ae42bd5397242ae77b7f2d7',1,'Create']]],
-  ['createplayer_15',['createPlayer',['../classCreate.html#ae55701ee1eb6bd44aa7a1385ef11b315',1,'Create']]],
-  ['current_16',['current',['../structLife.html#a9ad914c57af422b8c371dd7a84698559',1,'Life']]]
+  ['check_5fhelp_0',['check_help',['../classArgHandler.html#a3091409bf8d95418e9ab0be9cefa0830',1,'ArgHandler']]],
+  ['clientinputs_1',['ClientInputs',['../classClientInputs.html',1,'ClientInputs'],['../classClientInputs.html#adaddf556be9c3fa946508d167badc577',1,'ClientInputs::ClientInputs()=default'],['../classClientInputs.html#ad559878bf72a2410a8fec52c2efb5c2f',1,'ClientInputs::ClientInputs(const std::vector&lt; Protocol::InputKey &gt; &amp;key_pressed)']]],
+  ['componententitytype_2',['ComponentEntityType',['../classComponentEntityType.html',1,'ComponentEntityType'],['../classComponentEntityType.html#a97cfe53c4ebee6923b5e5ae1ad162602',1,'ComponentEntityType::ComponentEntityType()']]],
+  ['components_2ehpp_3',['Components.hpp',['../Components_8hpp.html',1,'']]],
+  ['containplayer_4',['containPlayer',['../classLobby.html#aabb2f6a72a7763ed017a60ff6bf18c01',1,'Lobby']]],
+  ['createinstance_5',['createInstance',['../classServer.html#a4519d0541b94d051a83bad9f038e81e9',1,'Server']]]
 ];

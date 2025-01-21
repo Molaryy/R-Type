@@ -1,9 +1,9 @@
 var searchData=
 [
-  ['main_0',['main',['../main_8cpp.html#aed2030e1505a72553347b3e40186de8b',1,'main(int argc, char const *const *argv):&#160;main.cpp'],['../Main_8cc.html#ae66f6b31b5ad750f1fe042a706a4e3d4',1,'main():&#160;Main.cc']]],
-  ['main_2ecc_1',['Main.cc',['../Main_8cc.html',1,'']]],
-  ['main_2ecpp_2',['main.cpp',['../main_8cpp.html',1,'']]],
-  ['max_3',['max',['../structLife.html#a1f026627a927671425939a38f453a597',1,'Life']]],
-  ['monitorclients_4',['monitorClients',['../classServer.html#a83b9ea1b83eb9c40db430bfdfffc079c',1,'Server']]],
-  ['movementsystem_5',['MovementSystem',['../classSystems.html#af39defdfa169a75f8edca985a2416219',1,'Systems']]]
+  ['main_0',['main',['../Main_8cpp.html#af11786117db3fd7eaf372d9029c0f199',1,'Main.cpp']]],
+  ['main_2ecpp_1',['Main.cpp',['../Main_8cpp.html',1,'']]],
+  ['max_5fclient_2',['max_client',['../classArgHandler.html#a5dc30d474e41ade4bc4fab4d17b38d2e',1,'ArgHandler']]],
+  ['max_5fclients_3',['MAX_CLIENTS',['../ArgHandler_8hpp.html#a0a8f91f93d75a07f0ae45077db45b3eb',1,'ArgHandler.hpp']]],
+  ['max_5flobby_4',['MAX_LOBBY',['../ArgHandler_8hpp.html#abe8816b3656a83a4828f132030b5220c',1,'ArgHandler.hpp']]],
+  ['max_5flobby_5',['max_lobby',['../classArgHandler.html#a0df6a2caed5c5440ef4fc320112bb4b6',1,'ArgHandler']]]
 ];

@@ -86,72 +86,104 @@ $(function(){ initResizable(false); });
 <div class="header">
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
+<a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structBonus-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">Bonus Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="Components_8hh_source.html">Components.hh</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="Components_8hpp_source.html">Components.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a7093461454d795f1f430dde694adf8de" id="r_a7093461454d795f1f430dde694adf8de"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7093461454d795f1f430dde694adf8de">Type</a> { <a class="el" href="#a7093461454d795f1f430dde694adf8dea345bf4f5c059fe606c60efdc2e37ecd0">HealthRegen</a>
-, <a class="el" href="#a7093461454d795f1f430dde694adf8dea9eedd9dbbd851364ec590244a803206e">DamageBoost</a>
-, <a class="el" href="#a7093461454d795f1f430dde694adf8dea382f4c2ffc89db2ebab547a2aafc40d7">SpeedBoost</a>
+<tr class="memitem:a96f58bfde5e83369560c9159e21a5c61" id="r_a96f58bfde5e83369560c9159e21a5c61"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a96f58bfde5e83369560c9159e21a5c61">BonusType</a> { <a class="el" href="#a96f58bfde5e83369560c9159e21a5c61a463537c4d42411f06ac6d403054ac0fc">None</a>
+, <a class="el" href="#a96f58bfde5e83369560c9159e21a5c61a04de569184cbe728f5011f8d4d1ef5a4">Damage</a>
+, <a class="el" href="#a96f58bfde5e83369560c9159e21a5c61a6d8c51714ee0770099c35d1b7b1afa6a">TripleShot</a>
  }</td></tr>
-<tr class="separator:a7093461454d795f1f430dde694adf8de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a96f58bfde5e83369560c9159e21a5c61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a4efe2e1c888b4675cc41cfbbb04d581c" id="r_a4efe2e1c888b4675cc41cfbbb04d581c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4efe2e1c888b4675cc41cfbbb04d581c">log</a> () const</td></tr>
+<tr class="separator:a4efe2e1c888b4675cc41cfbbb04d581c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a18db2cf20bfd7c1d75a1da157afb775e" id="r_a18db2cf20bfd7c1d75a1da157afb775e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a7093461454d795f1f430dde694adf8de">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a18db2cf20bfd7c1d75a1da157afb775e">type</a></td></tr>
-<tr class="separator:a18db2cf20bfd7c1d75a1da157afb775e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad67c4ecf01d0235031f03dfed502aacf" id="r_ad67c4ecf01d0235031f03dfed502aacf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad67c4ecf01d0235031f03dfed502aacf">value</a></td></tr>
-<tr class="separator:ad67c4ecf01d0235031f03dfed502aacf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae31eeab6ea841648fd627aa88acab27e" id="r_ae31eeab6ea841648fd627aa88acab27e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a96f58bfde5e83369560c9159e21a5c61">BonusType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae31eeab6ea841648fd627aa88acab27e">type</a></td></tr>
+<tr class="separator:ae31eeab6ea841648fd627aa88acab27e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81e4f6bc3e93a81cb3df8bf2d9012d55" id="r_a81e4f6bc3e93a81cb3df8bf2d9012d55"><td class="memItemLeft" align="right" valign="top">entity_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a81e4f6bc3e93a81cb3df8bf2d9012d55">id</a></td></tr>
+<tr class="separator:a81e4f6bc3e93a81cb3df8bf2d9012d55"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Enumeration Documentation</h2>
-<a id="a7093461454d795f1f430dde694adf8de" name="a7093461454d795f1f430dde694adf8de"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7093461454d795f1f430dde694adf8de">&#9670;&#160;</a></span>Type</h2>
+<a id="a96f58bfde5e83369560c9159e21a5c61" name="a96f58bfde5e83369560c9159e21a5c61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96f58bfde5e83369560c9159e21a5c61">&#9670;&#160;</a></span>BonusType</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="#a7093461454d795f1f430dde694adf8de">Bonus::Type</a></td>
+          <td class="memname">enum <a class="el" href="#a96f58bfde5e83369560c9159e21a5c61">Bonus::BonusType</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a7093461454d795f1f430dde694adf8dea345bf4f5c059fe606c60efdc2e37ecd0" name="a7093461454d795f1f430dde694adf8dea345bf4f5c059fe606c60efdc2e37ecd0"></a>HealthRegen&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a7093461454d795f1f430dde694adf8dea9eedd9dbbd851364ec590244a803206e" name="a7093461454d795f1f430dde694adf8dea9eedd9dbbd851364ec590244a803206e"></a>DamageBoost&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a7093461454d795f1f430dde694adf8dea382f4c2ffc89db2ebab547a2aafc40d7" name="a7093461454d795f1f430dde694adf8dea382f4c2ffc89db2ebab547a2aafc40d7"></a>SpeedBoost&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a96f58bfde5e83369560c9159e21a5c61a463537c4d42411f06ac6d403054ac0fc" name="a96f58bfde5e83369560c9159e21a5c61a463537c4d42411f06ac6d403054ac0fc"></a>None&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a96f58bfde5e83369560c9159e21a5c61a04de569184cbe728f5011f8d4d1ef5a4" name="a96f58bfde5e83369560c9159e21a5c61a04de569184cbe728f5011f8d4d1ef5a4"></a>Damage&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a96f58bfde5e83369560c9159e21a5c61a6d8c51714ee0770099c35d1b7b1afa6a" name="a96f58bfde5e83369560c9159e21a5c61a6d8c51714ee0770099c35d1b7b1afa6a"></a>TripleShot&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
 </div>
 </div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a4efe2e1c888b4675cc41cfbbb04d581c" name="a4efe2e1c888b4675cc41cfbbb04d581c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4efe2e1c888b4675cc41cfbbb04d581c">&#9670;&#160;</a></span>log()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Bonus::log </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a18db2cf20bfd7c1d75a1da157afb775e" name="a18db2cf20bfd7c1d75a1da157afb775e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a18db2cf20bfd7c1d75a1da157afb775e">&#9670;&#160;</a></span>type</h2>
+<a id="a81e4f6bc3e93a81cb3df8bf2d9012d55" name="a81e4f6bc3e93a81cb3df8bf2d9012d55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81e4f6bc3e93a81cb3df8bf2d9012d55">&#9670;&#160;</a></span>id</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#a7093461454d795f1f430dde694adf8de">Type</a> Bonus::type</td>
+          <td class="memname">entity_t Bonus::id</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="ad67c4ecf01d0235031f03dfed502aacf" name="ad67c4ecf01d0235031f03dfed502aacf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad67c4ecf01d0235031f03dfed502aacf">&#9670;&#160;</a></span>value</h2>
+<a id="ae31eeab6ea841648fd627aa88acab27e" name="ae31eeab6ea841648fd627aa88acab27e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae31eeab6ea841648fd627aa88acab27e">&#9670;&#160;</a></span>type</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int Bonus::value</td>
+          <td class="memname"><a class="el" href="#a96f58bfde5e83369560c9159e21a5c61">BonusType</a> Bonus::type</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -159,7 +191,7 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>bootstrap/include/<a class="el" href="Components_8hh_source.html">Components.hh</a></li>
+<li>server/includes/<a class="el" href="Components_8hpp_source.html">Components.hpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

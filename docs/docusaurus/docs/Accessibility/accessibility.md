@@ -1,15 +1,15 @@
-## Utilité des fonctionnalités d'accessibilité
+## Accessibility Features Utility
 
-Les fonctionnalités d'accessibilité sont essentielles pour rendre les applications utilisables par tous, y compris les personnes ayant des handicaps. Dans notre application, nous avons implémenté plusieurs fonctionnalités pour améliorer l'accessibilité :
+Accessibility features are essential for making applications usable by everyone, including people with disabilities. In our application, we have implemented several features to enhance accessibility :
 
-### Lecture de texte par synthèse vocale
+### Text-to-Speech
 
-Lorsque l'utilisateur clique sur le bouton "Accessibility", une fonctionnalité de synthèse vocale est activée. Cette fonctionnalité permet de lire à haute voix chaque mot du menu lorsque l'utilisateur passe la souris dessus. Cela est particulièrement utile pour les personnes ayant des difficultés de vision ou de lecture, car elles peuvent naviguer dans le menu en écoutant les options disponibles.
+When the user clicks the "Accessibility" button, a text-to-speech feature is activated. This feature reads out each menu item aloud when the user hovers over it with the mouse. This is particularly useful for individuals with vision or reading difficulties, as it allows them to navigate the menu by listening to the available options.
 
-### Navigation par touches
+### Keyboard Navigation
 
-Pour les utilisateurs qui ne sont pas à l'aise avec l'utilisation d'une souris, nous avons également rendu possible la navigation dans le menu à l'aide des touches du clavier, comme les flèches. Cela permet aux utilisateurs ayant des difficultés motrices de naviguer facilement dans l'application sans avoir besoin d'utiliser une souris.
+For users who are not comfortable using a mouse, we have also enabled menu navigation through keyboard keys, such as the arrow keys. This allows users with motor difficulties to easily navigate the application without the need for a mouse.
 
-Ces fonctionnalités montrent notre engagement à rendre notre application accessible à tous, en fournissant des outils qui aident les utilisateurs à interagir avec l'application de manière plus intuitive et inclusive.
+These features demonstrate our commitment to making our application accessible to everyone by providing tools that help users interact with the application in a more intuitive and inclusive way.
 
 ![](./assets/access.gif)

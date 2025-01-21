@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['takedamage_0',['takeDamage',['../structLife.html#a0a999342fd8823ec219020b9d7a6232e',1,'Life']]],
-  ['tick_5fspeed_1',['TICK_SPEED',['../Game_8hpp.html#a7fc9eee9e9d18a32a09278686843798e',1,'Game.hpp']]],
-  ['type_2',['Type',['../structBonus.html#a7093461454d795f1f430dde694adf8de',1,'Bonus']]],
-  ['type_3',['type',['../structBonus.html#a18db2cf20bfd7c1d75a1da157afb775e',1,'Bonus']]]
+  ['tripleshot_0',['TripleShot',['../structBonus.html#a96f58bfde5e83369560c9159e21a5c61a6d8c51714ee0770099c35d1b7b1afa6a',1,'Bonus']]],
+  ['type_1',['type',['../classComponentEntityType.html#af7dfe7a171469a42273da689e6b85a72',1,'ComponentEntityType::type'],['../structBonus.html#ae31eeab6ea841648fd627aa88acab27e',1,'Bonus::type']]]
 ];
