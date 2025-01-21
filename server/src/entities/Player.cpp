@@ -26,14 +26,8 @@ void Player::collision(Registry &r, const entity_t me, const entity_t other) {
         life->takeDamage(10);
     else if (otherType->type == Protocol::BONUS_HEALTH)
         life->heal(BONUS_HEALTH_HEALING);
-    else if (otherType->type == Protocol::WALL) {
+    else if (otherType->type == Protocol::WALL)
         life->current = 0;
-        Network::Packet packet(Protocol::DeadPacket(me, true), Protocol::KILL);
-        const SparseArray<NetworkId> &network_ids = r.get_components<NetworkId>();
-        for (auto &&[network_id] : Zipper(network_ids))
-            network.send(network_id.id, packet.serialize());
-        return;
-    }
 
     Network::Packet packet(
         Protocol::HitPacket(me, life->current),

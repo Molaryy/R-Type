@@ -2,35 +2,54 @@
 ** EPITECH PROJECT, 2025
 ** R-Type
 ** File description:
-** EnemyTurret.cpp
+** BossHeart.cpp
 */
 
-#include "entities/EnemyTurret.hpp"
+#include "entities/BossHeart.hpp"
 
 #include <cmath>
-#include <entities/BonusHealth.hpp>
-#include <entities/BonusTripleShot.hpp>
 
-#include "entities/BonusForce.hpp"
 #include "Components.hh"
 #include "Components.hpp"
 #include "IndexedZipper.hh"
 #include "Packet.hpp"
 #include "Server.hpp"
 #include "Zipper.hh"
+#include "entities/BonusHealth.hpp"
+#include "entities/BonusForce.hpp"
 #include "entities/EnemyBullet.hpp"
 #include "entities/PlayerBullet.hpp"
 
-void EnemyTurret::ArtificialIntelligence::operator()(Registry &r, const entity_t me) {
-    tick++;
+void BossHeart::ArtificialIntelligence::operator()(Registry &r, const entity_t me) {
+    Network::INetworkServer &network = Server::getInstance().getNetwork();
+    SparseArray<Position> &positions = r.get_components<Position>();
+    SparseArray<Velocity> &velocities = r.get_components<Velocity>();
+    std::optional<Position> &position = positions[me];
+    std::optional<Velocity> &velocity = velocities[me];
+    if (!position)
+        return;
 
-    if (tick % TURRET_BULLET_RATE)
+    if (position->x <= BOSS_HEART_STOP_POS) {
+        position->x = BOSS_HEART_STOP_POS;
+        velocity->x = 0;
+
+        for (auto &&[network_id] : Zipper(r.get_components<NetworkId>())) {
+            Protocol::EntityPositionVelocityPacket pos_vel(
+                me,
+                {position->x, position->y},
+                {velocity->x, velocity->y});
+            Network::Packet packet(
+                pos_vel,
+                Protocol::POSITION_VELOCITY
+            );
+            network.send(network_id.id, packet.serialize());
+        }
+    }
+
+    tick++;
+    if (tick % BOSS_HEART_BULLET_RATE)
         return;
-    const SparseArray<Position> &positions = r.get_components<Position>();
     const SparseArray<ComponentEntityType> &types = r.get_components<ComponentEntityType>();
-    const std::optional<Position> &position = positions[me];
-    if (!position.has_value())
-        return;
 
     Position direction{};
     double shortest_distance = -1.0;
@@ -45,12 +64,13 @@ void EnemyTurret::ArtificialIntelligence::operator()(Registry &r, const entity_t
     }
     if (shortest_distance == -1.0)
         return;
-    EnemyBullet::create(r, position.value(), direction, TURRET_BULLET_SPEED);
+    EnemyBullet::create(r, Position(position->x, position->y - BOSS_HEART_SIZE / 2.f), direction, BOSS_HEART_BULLET_SPEED);
 }
 
-void EnemyTurret::collision(Registry &r, const entity_t me, const entity_t other) {
+void BossHeart::collision(Registry &r, const entity_t me, const entity_t other) {
     const std::optional<ComponentEntityType> &otherType = r.get_components<ComponentEntityType>()[other];
     std::optional<Life> &life = r.get_components<Life>()[me];
+    std::optional<Life> &otherLife = r.get_components<Life>()[other];
     const std::optional<Bonus> &otherBonus = r.get_entity_component<Bonus>(other);
     if (!otherType.has_value() || !life.has_value() || !life->is_alive() || otherType->side != ComponentEntityType::Ally)
         return;
@@ -58,7 +78,7 @@ void EnemyTurret::collision(Registry &r, const entity_t me, const entity_t other
     if (otherType->type == Protocol::PLAYER_BULLET)
         life->takeDamage(PLAYER_BULLET_DAMAGE + (otherBonus->type == Bonus::Damage ? BONUS_FORCE_DAMAGE_BOOST : 0));
     if (otherType->type == Protocol::PLAYER)
-        life->current = 0;
+        otherLife->current = 0;
     if (life->is_alive()) {
         Network::Packet packet(
             Protocol::HitPacket(me, life->current),
@@ -69,50 +89,39 @@ void EnemyTurret::collision(Registry &r, const entity_t me, const entity_t other
             network.send(network_id.id, packet.serialize());
     } else {
         const std::optional<Position> &pos = r.get_entity_component<Position>(me);
-        if (pos) {
-            if (Server::random(TURRET_DROP_BONUS_HEALTH_CHANCE))
-                BonusHealth::create(r, pos.value());
-            else if (Server::random(TURRET_DROP_BONUS_DAMAGE_CHANCE))
-                BonusForce::create(r, pos.value());
-            else if (Server::random(TURRET_DROP_BONUS_TRIPLE_CHANCE))
-                BonusTripleShot::create(r, pos.value());
-        }
+        if (pos)
+            BonusHealth::create(r, pos.value());
     }
 }
 
-entity_t EnemyTurret::create(Registry &r) {
-    const Position pos(WIDTH, static_cast<float>(std::rand() % (HEIGHT - TURRET_SIZE)));
+entity_t BossHeart::create(Registry &r) {
+    const Position pos(WIDTH, static_cast<float>(std::rand() % HEIGHT));
 
     return createFromPos(r, pos);
 }
 
-entity_t EnemyTurret::createFromPos(Registry &r, const Position &position) {
+entity_t BossHeart::createFromPos(Registry &r, const Position &position) {
     Position pos(position);
 
     const entity_t entity = r.spawn_entity();
 
-    const float x = 0 - pos.x;
-    const float y = static_cast<float>(std::rand() % (HEIGHT - TURRET_SIZE)) - pos.y;
+    Velocity vel(CAMERA_SPEED, 0);
 
-    const float scalling_factor = static_cast<float>(std::abs(CAMERA_SPEED + TURRET_SPEED)) / sqrtf(powf(x, 2) + powf(y, 2));
-
-    Velocity vel(x * scalling_factor, y * scalling_factor);
-
-    r.add_component(entity, ComponentEntityType(Protocol::ENEMY_TURRET));
+    r.add_component(entity, ComponentEntityType(Protocol::BOSS_HEART));
     r.add_component(entity, Position(pos));
     r.add_component(entity, Velocity(vel));
-    r.add_component(entity, Life(TURRET_HEALTH, TURRET_HEALTH));
-    r.add_component(entity, Collision(TURRET_SIZE, TURRET_SIZE, collision));
+    r.add_component(entity, Life(BOSS_HEART_HEALTH, BOSS_HEART_HEALTH));
+    r.add_component(entity, Collision(BOSS_HEART_SIZE, BOSS_HEART_SIZE, collision));
     r.add_component(entity, ::ArtificialIntelligence(ArtificialIntelligence()));
 
     Network::Packet packet(
         Protocol::SpawnEntityPacket(
             entity,
-            Protocol::ENEMY_TURRET,
+            Protocol::BOSS_HEART,
             Protocol::Vector2f(pos.x, pos.y),
-            Protocol::Vector2f(TURRET_SIZE, TURRET_SIZE),
+            Protocol::Vector2f(BOSS_HEART_SIZE, BOSS_HEART_SIZE),
             Protocol::Vector2f(vel.x, vel.y),
-            TURRET_HEALTH
+            BOSS_HEART_HEALTH
         ),
         Protocol::SPAWN
     );

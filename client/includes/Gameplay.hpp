@@ -33,6 +33,8 @@ enum Textures {
     BONUS_FORCE,
     BONUS_TRIPLE_SHOT,
     WALL,
+    BOSS_HEART,
+    BOSS,
     BACKGROUND_IMAGE,
     NB_TEXTURES
 };
@@ -50,6 +52,8 @@ inline std::array<std::string, NB_TEXTURES> textures_paths {
     "assets/bonus_health.png",
     "assets/bonus_force.png",
     "assets/bonus_triple_shot.png",
-    "assets/background.jpg",
     "assets/wall.png",
+    "assets/boss_heart.png",
+    "assets/boss.png",
+    "assets/background.jpg",
 };

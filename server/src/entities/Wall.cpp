@@ -14,21 +14,14 @@
 #include "Zipper.hh"
 
 void Wall::collision(Registry &r, const entity_t me, const entity_t other) {
-    const std::optional<Life> &otherLife = r.get_entity_component<Life>(other);
+    std::optional<Life> &otherLife = r.get_entity_component<Life>(other);
     const std::optional<Life> &life = r.get_entity_component<Life>(me);
     const std::optional<ComponentEntityType> &type = r.get_entity_component<ComponentEntityType>(other);
-    if (!life.has_value() || !life->is_alive() || !otherLife.has_value() || !otherLife->is_alive() || !type.has_value() || type->type == Protocol::WALL)
+    if (!life.has_value() || !life->is_alive() || !otherLife.has_value() || !otherLife->is_alive() || !type.has_value() || type->type == Protocol::WALL
+        || type->type == Protocol::BOSS)
         return;
 
-    Network::Packet packet(
-        Protocol::DeadPacket(other, true),
-        Protocol::KILL
-    );
-    Network::INetworkServer &network = Server::getInstance().getNetwork();
-    for (auto &&[network_id] : Zipper(r.get_components<NetworkId>()))
-        network.send(network_id.id, packet.serialize());
-    if (type->type != Protocol::PLAYER)
-        r.kill_entity(other);
+    otherLife->current = 0;
 }
 
 entity_t Wall::create(Registry &r) {

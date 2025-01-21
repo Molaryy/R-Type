@@ -10,14 +10,6 @@
 #include <cstddef>
 #include <cstdint>
 
-#define BOSS_HEART_SIZE 50
-#define BOSS_HEART_HEALTH 5
-#define BOSS_HEART_BULLET_RATE 60
-
-#define BOSS_SIZE 50
-#define BOSS_HEALTH 10
-#define BOSS_BULLET_RATE 20
-
 #define WIDTH 800
 #define HEIGHT 600
 

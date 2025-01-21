@@ -20,14 +20,7 @@ void BonusHealth::collision(Registry &r, const entity_t me, const entity_t other
     if (!otherType.has_value() || !life.has_value() || !life->is_alive() || otherType->type != Protocol::PLAYER)
         return;
 
-    life->current = 0;
-    Network::Packet packet(
-        Protocol::DeadPacket(me, false),
-        Protocol::KILL
-    );
-    Network::INetworkServer &network = Server::getInstance().getNetwork();
-    for (auto &&[network_id] : Zipper(r.get_components<NetworkId>()))
-        network.send(network_id.id, packet.serialize());
+    life->current = -1;
 }
 
 entity_t BonusHealth::create(Registry &r, const Position &position) {

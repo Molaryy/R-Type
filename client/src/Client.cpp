@@ -253,8 +253,33 @@ void Client::setupPacketHandler_() {
                                                                 }));
                 registry_.add_component(e, Life(health, health));
                 break;
-            case Protocol::WALL:
-                registry_.add_component(e, Components::Drawable(WALL, size.x, size.y, 0, 0, 315, 120, [](Components::Drawable &){}));
+            case Protocol::BOSS_HEART:
+                registry_.add_component(e, Components::Drawable(BOSS_HEART, size.x, size.y, 0, 0, 130, 100,
+                                                                [frame = 0](Components::Drawable &drawable) mutable {
+                                                                    if (frame++ < 3)
+                                                                        return;
+                                                                    frame = 0;
+                                                                    drawable.text_x += drawable.text_width;
+                                                                    if (drawable.text_x > drawable.text_width)
+                                                                        drawable.text_x = 0;
+                                                                }));
+                registry_.add_component(e, Life(health, health));
+                break;
+            case Protocol::BOSS:
+                registry_.add_component(e, Components::Drawable(BOSS, size.x, size.y, 0, 0, 206, 600,
+                                                                [frame = 0](Components::Drawable &drawable) mutable {
+                                                                    if (frame++ < 3)
+                                                                        return;
+                                                                    frame = 0;
+                                                                    drawable.text_x += drawable.text_width;
+                                                                    if (drawable.text_x > drawable.text_width)
+                                                                        drawable.text_x = 0;
+                                                                }));
+                registry_.add_component(e, Life(health, health));
+                break;
+case Protocol::WALL:
+                registry_.add_component(e, Components::Drawable(WALL, size.x, size.y, 0, 0, 315, 120, [](Components::Drawable &) {
+                }));
                 break;
             default:
                 std::cerr << "Unknown entity type: " << type << std::endl;
@@ -296,15 +321,8 @@ void Client::setupPacketHandler_() {
 
         if (!natural)
             return registry_.kill_entity(entity_id);
-
+        const std::optional<Components::Drawable> &draw = registry_.get_components<Components::Drawable>()[entity_id];
         const std::optional<Position> &pos = registry_.get_components<Position>()[entity_id];
-        std::optional<Components::Drawable> &draw = registry_.get_components<Components::Drawable>()[entity_id];
-        const std::optional<Components::ComponentEntityType> &type = registry_.get_components<Components::ComponentEntityType>()[entity_id];
-        if (type.has_value() && type->type == Protocol::PLAYER) {
-            draw->can_draw = false;
-            return;
-        }
-
         if (pos.has_value() && draw.has_value()) {
             const entity_t e = registry_.spawn_entity();
 
@@ -321,10 +339,6 @@ void Client::setupPacketHandler_() {
                                                                     drawable.text_height = 0;
                                                                 }
                                                             }));
-        }
-        if (type.has_value() && type->type == Protocol::PLAYER) {
-            draw->can_draw = false;
-            return;
         }
         playSoundEffect(explosionSoundID_);
         registry_.kill_entity(entity_id);

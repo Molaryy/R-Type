@@ -11,7 +11,7 @@
 
 inline bool isAccessibilityOn = false;
 
-enum MENU_BUTTONS {
+enum MENU_BUTTONS : int {
     PLAY,
     LEADERBOARD,
     SETTINGS,
@@ -42,7 +42,7 @@ inline std::array<std::string, NB_MENU_BUTTONS> voiceMenuButtonsTitleFilepaths =
     "./assets/voice/Accessibility.wav"
 };
 
-enum LOBBY_BUTTONS {
+enum LOBBY_BUTTONS : int {
     RELOAD,
     MENU,
     JOIN_RANDOM_LOBBY,
