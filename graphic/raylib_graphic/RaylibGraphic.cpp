@@ -208,6 +208,26 @@ namespace Graphic {
         SetTargetFPS(fps);
     }
 
+    bool RaylibGraphic::isKeyPressed(int key) const {
+        return IsKeyPressed(key);
+    }
+
+    void RaylibGraphic::pauseMusic(const int musicID) {
+        const auto it = musics_.find(musicID);
+
+        if (it != musics_.end()) {
+            PauseMusicStream(it->second);
+        }
+    }
+
+    void RaylibGraphic::resumeMusic(const int musicID) {
+        const auto it = musics_.find(musicID);
+
+        if (it != musics_.end()) {
+            ResumeMusicStream(it->second);
+        }
+    }
+
     extern "C" {
     LIB_EXPORT IRenderer *create_instance() {
         return new RaylibGraphic();
