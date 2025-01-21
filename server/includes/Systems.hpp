@@ -341,7 +341,7 @@ namespace Systems {
 
         Network::INetworkServer &network = Server::getInstance().getNetwork();
         while (!entity_to_kill.empty()) {
-            std::tuple<unsigned long, bool, bool> &tuple = entity_to_kill.front();
+            std::tuple<entity_t, bool, bool> &tuple = entity_to_kill.front();
             Network::Packet packet(Protocol::DeadPacket(std::get<0>(tuple), std::get<2>(tuple)), Protocol::KILL);
             const SparseArray<NetworkId> &network_ids = r.get_components<NetworkId>();
             for (auto &&[network_id] : Zipper(network_ids))
